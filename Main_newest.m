@@ -8,7 +8,7 @@ fprintf('Discrete elastic rods (fully working!!)\n');
 global g dt tol
 
 % Time step
-dt = 1e-2;
+dt = 1e-4;
 
 % Density
 rho = 1200;
@@ -54,7 +54,9 @@ plotStep = 1;
 % inputFileName = 'input_rod.txt';
 % inputFileName = 'input_rod_straight.txt';
 % inputFileName = 'input_-ve_cantilever_rod.txt';
-inputFileName = 'input_rod_shell.txt';
+% inputFileName = 'input_rod_shell.txt';
+% inputFileName = 'simplest_rod_shell_input.txt';
+inputFileName = 'Copy_of_simplest_rod_shell_input.txt';
 % inputFileName = 'input_rod_shell - simpler.txt';
 % inputFileName = 'input_shell_cantilever.txt';
 % inputFileName = 'input_2rods_joint.txt';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -178,7 +180,11 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_nodes=[1, 4, 5, 6, 7, 8, 40, 73, 76, 78, 80]; % shell only
 % MultiRod.fixed_nodes=[1, 2, 53, 54, 55, 56, 57, 89, 122, 125, 127, 129]; % rod + shell
 
-MultiRod.fixed_nodes=[51, 52, 71, 72, 73, 74, 75, 94, 96, 98, 100]; % rod + shell another fixed at farther end of shell
+% MultiRod.fixed_nodes=[51, 52, 71, 72, 73, 74, 75, 94, 96, 98, 100]; % rod + shell another fixed at farther end of shell
+% MultiRod.fixed_edges=[]; % required input
+
+% simplest rod-shell element
+MultiRod.fixed_nodes=[3,4, 5]; % rod + shell fixed at farther end of shell
 MultiRod.fixed_edges=[]; % required input
 
 [MultiRod.fixedDOF, MultiRod.freeDOF]=FindFixedFreeDOF(MultiRod);

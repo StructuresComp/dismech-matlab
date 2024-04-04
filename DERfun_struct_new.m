@@ -27,6 +27,16 @@ while error > tol
      % Compute time parallel reference frame
      [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
+     % hard code reference frame attachement for pseudo-edge of shell at rod-shell joint
+     face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
+         q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
+         q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
+     face_normal_joint = face_normal_joint/norm(face_normal_joint);
+     tangent_rod_joint = (q(mapNodetoDOF(3)) + q(mapNodetoDOF(5)))/2 - q(mapNodetoDOF(2));
+     
+     a1_iter(end, :) = face_normal_joint; % normal of shell face involved in joint
+     a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
+
      % Compute reference twist
      tangent = computeTangent(MultiRod, q);
      refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);

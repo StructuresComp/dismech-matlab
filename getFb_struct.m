@@ -66,6 +66,9 @@ for c = 1:n_bend
     dF(end-1) = 0;
     dJ(end, end) = 0;
     dJ(end-1, end-1) = 0;
+% 
+%     dF
+%     dJ
 
     Fb(ind) = Fb(ind) - dF(ind);
     Jb(ind, ind) = Jb(ind, ind) - dJ(ind, ind);
