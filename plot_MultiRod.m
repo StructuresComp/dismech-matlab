@@ -26,9 +26,9 @@ hold on
 % ylim([-0.1 0.1])
 % zlim([-0.1 0.1])
 
-xlim([0 0.3])
+xlim([0 0.7])
 ylim([-0.1 0.1])
-zlim([-0.1 0.1])
+zlim([-0.5 0.1])
 
 % set(h1, 'visible', 'off');
 % clf()

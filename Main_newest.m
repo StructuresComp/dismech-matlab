@@ -8,7 +8,7 @@ fprintf('Discrete elastic rods (fully working!!)\n');
 global g dt tol
 
 % Time step
-dt = 1e-4;
+dt = 1e-2;
 
 % Density
 rho = 1200;
@@ -135,10 +135,20 @@ bend_twist_spring_sample = CreateBendTwistSpring(bend_twist_spring_sample,...
 
 bend_twist_springs = repmat(bend_twist_spring_sample, n_bend_twist, 1); % array of bend_spring
 
-for b=1:n_bend_twist
+for b=1:n_bend_twist-1
     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
-        elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+        elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
 end
+
+% pseudo bend-twist spring for rod-shell joint
+% bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+%     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+
+bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+    elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+
+% bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+%     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0, MultiRod.GJ]);
 
 %% hinge bending spring
 
@@ -184,7 +194,8 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_edges=[]; % required input
 
 % simplest rod-shell element
-MultiRod.fixed_nodes=[3,4, 5]; % rod + shell fixed at farther end of shell
+% MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end of shell
+MultiRod.fixed_nodes=[3,4,5, 6]; % rod + shell fixed at farther end of shell
 MultiRod.fixed_edges=[]; % required input
 
 [MultiRod.fixedDOF, MultiRod.freeDOF]=FindFixedFreeDOF(MultiRod);

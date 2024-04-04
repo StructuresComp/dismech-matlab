@@ -46,10 +46,10 @@ for c = 1:n_twist
 
     % % hard code and set to zero for now
     % last two dof indices force set to 0
-    dF(end) = 0;
     dF(end-1) = 0;
-    dJ(end, end) = 0;
+    dF(end-2) = 0;
     dJ(end-1, end-1) = 0;
+    dJ(end-2, end-2) = 0;
 
     Ft(ind) = Ft(ind) - dF(ind);
     Jt(ind, ind) = Jt(ind, ind) - dJ(ind, ind);

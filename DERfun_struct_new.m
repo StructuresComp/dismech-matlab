@@ -24,6 +24,9 @@ error = 10 * tol;
 
 while error > tol
 
+    % compute the location of the pseudo node
+    q(mapNodetoDOF(n_nodes)) = 0.5.*(q(mapNodetoDOF(3)) + q(mapNodetoDOF(5)));
+
      % Compute time parallel reference frame
      [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
