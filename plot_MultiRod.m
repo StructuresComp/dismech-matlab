@@ -25,9 +25,14 @@ hold on
 % xlim([-0.2 0.2])
 % ylim([-0.1 0.1])
 % zlim([-0.1 0.1])
+% 
+% xlim([0 0.7])
+% ylim([-0.1 0.1])
+% zlim([-0.5 0.1])
 
-xlim([0 0.7])
-ylim([-0.1 0.1])
+
+xlim([0 0.6])
+ylim([-0.3 0.3])
 zlim([-0.5 0.1])
 
 % set(h1, 'visible', 'off');
@@ -67,6 +72,8 @@ title(num2str(ctime, 't=%f'));
 % axis equal
 view(3); % isometric view
 % view(0,90); % x-y plane view
+% view(90,0); % y-z plane view
+% view(0,0); % x-z plane view
 xlabel('x');
 ylabel('y');
 zlabel('z');

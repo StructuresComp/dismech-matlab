@@ -4,8 +4,8 @@ clear all
 close all
 
 % rod nodes
-nodes_rod = 49;
-% nodes_rod = 0;
+% nodes_rod = 49;
+nodes_rod = 0;
 
 % Geometry
 aspectRatio = 4; % Length/Width
@@ -15,9 +15,12 @@ maxMeshSize = geometry_w/4;
 % maxMeshSize = 0.2;
 
 %% Generate mesh and initialization
+% 
+% [Nodes, Edges, face_nodes, face_edges, sign_faces, EdgeIsBetween, HingeIsBetween, face_unit_normals, n_avg, edge_faces] =...
+%     generateMesh(geometry_L, geometry_w, maxMeshSize);
 
 [Nodes, Edges, face_nodes, face_edges, sign_faces, EdgeIsBetween, HingeIsBetween, face_unit_normals, n_avg, edge_faces] =...
-    generateMesh(geometry_L, geometry_w, maxMeshSize);
+    generateEquilateralMesh(geometry_L, geometry_w, maxMeshSize);
 
 
 % [Nodes, Edges, face_nodes, face_edges, sign_faces, EdgeIsBetween, HingeIsBetween, face_unit_normals, n_avg] =...
@@ -66,7 +69,7 @@ n_hinges=size(HingeIsBetween,2);
 %%
 % filename = 'input_shell_cantilever_most_dense.txt';
 % filename = 'input_shell_cantilever_new.txt';
-filename = 'input_shell_cantilever.txt';
+filename = 'input_shell_cantilever_equilateral.txt';
 % filename = 'new_input_shell.txt';
 % filename = 'input semi-cylinder.txt';
 % filename = 'input hemisphere.txt';
@@ -95,7 +98,14 @@ writematrix(EdgeIsBetween',filename, 'WriteMode','append')
 
 fid = fopen(filename, 'at');
 if fid ~= -1
-    fprintf(fid,'*Hinges');
+    fprintf(fid,'*elStretchShell');
+    fclose(fid);
+end
+writematrix(EdgeIsBetween',filename, 'WriteMode','append')
+
+fid = fopen(filename, 'at');
+if fid ~= -1
+    fprintf(fid,'*elBendShell');
     fclose(fid);
 end
 writematrix(HingeIsBetween',filename, 'WriteMode','append')

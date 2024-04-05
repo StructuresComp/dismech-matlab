@@ -42,7 +42,7 @@ end
 maximum_iter = 100;
 
 % Total simulation time (it exits after t=totalTime)
-totalTime = 1; % sec
+totalTime = 5; % sec
 
 % Indicate whether images should be saved
 saveImage = 0;
@@ -56,9 +56,10 @@ plotStep = 1;
 % inputFileName = 'input_-ve_cantilever_rod.txt';
 % inputFileName = 'input_rod_shell.txt';
 % inputFileName = 'simplest_rod_shell_input.txt';
-inputFileName = 'Copy_of_simplest_rod_shell_input.txt';
+inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
 % inputFileName = 'input_rod_shell - simpler.txt';
 % inputFileName = 'input_shell_cantilever.txt';
+% inputFileName = 'input_shell_cantilever_equilateral.txt';
 % inputFileName = 'input_2rods_joint.txt';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 % inputFileName = 'input_4node_Tjoint.txt';
 % inputFileName = 'inp_4node_T_2b.txt';
@@ -136,20 +137,24 @@ bend_twist_spring_sample = CreateBendTwistSpring(bend_twist_spring_sample,...
 bend_twist_springs = repmat(bend_twist_spring_sample, n_bend_twist, 1); % array of bend_spring
 
 for b=1:n_bend_twist-1
+%     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
+%         elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
         elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+
 end
 
 % pseudo bend-twist spring for rod-shell joint
-% bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
-%     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
-
-bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
-    elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
-
-% bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
-%     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0, MultiRod.GJ]);
-
+if(n_bend_twist)
+%     bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+%         elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+    
+    bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+        elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+    
+    % bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
+    %     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0, MultiRod.GJ]);
+end
 %% hinge bending spring
 
 global hinge_spring_sample % hinge_springs
@@ -194,9 +199,15 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_edges=[]; % required input
 
 % simplest rod-shell element
-% MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end of shell
-MultiRod.fixed_nodes=[3,4,5, 6]; % rod + shell fixed at farther end of shell
+MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end node of
+% shell (pin-joint)
+% MultiRod.fixed_nodes=[3,4,5,6]; % rod + shell fixed at farther face of shell
 MultiRod.fixed_edges=[]; % required input
+
+% % equilateral mesh shell (cantilever)
+% % MultiRod.fixed_nodes=[1, 3, 5, 7, 9, 11, 13, 15, 17]; 
+% MultiRod.fixed_nodes=[1:17]; 
+% MultiRod.fixed_edges=[]; % required input
 
 [MultiRod.fixedDOF, MultiRod.freeDOF]=FindFixedFreeDOF(MultiRod);
 
