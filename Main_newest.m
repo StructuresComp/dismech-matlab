@@ -56,7 +56,8 @@ plotStep = 1;
 % inputFileName = 'input_-ve_cantilever_rod.txt';
 % inputFileName = 'input_rod_shell.txt';
 % inputFileName = 'simplest_rod_shell_input.txt';
-inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
+inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working equilateral-triangles
+% inputFileName = 'Copy_2_of_simplest_rod_shell_input.txt'; % right-triangles
 % inputFileName = 'input_rod_shell - simpler.txt';
 % inputFileName = 'input_shell_cantilever.txt';
 % inputFileName = 'input_shell_cantilever_equilateral.txt';
@@ -136,6 +137,7 @@ bend_twist_spring_sample = CreateBendTwistSpring(bend_twist_spring_sample,...
 
 bend_twist_springs = repmat(bend_twist_spring_sample, n_bend_twist, 1); % array of bend_spring
 
+%% equilateral triangle
 for b=1:n_bend_twist-1
 %     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
 %         elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
@@ -155,6 +157,18 @@ if(n_bend_twist)
     % bend_twist_springs(n_bend_twist) = CreateBendTwistSpring (bend_twist_springs(n_bend_twist), ...
     %     elBendRod(n_bend_twist,:), bend_twist_spring_sign(n_bend_twist,:), MultiRod.voronoiRefLen, [0 0], 0, [0, MultiRod.GJ]);
 end
+%% right-triangle example
+
+% bend_twist_springs(1) = CreateBendTwistSpring (bend_twist_springs(1), ...
+%     elBendRod(1,:), bend_twist_spring_sign(1,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+%  
+% bend_twist_springs(2) = CreateBendTwistSpring (bend_twist_springs(2), ...
+%     elBendRod(2,:), bend_twist_spring_sign(2,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+% 
+% bend_twist_springs(3) = CreateBendTwistSpring (bend_twist_springs(3), ...
+%     elBendRod(3,:), bend_twist_spring_sign(3,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+
+
 %% hinge bending spring
 
 global hinge_spring_sample % hinge_springs
@@ -199,9 +213,9 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_edges=[]; % required input
 
 % simplest rod-shell element
-MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end node of
+% MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end node of
 % shell (pin-joint)
-% MultiRod.fixed_nodes=[3,4,5,6]; % rod + shell fixed at farther face of shell
+MultiRod.fixed_nodes=[3,4,5,6]; % rod + shell fixed at farther face of shell
 MultiRod.fixed_edges=[]; % required input
 
 % % equilateral mesh shell (cantilever)
