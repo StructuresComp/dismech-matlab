@@ -78,7 +78,7 @@ while error > tol
      
      f_free = f(freeIndex);
      J_free = J(freeIndex, freeIndex);
-     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash)
+     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash(?))
 
      % Newton's update
      dq_free = J_free \ f_free;
@@ -94,10 +94,10 @@ a2 = a2_iter;
 u = (q - q0) / dt;
 
 %%
-MultiRod.q=q;
-MultiRod.u=u;
-MultiRod.a1=a1;
-MultiRod.a2=a2;
+MultiRod.q = q;
+MultiRod.u = u;
+MultiRod.a1 = a1;
+MultiRod.a2 = a2;
 MultiRod.m1 = m1;
 MultiRod.m2 = m2;
 

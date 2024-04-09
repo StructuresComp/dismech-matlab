@@ -4,7 +4,6 @@ global bug
 
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
-n_bend_rod = MultiRod.n_edges_rod - 1; % for now, need to change
 n_bend = numel(bend_twist_springs);
 
 % face1_ind = ;

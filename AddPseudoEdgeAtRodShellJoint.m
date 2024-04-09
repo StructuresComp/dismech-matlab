@@ -1,8 +1,9 @@
-function  [] = AddPseudoEdgeAtRodShellJoint(e0, f0, e0_sign, Nodes, edges, face_nodes_shell, MultiRod)
+function  [MultiRod, elStretchRod, elBendRod, elBendSign] = AddPseudoEdgeAtRodShellJoint(e0, f0, e0_sign, Nodes, edges, face_nodes_shell, MultiRod, elStretchRod, elBendRod, elBendSign)
 
 n_edges = MultiRod.n_edges;
 n_edges_rod = MultiRod.n_edges_rod;
 n_nodes = MultiRod.n_nodes;
+n_pseudo_edges = MultiRod.n_pseudo_edges;
 
 % given edge e0 and face f0;
 joint_edge_nodes = edges(e0, :);
@@ -61,43 +62,45 @@ else
     fprintf("input shell mesh error: unable to draw a triangle at the joint face")
 end
 
-pseudo_e = [n0, n_nodes+1];
-pseudo_e_vec = M - n0;
-pseudo_bend_sp = [ne, e0, n0, n_edges_rod+1, n_nodes+1];
-
-pseudo_bend_sp_sgn = [e0_sign, 1];
+pseudo_edge.nodes = [n0, n_nodes+1];
+pseudo_edge.face_nodes = joint_face_nodes;
+pseudo_edge.vec = M - n0;
+pseudo_edge.bend_sp = [ne, e0, n0, n_edges_rod+1, n_nodes+1];
+pseudo_edge.bend_sgn = [e0_sign, 1];
+pseudo_edge.n0 = n0;
+pseudo_edge.ne = ne;
+pseudo_edge.pseudo_n_ind = n_nodes +1;
+pseudo_edge.n1 = n1;
+pseudo_edge.n2 = n2;
 
 j = n_edges;
 while j > n_edges_rod
     edges(j+1,:) = edges(j,:);
     j=j-1;
 end
-edges(n_edges_rod+1,:) = pseudo_e;
+edges(n_edges_rod+1,:) = pseudo_edge.nodes;
 
-%%
-n_edges = n_edges+1;
-n_nodes = n_nodes + 1;
-n_edges_rod = n_edges_rod+1;
-% n_bend_twist = n_bend_twist+1;
-Nodes(n_nodes,:) = M;
+Nodes = [Nodes; M];
 
-MultiRod.n_edges = n_edges;
-MultiRod.n_nodes = n_nodes;
-MultiRod.n_edges_rod = n_edges_rod;
-% MultiRod.n_bend_twist = n_bend_twist;
+MultiRod.n_edges = n_edges+1;
+MultiRod.n_nodes = n_nodes+1;
+MultiRod.n_pseudo_edges = n_pseudo_edges+1;
 
 MultiRod.Nodes = Nodes;
 MultiRod.edges = edges;
 
-MultiRod.voronoiRefLen(n_nodes) = 0.5*norm(pseudo_e_vec);
+% MultiRod.voronoiRefLen(n_nodes) = 0.5*norm(pseudo_e_vec);
 
-% stretch_springs(n_elStretchRod) = CreateStretchSpring(stretch_springs(n_elStretchRod), norm(pseudo_e_vec), pseudo_e);
-% 
-% bend_twist_springs(n_elBendRod) = CreateBendTwistSpring(bend_twist_springs(n_elBendRod), ...
-%         pseudo_bend_sp, pseudo_bend_sp_sgn, MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+MultiRod.fixed_nodes = [MultiRod.fixed_nodes, pseudo_edge.pseudo_n_ind];
+
+elStretchRod = [elStretchRod; pseudo_edge.nodes];
+elBendRod = [elBendRod; pseudo_edge.bend_sp];
+elBendSign = [elBendSign; pseudo_edge.bend_sgn];
+
+MultiRod.pseudo_edges = [MultiRod.pseudo_edges, pseudo_edge];
 
 MultiRod.a1(n_edges_rod) = face_n;
-MultiRod.a2(n_edges_rod) = cross(pseudo_e_vec/norm(pseudo_e_vec), face_n);
+MultiRod.a2(n_edges_rod) = cross(pseudo_e_vec/norm(pseudo_edge.vec), face_n);
 
 
 
