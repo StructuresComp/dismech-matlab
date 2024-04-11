@@ -22,4 +22,4 @@ for c=1:n_edges_rod % Loop over edges
     a1(c,:) = a1_local;
     a2(c,:) = cross(t, a1_local);
 end
-end
+

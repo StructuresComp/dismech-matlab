@@ -24,10 +24,26 @@ error = 10 * tol;
 
 while error > tol
 
+    % compute the location of the pseudo node
+    q(mapNodetoDOF(n_nodes)) = 0.5.*(q(mapNodetoDOF(3)) + q(mapNodetoDOF(5)));
+
      % Compute time parallel reference frame
      [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
-     % Compute reference twist
+     %% hard code reference frame attachement for pseudo-edge of shell at rod-shell joint
+
+     if(numel(a1_iter))
+         face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
+             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
+             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
+         face_normal_joint = face_normal_joint/norm(face_normal_joint);
+         tangent_rod_joint = (q(mapNodetoDOF(3)) + q(mapNodetoDOF(5)))/2 - q(mapNodetoDOF(2));
+         
+         a1_iter(end, :) = face_normal_joint; % normal of shell face involved in joint
+         a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
+     end
+
+     %% Compute reference twist
      tangent = computeTangent(MultiRod, q);
      refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
     
@@ -62,7 +78,7 @@ while error > tol
      
      f_free = f(freeIndex);
      J_free = J(freeIndex, freeIndex);
-     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash)
+     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash(?))
 
      % Newton's update
      dq_free = J_free \ f_free;
@@ -78,10 +94,10 @@ a2 = a2_iter;
 u = (q - q0) / dt;
 
 %%
-MultiRod.q=q;
-MultiRod.u=u;
-MultiRod.a1=a1;
-MultiRod.a2=a2;
+MultiRod.q = q;
+MultiRod.u = u;
+MultiRod.a1 = a1;
+MultiRod.a2 = a2;
 MultiRod.m1 = m1;
 MultiRod.m2 = m2;
 

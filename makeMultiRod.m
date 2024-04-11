@@ -82,11 +82,6 @@ end
 %% Compute Mass
 
 m = zeros(n_DOF, 1);
-for cNode=1:n_nodes_rod
-    dm = voronoiRefLen(cNode) * pi * r0^2 * rho;
-    ind = mapNodetoDOF(cNode);
-    m(ind) = dm*ones(3,1);
-end
 
 % m = zeros(3*n_nodes,1);
 
@@ -101,6 +96,12 @@ for i=1:n_faces_shell
     m(mapNodetoDOF(node1ind)) = m(mapNodetoDOF(node1ind)) + Mface/3.*ones(3,1);
     m(mapNodetoDOF(node2ind)) = m(mapNodetoDOF(node2ind)) + Mface/3.*ones(3,1);
     m(mapNodetoDOF(node3ind)) = m(mapNodetoDOF(node3ind)) + Mface/3.*ones(3,1);
+end
+
+for cNode=1:n_nodes_rod
+    dm = voronoiRefLen(cNode) * pi * r0^2 * rho;
+    ind = mapNodetoDOF(cNode);
+    m(ind) = m(ind) + dm*ones(3,1);
 end
 
 for cEdge=1:n_edges_rod

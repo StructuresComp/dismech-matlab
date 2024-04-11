@@ -4,7 +4,6 @@ global bug
 
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
-n_bend_rod = MultiRod.n_edges_rod - 1; % for now, need to change
 n_bend = numel(bend_twist_springs);
 
 % face1_ind = ;
@@ -62,10 +61,13 @@ for c = 1:n_bend
 
     % % hard code and set to zero for now
     % last two dof indices force set to 0
-    dF(end) = 0;
     dF(end-1) = 0;
-    dJ(end, end) = 0;
+    dF(end-2) = 0;
     dJ(end-1, end-1) = 0;
+    dJ(end-2, end-2) = 0;
+% 
+%     dF
+%     dJ
 
     Fb(ind) = Fb(ind) - dF(ind);
     Jb(ind, ind) = Jb(ind, ind) - dJ(ind, ind);
