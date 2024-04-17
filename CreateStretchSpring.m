@@ -3,7 +3,7 @@ function stretch_sp = CreateStretchSpring (stretch_sp, undefLen, nodes_index, op
 global MultiRod
 
 % default value for stiffness
-if nargin > 5
+if nargin > 3
   stiffness = optional_stiffness;
 else
   stiffness = MultiRod.EA;

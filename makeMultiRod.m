@@ -70,8 +70,8 @@ for c=1:n_edges
 end
 %% voronoi reference length (node based quantity)
 
-% voronoiRefLen = zeros(n_edges_rod+1,1);
-voronoiRefLen = zeros(57,1);
+voronoiRefLen = zeros(n_nodes,1);
+% voronoiRefLen = zeros(57,1);
 for c=1:n_edges_rod   
     node1_index = Edges(c,1);
     node2_index = Edges(c,2);
@@ -98,7 +98,7 @@ for i=1:n_faces_shell
     m(mapNodetoDOF(node3ind)) = m(mapNodetoDOF(node3ind)) + Mface/3.*ones(3,1);
 end
 
-for cNode=1:n_nodes_rod
+for cNode=1:n_nodes
     dm = voronoiRefLen(cNode) * pi * r0^2 * rho;
     ind = mapNodetoDOF(cNode);
     m(ind) = m(ind) + dm*ones(3,1);

@@ -50,18 +50,31 @@ saveImage = 0;
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 plotStep = 1;
 
+% twist test 
+twist_omega = 2*pi/10;
+
 %% Inputs
 % inputFileName = 'input_rod.txt';
 % inputFileName = 'input_rod_straight.txt';
 % inputFileName = 'input_-ve_cantilever_rod.txt';
 % inputFileName = 'input_rod_shell.txt';
 % inputFileName = 'simplest_rod_shell_input.txt';
-% inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working equilateral-triangles
-inputFileName = 'Copy_2_of_simplest_rod_shell_input.txt'; % right-triangles
+
+inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
+% equilateral-triangles , also for checking rod-shell twisting motion transfer
+
+% inputFileName = 'Copy_2_of_simplest_rod_shell_input.txt'; % right-triangles
 % inputFileName = 'Copy_3_of_simplest_rod_shell_input.txt'; % right-triangles
 % inputFileName = 'input_rod_shell - simpler.txt';
 % inputFileName = 'input_shell_cantilever.txt';
 % inputFileName = 'input_shell_cantilever_equilateral.txt';
+
+% inputFileName = '3_node_rod_input.txt';
+
+% inputFileName = 'input_shell_rod.txt';
+
+% inputFileName = 'rod_loop_with_edge_input.txt';
+
 % inputFileName = 'input_2rods_joint.txt';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 % inputFileName = 'input_4node_Tjoint.txt';
 % inputFileName = 'inp_4node_T_2b.txt';
@@ -206,7 +219,7 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 %% Fixed and Free DOFs
 
 % Boundary Conditions
-% MultiRod.fixed_nodes=[1, 2]; % required input
+% MultiRod.fixed_nodes=[]; % required input
 % MultiRod.fixed_nodes=[1, 4, 5, 6, 7, 8, 40, 73, 76, 78, 80]; % shell only
 % MultiRod.fixed_nodes=[1, 2, 53, 54, 55, 56, 57, 89, 122, 125, 127, 129]; % rod + shell
 
@@ -214,9 +227,9 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_edges=[]; % required input
 
 % simplest rod-shell element
-% MultiRod.fixed_nodes=[4, 6]; % rod + shell fixed at farther end node of
+% MultiRod.fixed_nodes=[3,5,6]; % rod + shell fixed at farther end node of
 % shell (pin-joint)
-MultiRod.fixed_nodes=[3,4,5,6]; % rod + shell fixed at farther face of shell
+MultiRod.fixed_nodes=[1,6]; % pseudo node
 MultiRod.fixed_edges=[]; % required input
 
 % % equilateral mesh shell (cantilever)
@@ -247,7 +260,14 @@ Nsteps = round(totalTime/dt);
 ctime = 0; % current time (utility variable)
 
 for timeStep = 1:Nsteps
+
+    % twist test hard code theta for rod edge
+%     MultiRod.q0(19) = twist_omega*ctime;
+% MultiRod.q0(mapNodetoDOF(2)) = [0.08660, 0.05*cos(twist_omega*ctime), 0.05*sin(twist_omega*ctime)];
+% MultiRod.q0(mapNodetoDOF(5)) = [0.08660, -0.05*cos(twist_omega*ctime), -0.05*sin(twist_omega*ctime)];
     
+
+%     MultiRod.q0(11) = twist_omega*ctime; % for 3node_rod_input.txt
     [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = DERfun_struct_new(MultiRod, stretch_springs, bend_twist_springs, hinge_springs);
 
     ctime = ctime + dt

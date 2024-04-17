@@ -27,11 +27,14 @@ while error > tol
     % compute the location of the pseudo node
     q(mapNodetoDOF(n_nodes)) = 0.5.*(q(mapNodetoDOF(3)) + q(mapNodetoDOF(5)));
 
+    % different config: input_shell_rod.txt
+%     q(mapNodetoDOF(n_nodes)) = 0.5.*(q(mapNodetoDOF(2)) + q(mapNodetoDOF(5))); 
+
      % Compute time parallel reference frame
      [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
      %% hard code reference frame attachement for pseudo-edge of shell at rod-shell joint
-
+% 
      if(numel(a1_iter))
          face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
              q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
@@ -43,6 +46,48 @@ while error > tol
          a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
      end
 
+ % % different config
+
+%     if(numel(a1_iter))
+%          face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
+%              q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
+%              q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
+%          face_normal_joint = face_normal_joint/norm(face_normal_joint);
+%          tangent_rod_joint = -(q(mapNodetoDOF(2)) + q(mapNodetoDOF(5)))/2 + q(mapNodetoDOF(3));
+%          
+%          a1_iter(end, :) = face_normal_joint; % normal of shell face involved in joint
+%          a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
+%      end
+%% adjust the location of shell nodes using twist of the pseudo-edge
+% % 
+%      opp_edge =  q(mapNodetoDOF(5)) - q(mapNodetoDOF(3));
+% 
+%      offset = q(22)*0.5*(1/norm(q(mapNodetoDOF(6)) - q(mapNodetoDOF(2))))...
+%         .*cross(opp_edge, q(mapNodetoDOF(6)) - q(mapNodetoDOF(2)));
+% 
+% % q(mapNodetoDOF(5)) = q5 + q(19)*0.5*norm(q5 - q3);
+% % q(mapNodetoDOF(3)) = q3 - q(19)*0.5*norm(q5 - q3);
+% 
+%     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) + offset;
+% 
+%     q(mapNodetoDOF(3)) = q(mapNodetoDOF(3)) - offset;
+
+%  % different config
+%      opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
+% 
+%      offset = q(20)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
+%         .*cross(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6)), opp_edge);
+% 
+% % q(mapNodetoDOF(5)) = q5 + q(19)*0.5*norm(q5 - q3);
+% % q(mapNodetoDOF(3)) = q3 - q(19)*0.5*norm(q5 - q3);
+% 
+%     q(mapNodetoDOF(2)) = q(mapNodetoDOF(2)) + offset;
+% 
+%     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) - offset;
+
+
+
+     
      %% Compute reference twist
      tangent = computeTangent(MultiRod, q);
      refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
@@ -50,6 +95,9 @@ while error > tol
      % Compute material frame
      theta = q(3*n_nodes + 1:3*n_nodes + n_edges_rod);
      [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta); 
+
+%      m1(end,:) = a1_iter(end, :); % normal of shell face involved in joint
+%      m2(end,:) = a2_iter(end, :);
 
      % Force and Jacobian calculation
     [Fs, Js, stretch_springs] = getFs_struct(MultiRod, stretch_springs, q);
@@ -84,11 +132,47 @@ while error > tol
      dq_free = J_free \ f_free;
      q(freeIndex) = q(freeIndex) - dq_free;
 
-     % Error
+%      %% different config
+%      opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
+% 
+%      offset = q(20)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
+%         .*cross(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6)), opp_edge);
+% 
+% % q(mapNodetoDOF(5)) = q5 + q(19)*0.5*norm(q5 - q3);
+% % q(mapNodetoDOF(3)) = q3 - q(19)*0.5*norm(q5 - q3);
+% 
+%     q(mapNodetoDOF(2)) = q(mapNodetoDOF(2)) + offset;
+% 
+%     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) - offset;
+
+     %% Error
      error = sum(abs(f_free) );
      fprintf('Iter=%d, error=%f\n', iter, error);
      iter = iter + 1;
 end
+
+%% adjust the location of shell nodes using twist of the pseudo-edge
+% % 
+%      opp_edge =  q(mapNodetoDOF(5)) - q(mapNodetoDOF(3));
+% 
+%      offset = q(22)*0.5*(1/norm(q(mapNodetoDOF(6)) - q(mapNodetoDOF(2))))...
+%         .*cross(opp_edge, q(mapNodetoDOF(6)) - q(mapNodetoDOF(2)));
+% 
+%     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) + offset;
+% 
+%     q(mapNodetoDOF(3)) = q(mapNodetoDOF(3)) - offset;
+
+% %  % different config
+%      opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
+% 
+%      offset = q(20)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
+%         .*cross(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6)), opp_edge);
+% 
+%     q(mapNodetoDOF(2)) = q(mapNodetoDOF(2)) + offset;
+% 
+%     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) - offset;
+
+%%
 a1 = a1_iter;
 a2 = a2_iter;
 u = (q - q0) / dt;
