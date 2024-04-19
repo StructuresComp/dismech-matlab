@@ -26,9 +26,9 @@ hold on
 % ylim([-0.1 0.1])
 % zlim([-0.1 0.1])
 % 
-% xlim([-0.1 1.1])
-% ylim([-0.1 0.1])
-% zlim([-0.1 0.1])
+xlim([-0.1 1.1])
+ylim([-0.1 0.1])
+zlim([-0.1 0.1])
 
 % xlim([0 0.7])
 % ylim([-0.1 0.1])
@@ -39,9 +39,9 @@ hold on
 % ylim([-0.3 0.3])
 % zlim([-0.5 0.1])
 
-xlim([-0.6 0.6])
-ylim([-0.3 0.3])
-zlim([-0.5 0.1])
+% xlim([-0.6 0.6])
+% ylim([-0.3 0.3])
+% zlim([-0.5 0.1])
 
 % set(h1, 'visible', 'off');
 % clf()
@@ -78,8 +78,8 @@ end
 hold off
 title(num2str(ctime, 't=%f'));
 % axis equal
-% view(3); % isometric view
-view(0,90); % x-y plane view
+view(3); % isometric view
+% view(0,90); % x-y plane view
 % view(90,0); % y-z plane view
 % view(0,0); % x-z plane view
 xlabel('x');

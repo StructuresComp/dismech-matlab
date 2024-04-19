@@ -8,7 +8,7 @@ fprintf('Discrete elastic rods (fully working!!)\n');
 global g dt tol
 
 % Time step
-dt = 1e-2;
+dt = 1e-3;
 
 % Density
 rho = 1200;
@@ -30,7 +30,7 @@ nu_Rod = 0.5;
 nu_Shell = 0.5;
 
 % gravity
-gravity = 1; % or 0 for off
+gravity = 0; % or 0 for off
 
 if (gravity==1)
     g = [0, 0, -9.81]';
@@ -48,10 +48,10 @@ totalTime = 5; % sec
 saveImage = 0;
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
-plotStep = 1;
+plotStep = 10;
 
 % twist test 
-twist_omega = 2*pi/10;
+twist_omega = 2*pi;
 
 %% Inputs
 % inputFileName = 'input_rod.txt';
@@ -60,7 +60,7 @@ twist_omega = 2*pi/10;
 % inputFileName = 'input_rod_shell.txt';
 % inputFileName = 'simplest_rod_shell_input.txt';
 
-inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
+% inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
 % equilateral-triangles , also for checking rod-shell twisting motion transfer
 
 % inputFileName = 'Copy_2_of_simplest_rod_shell_input.txt'; % right-triangles
@@ -71,7 +71,7 @@ inputFileName = 'Copy_of_simplest_rod_shell_input.txt'; % fully working
 
 % inputFileName = '3_node_rod_input.txt';
 
-% inputFileName = 'input_shell_rod.txt';
+inputFileName = 'input_shell_rod.txt';
 
 % inputFileName = 'rod_loop_with_edge_input.txt';
 
@@ -153,10 +153,10 @@ bend_twist_springs = repmat(bend_twist_spring_sample, n_bend_twist, 1); % array 
 
 %% equilateral triangle
 for b=1:n_bend_twist-1
-%     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
-%         elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
-        elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
+        elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [MultiRod.EI, MultiRod.GJ]);
+%     bend_twist_springs(b) = CreateBendTwistSpring (bend_twist_springs(b), ...
+%         elBendRod(b,:), bend_twist_spring_sign(b,:), MultiRod.voronoiRefLen, [0 0], 0, [0 0]);
 
 end
 
@@ -227,10 +227,14 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 % MultiRod.fixed_edges=[]; % required input
 
 % simplest rod-shell element
-% MultiRod.fixed_nodes=[3,5,6]; % rod + shell fixed at farther end node of
-% shell (pin-joint)
-MultiRod.fixed_nodes=[1,6]; % pseudo node
-MultiRod.fixed_edges=[]; % required input
+MultiRod.fixed_nodes=[2,5,6]; % rod + shell fixed at farther end node of
+% % shell (pin-joint)
+MultiRod.fixed_edges=[];
+% MultiRod.fixed_nodes=[6]; % pseudo node
+% MultiRod.fixed_edges=[1]; % required input
+
+% MultiRod.fixed_nodes=[]; 
+% MultiRod.fixed_edges=[1]; % required input
 
 % % equilateral mesh shell (cantilever)
 % % MultiRod.fixed_nodes=[1, 3, 5, 7, 9, 11, 13, 15, 17]; 
@@ -246,7 +250,13 @@ for i=1:n_edges
     n2 = MultiRod.Edges(i,2);
     n1pos = MultiRod.q(mapNodetoDOF(n1));
     n2pos = MultiRod.q(mapNodetoDOF(n2));
-    plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'bo-');
+    plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'bo');
+    hold on
+    if(ismember(i, MultiRod.fixed_edges)) 
+        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'r');
+    else
+        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'b');
+    end
     hold on
 end
 plot3(MultiRod.Nodes(MultiRod.fixed_nodes,1), ...
@@ -263,8 +273,8 @@ for timeStep = 1:Nsteps
 
     % twist test hard code theta for rod edge
 %     MultiRod.q0(19) = twist_omega*ctime;
-% MultiRod.q0(mapNodetoDOF(2)) = [0.08660, 0.05*cos(twist_omega*ctime), 0.05*sin(twist_omega*ctime)];
-% MultiRod.q0(mapNodetoDOF(5)) = [0.08660, -0.05*cos(twist_omega*ctime), -0.05*sin(twist_omega*ctime)];
+MultiRod.q0(mapNodetoDOF(2)) = [0.08660, 0.05*cos(twist_omega*ctime), 0.05*sin(twist_omega*ctime)];
+MultiRod.q0(mapNodetoDOF(5)) = [0.08660, -0.05*cos(twist_omega*ctime), -0.05*sin(twist_omega*ctime)];
     
 
 %     MultiRod.q0(11) = twist_omega*ctime; % for 3node_rod_input.txt
