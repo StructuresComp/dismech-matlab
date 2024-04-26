@@ -228,8 +228,10 @@ bend_twist_springs = setkappa(MultiRod, bend_twist_springs);
 
 % simplest rod-shell element
 MultiRod.fixed_nodes=[2,5,6]; % rod + shell fixed at farther end node of
+% % % shell (pin-joint)
+% MultiRod.fixed_nodes=[3,5,6]; % rod + shell fixed at farther end node of
 % % shell (pin-joint)
-MultiRod.fixed_edges=[];
+MultiRod.fixed_edges=[2];
 % MultiRod.fixed_nodes=[6]; % pseudo node
 % MultiRod.fixed_edges=[1]; % required input
 
@@ -273,12 +275,17 @@ for timeStep = 1:Nsteps
 
     % twist test hard code theta for rod edge
 %     MultiRod.q0(19) = twist_omega*ctime;
+%     MultiRod.q0(19) = -twist_omega*ctime;
 MultiRod.q0(mapNodetoDOF(2)) = [0.08660, 0.05*cos(twist_omega*ctime), 0.05*sin(twist_omega*ctime)];
 MultiRod.q0(mapNodetoDOF(5)) = [0.08660, -0.05*cos(twist_omega*ctime), -0.05*sin(twist_omega*ctime)];
     
 
 %     MultiRod.q0(11) = twist_omega*ctime; % for 3node_rod_input.txt
-    [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = DERfun_struct_new(MultiRod, stretch_springs, bend_twist_springs, hinge_springs);
+%     [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = DERfun_struct_new(MultiRod, stretch_springs, bend_twist_springs, hinge_springs);
+% [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = DERfun_struct_new_modified_joint_handling...
+%     (MultiRod, stretch_springs, bend_twist_springs, hinge_springs);
+[MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = DERfun_trial_joint_twisting...
+    (MultiRod, stretch_springs, bend_twist_springs, hinge_springs);
 
     ctime = ctime + dt
     

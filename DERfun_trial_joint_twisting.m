@@ -1,5 +1,5 @@
 function [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = ...
-    DERfun_struct_new(MultiRod, stretch_springs, bend_twist_springs, hinge_springs)
+    DERfun_trial_joint_twisting(MultiRod, stretch_springs, bend_twist_springs, hinge_springs)
 
 % global MultiRod
 
@@ -21,6 +21,7 @@ global dt tol
 q = q0;
 iter = 1; % Number of iterations
 error = 10 * tol;
+% theta_0 = 0;
 
 while error > tol
 
@@ -48,16 +49,16 @@ while error > tol
 
  % % different config
 
-    if(numel(a1_iter))
-         face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
-             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
-             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
-         face_normal_joint = face_normal_joint/norm(face_normal_joint);
-         tangent_rod_joint = -(q(mapNodetoDOF(2)) + q(mapNodetoDOF(5)))/2 + q(mapNodetoDOF(3));
-         
-         a1_iter(end, :) = face_normal_joint; % normal of shell face involved in joint
-         a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
-     end
+%     if(numel(a1_iter))
+%          face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
+%              q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
+%              q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
+%          face_normal_joint = face_normal_joint/norm(face_normal_joint);
+%          tangent_rod_joint = -(q(mapNodetoDOF(2)) + q(mapNodetoDOF(5)))/2 + q(mapNodetoDOF(3));
+%          
+%          a1_iter(end, :) = face_normal_joint; % normal of shell face involved in joint
+%          a2_iter(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
+%      end
 %% adjust the location of shell nodes using twist of the pseudo-edge
 % % 
 %      opp_edge =  q(mapNodetoDOF(5)) - q(mapNodetoDOF(3));
@@ -91,10 +92,24 @@ while error > tol
      %% Compute reference twist
      tangent = computeTangent(MultiRod, q);
      refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-    
+
      % Compute material frame
      theta = q(3*n_nodes + 1:3*n_nodes + n_edges_rod);
      [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta); 
+     % % different config
+
+    if(numel(a1_iter))
+         face_normal_joint = cross(q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))) -...
+             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,1))), q(mapNodetoDOF(MultiRod.face_nodes_shell(1,3))) -...
+             q(mapNodetoDOF(MultiRod.face_nodes_shell(1,2))))  ;
+         face_normal_joint = face_normal_joint/norm(face_normal_joint);
+         tangent_rod_joint = -(q(mapNodetoDOF(2)) + q(mapNodetoDOF(5)))/2 + q(mapNodetoDOF(3));
+         
+         m1(end, :) = face_normal_joint; % normal of shell face involved in joint
+         m2(end, :) = cross(tangent_rod_joint/norm(tangent_rod_joint), face_normal_joint);
+    end
+    % find theta_0 pseudo_edge
+    theta_0 = signedAngle(a1_iter(end,:), m1(end,:), (-q(mapNodetoDOF(n_nodes)) + q(mapNodetoDOF(3)) ) );
 
 %      m1(end,:) = a1_iter(end, :); % normal of shell face involved in joint
 %      m2(end,:) = a2_iter(end, :);
@@ -145,15 +160,11 @@ while error > tol
      % Newton's update
      dq_free = J_free \ f_free;
      q(freeIndex) = q(freeIndex) - dq_free;
-
-%      %% different config
-%      opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
+     %%
+% opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
 % 
-%      offset = q(20)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
+%      offset = (q(20)-theta_0)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
 %         .*cross(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6)), opp_edge);
-% 
-% % q(mapNodetoDOF(5)) = q5 + q(19)*0.5*norm(q5 - q3);
-% % q(mapNodetoDOF(3)) = q3 - q(19)*0.5*norm(q5 - q3);
 % 
 %     q(mapNodetoDOF(2)) = q(mapNodetoDOF(2)) + offset;
 % 
@@ -179,7 +190,7 @@ end
 % %  % different config
      opp_edge =  q(mapNodetoDOF(2)) - q(mapNodetoDOF(5));
 
-     offset = q(20)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
+     offset = (q(20)-theta_0)*0.5*(1/norm(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6))))...
         .*cross(q(mapNodetoDOF(3)) - q(mapNodetoDOF(6)), opp_edge);
 
     q(mapNodetoDOF(2)) = q(mapNodetoDOF(2)) + offset;
@@ -187,6 +198,7 @@ end
     q(mapNodetoDOF(5)) = q(mapNodetoDOF(5)) - offset;
 
 %%
+q(20) = theta_0; % (?)
 a1 = a1_iter;
 a2 = a2_iter;
 u = (q - q0) / dt;
