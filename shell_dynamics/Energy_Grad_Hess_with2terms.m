@@ -96,11 +96,10 @@ E2 = 0; % initialize scalar
 for i=1:3
     for j=1:3
         E = E + ( (c(i)*c(j)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) * (dot(t(:,i),t(:,j))^2) );
-        E2 = E2 + ( (c(i)*c(j)) * (norm(t(:,i))^2*norm(t(:,j))^2) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) );
+        E2 = E2 + ( (c(i)*c(j)) * ((norm(t(:,i))^2)*(norm(t(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) );
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
-% E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A^2 ;
 %% Gradient of Energy
 
 % initialize
@@ -166,7 +165,6 @@ gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
 gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
-% gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A^2;
 %% Hessian of Energy
 
 % double derivatives wrt xi's
@@ -359,5 +357,4 @@ hessE2 = [ddel_E2_by_ps(:,:,1) , ddel_E2_by_ps(:,:,2) , ddel_E2_by_ps(:,:,3) , d
     ddel_E2_del_xi_k_del_p_i , ddel_E2_del_xi_k_del_p_j , ddel_E2_del_xi_k_del_p_k , ddel_E2_by_del_xi_k_xi_i , ddel_E2_by_del_xi_k_xi_j , ddel_E2_by_del_xi_k_xi_k ]' ;
 
 hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
-% hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A^2;
 end

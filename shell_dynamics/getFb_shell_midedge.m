@@ -25,7 +25,9 @@ for i=1:n_faces
 
     s_is = sign_faces(:,i);
 
-    [~, gradE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+    % [~, gradE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+    %         s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3));
+    [~, gradE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms_nat_curv (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3));
 
     ind = [];

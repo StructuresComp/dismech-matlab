@@ -64,10 +64,6 @@ while ~solved % error > sim_params.tol
     % IMC
     [Fc, Jc, Ffr, Jfr, imc] = ...
         IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
-    %     Fc = zeros(n_DOF,1);
-    %     Jc= zeros(n_DOF,n_DOF);
-    %     Ffr = zeros(n_DOF,1);
-    %     Jfr = zeros(n_DOF,n_DOF);
 
     % floor contact
     if(sim_params.floor_present)

@@ -23,11 +23,20 @@ for i=1:n_faces
         xi_is(j) = q(3*n_nodes + Face_i_edges(j));
         tau_0_is(:,j) = tau_0(:,Face_i_edges(j));
     end
+    init_ts = MultiRod.init_ts(:,:,i);
+    init_cs = MultiRod.init_cs(:,i);
+    init_fs = MultiRod.init_fs(:,i);
+    init_xis = MultiRod.init_xis(:,i);
+
 
     s_is = sign_faces(:,i);
 
-    [~, gradE, hessE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-            s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3));
+    [~, gradE, hessE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms_nat_curv (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+            s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), ...
+            init_ts, init_cs, init_fs, init_xis);
+
+    % [~, gradE, hessE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+    %         s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3));
 
     ind = [];
     for j=1:3

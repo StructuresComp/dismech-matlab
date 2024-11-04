@@ -37,6 +37,10 @@ classdef MultiRod
         refTwist
         face_edges
         sign_faces
+        init_ts
+        init_fs
+        init_cs
+        init_xis
         fixed_nodes
         fixed_edges
         fixedDOF
@@ -59,13 +63,14 @@ classdef MultiRod
             n_rod_nodes = size(rod_nodes,1);
             n_shell_nodes = size(shell_nodes,1);
             obj.n_nodes = n_rod_nodes + n_shell_nodes;
-            
             n_rod_edges = size(rod_edges,1);
             n_shell_edges = size(shell_edges,1);
             n_edges_rod_shell_joint_total = size(rod_shell_joint_total_edges,1);
             obj.n_edges = size(Edges,1);
             obj.n_edges_dof = n_rod_edges + n_edges_rod_shell_joint_total;
             obj.n_faces = size(face_nodes,1);
+            obj.n_edges_rod_only = n_rod_edges;
+            obj.n_edges_shell_only = n_shell_edges;
 
             % Store nodes and edges
             obj.Nodes = Nodes;
@@ -81,7 +86,8 @@ classdef MultiRod
             
             if sim_params.use_midedge
                 obj.n_DOF = obj.n_DOF + n_shell_edges;
-                q0 = [q0; zeros(n_shell_edges, 1)];
+                xi_s = zeros(n_shell_edges, 1);
+                q0 = [q0; xi_s];
             end
             
             obj.q0 = q0;
@@ -121,6 +127,14 @@ classdef MultiRod
             if sim_params.use_midedge
                 obj.face_edges = face_edges;
                 obj.sign_faces = sign_faces;
+                [obj.init_ts,obj.init_cs,obj.init_fs, obj.init_xis] = obj.initialCurvatureMidedge(); % calculate initial values for c,t,f,xi
+            else
+                obj.face_edges = [];
+                obj.sign_faces = [];
+                obj.init_ts = [];
+                obj.init_cs = [];
+                obj.init_fs = []; 
+                obj.init_xis = [];
             end
                    
         end
@@ -159,7 +173,7 @@ classdef MultiRod
         end
 
         function massMat = calculateMassMatrix(obj)
-            m = zeros(numel(obj.Nodes), 1);
+            m = zeros(obj.n_DOF, 1);
 
             % Shell faces
             for i = 1:obj.n_faces
@@ -198,8 +212,138 @@ classdef MultiRod
                 W(ind) = diag(obj.MassMat(ind, ind)) .* g;
             end
         end
+
+        function [init_ts, init_fs, init_cs, init_xis] = initialCurvatureMidedge(obj)
+
+            init_ts = zeros(3,3,obj.n_faces);
+            init_fs = zeros(3,obj.n_faces);
+            init_cs = zeros(3,obj.n_faces);
+            init_xis = zeros(3,obj.n_faces);
+            
+            edge_common_to = zeros(obj.n_edges,1);
+            n_avg = zeros(3,obj.n_edges);
+            tau_0 = zeros(3,obj.n_edges);
+            e = zeros(3,obj.n_edges);
+            for c = 1:obj.n_faces
+                node1_number = obj.face_nodes_shell(c,1);
+                node2_number = obj.face_nodes_shell(c,2);
+                node3_number = obj.face_nodes_shell(c,3);
+                node1_position = obj.q(3*node1_number-2:3*node1_number);
+                node2_position = obj.q(3*node2_number-2:3*node2_number);
+                node3_position = obj.q(3*node3_number-2:3*node3_number);
+
+                % face normal calculation:
+                face_normal = cross(([node2_position]-[node1_position]),([node3_position]-[node1_position]));
+                face_unit_normal = face_normal .* 1/norm(face_normal);
+
+                % face edge map
+                edge1_idx = obj.face_edges(c,1);
+                edge2_idx = obj.face_edges(c,2);
+                edge3_idx = obj.face_edges(c,3);
+
+                edge_common_to(edge1_idx) = edge_common_to(edge1_idx)+1;
+                edge_common_to(edge2_idx) = edge_common_to(edge2_idx)+1;
+                edge_common_to(edge3_idx) = edge_common_to(edge3_idx)+1;
+
+                n_avg(:,edge1_idx) = n_avg(:,edge1_idx) + face_unit_normal;
+                n_avg(:,edge1_idx) = n_avg(:,edge1_idx)/ norm(n_avg(:,edge1_idx));
+
+                n_avg(:,edge2_idx) = n_avg(:,edge2_idx) + face_unit_normal;
+                n_avg(:,edge2_idx) = n_avg(:,edge2_idx)/ norm(n_avg(:,edge2_idx));
+
+                n_avg(:,edge3_idx) = n_avg(:,edge3_idx) + face_unit_normal;
+                n_avg(:,edge3_idx) = n_avg(:,edge3_idx)/ norm(n_avg(:,edge3_idx));
+
+                % ensure that edge is common to only 2 triangle faces (to avoid bugs)
+                assert(edge_common_to(edge1_idx)<3, "edge is common to more than 2 faces!");
+                assert(edge_common_to(edge2_idx)<3, "edge is common to more than 2 faces!");
+                assert(edge_common_to(edge3_idx)<3, "edge is common to more than 2 faces!");
+
+            end
+
+
+            for i=1:obj.n_edges
+                e(:,i) = obj.q(3*obj.Edges(i,2)-2:3*obj.Edges(i,2)) - obj.q(3*obj.Edges(i,1)-2:3*obj.Edges(i,1));
+                tau_0(:,i) = cross(e(:,i), n_avg(:,i));
+                tau_0(:,i) = tau_0(:,i)/norm(tau_0(:,i));
+            end
+
+            for i=1:obj.n_faces
+                Face_i_nodes = obj.face_nodes_shell(i,:);
+                Face_i_edges = obj.face_edges(i,:);
+
+                p_is = zeros(3,3);
+                xi_is = zeros(3,1);
+                tau_0_is = zeros(3,3);
+
+                for j=1:3
+                    p_is(:,j) = obj.q(3*Face_i_nodes(j)-2:3*Face_i_nodes(j));
+                    xi_is(j) = obj.q(3*obj.n_nodes + Face_i_edges(j));
+                    tau_0_is(:,j) = tau_0(:,Face_i_edges(j));
+                end
+
+                init_xis(:,i) = xi_is;
+
+                [init_t, init_f, init_c] = obj.calculateInit_t_f_c_midedge(p_is, tau_0_is);
+
+                init_ts(:,:,i) = init_t;
+                init_fs (:,i) = init_f';
+                init_cs (:,i) = init_c';
+
+            end
+
+        end
     end
     methods (Static)
+        function [ts, fs, cs] = calculateInit_t_f_c_midedge(p_s, tau0_s)
+
+            pi = p_s(:,1);
+            pj = p_s(:,2);
+            pk = p_s(:,3);
+
+            tau_i0 = tau0_s(:,1);
+            tau_j0 = tau0_s(:,2);
+            tau_k0 = tau0_s(:,3);
+
+            % edges
+            vi = pk - pj ; % 3*1 edge i vector
+            vj = pi - pk ; % 3*1 edge j vector
+            vk = pj - pi ; % 3*1 edge k vector
+
+            % edge lengths
+            li = norm(vi);
+            lj = norm(vj);
+            lk = norm(vk);
+
+            % triangle face normal
+            normal = cross(vk, vi);
+            A = norm(normal)/2; % area of triangular face
+            unit_norm = normal/norm(normal); % normalized triangle face normal vector
+
+            % t_i's (tangent (perpendicular to edge, in plane of triangle) of length =
+            % |vi|)
+            t_i = cross(vi,unit_norm);
+            t_j = cross(vj,unit_norm);
+            t_k = cross(vk,unit_norm);
+
+            % c_i's :  scalars
+            c_i = 1/( A*li*dot((t_i/norm(t_i)),tau_i0) );
+            c_j = 1/( A*lj*dot((t_j/norm(t_j)),tau_j0) );
+            c_k = 1/( A*lk*dot((t_k/norm(t_k)),tau_k0) );
+
+            % f_i's :  scalars
+            f_i = dot(unit_norm,tau_i0);
+            f_j = dot(unit_norm,tau_j0);
+            f_k = dot(unit_norm,tau_k0);
+
+            fs = [f_i, f_j, f_k]; % (1*3)
+
+            ts = [t_i , t_j , t_k]; % t_i are columns
+
+            cs = [c_i, c_j, c_k]; % (1*3)
+
+        end
+
         function [edge_combos, edge_combos_idx] = construct_possible_edge_combos(edges)
             % Construct list of all possible edge combinations without duplicates (excluding adjacent edges)
             % Inputs:
