@@ -27,10 +27,10 @@ for c=1:MultiRod.n_faces
 end
 
 %% check symmetry for stingray
-if(sum(abs(Fd(1:9)-Fd(19:27)))>10^6)
-    error("not same aerodynamic force on left and right side")
-end
-
-if(sum(abs(Fd(10:3:16)))>10^6)
-    error("aerodynamic force centerline is in x-direction?")
-end
+% if(sum(abs(Fd(1:9)-Fd(19:27)))>10^6)
+%     error("not same aerodynamic force on left and right side")
+% end
+% 
+% if(sum(abs(Fd(10:3:16)))>10^6)
+%     error("aerodynamic force centerline is in x-direction?")
+% end

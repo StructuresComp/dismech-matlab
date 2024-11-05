@@ -14,7 +14,7 @@ sim_params.dt = 1e-2;
 gravity = 1; % or 0 for off
 
 if (gravity==1)
-    g = [0, 0, -0.981]';
+    g = [0, 0, -9.81]';
 else
     g = [0, 0, 0]';
 end
@@ -25,7 +25,7 @@ sim_params.g = g;
 sim_params.maximum_iter = 25;
 
 % Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 20; % sec
+sim_params.totalTime = 10; % sec
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 10;
@@ -104,4 +104,4 @@ input_log_node = 1;
 %% Plot dimensions
 sim_params.plot_x = [-1,1];
 sim_params.plot_y = [-1,1];
-sim_params.plot_z = [-4,0];
+sim_params.plot_z = [-5,0];

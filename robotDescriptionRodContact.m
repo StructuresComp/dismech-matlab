@@ -1,16 +1,17 @@
 % input: robotDescription.m
 
 sim_params.static_sim = true;
-sim_params.TwoDsim = true;
+sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
+sim_params.floor_present = true;
 sim_params.log_data = true;
 sim_params.logStep = 1;
+sim_params.showFloor = true;
 
 % Time step
-sim_params.dt = 1e-3;
+sim_params.dt = 1e-2;
 
 % gravity
 gravity = 1; % or 0 for off
@@ -34,7 +35,7 @@ sim_params.plotStep = 1;
 
 %% Input text file 
 % inputFileName = 'experiments/pneunet/input_straight.txt';
-inputFileName = 'experiments/pneunet/input_straight_horizontal.txt';
+inputFileName = 'experiments/rodcontact/input_straight_inclined.txt';
 % inputFileName = 'experiments/pneunet/input_semicircle.txt';
 
 % reading the input text file
@@ -57,15 +58,13 @@ environment.mu = 0.25;
 environment.eta = 0;
 environment.Cd = 0;
 environment.rho = 0;
-% point force
-% environment.ptForce = [0, 0, 0];
-environment.ptForce = [1.75, 0, 0.07];
+environment.ptForce = [0, 0, 0]; % point force
 environment.ptForce_node = size(rod_nodes,1);
 
 % imc
 imc.compute_friction = true;
 imc.k_c = 100;
-imc.k_c_floor = 100;
+imc.k_c_floor = 0;
 imc.contact_len = 2*geom.rod_r0;
 imc.delta = 0.01*imc.contact_len;
 imc.delta_floor = 0.05;
@@ -76,7 +75,7 @@ imc.C = [];
 imc.mu_k = environment.mu;
 imc.velTol = 1e-2;
 imc.floor_has_friction = true;
-imc.floor_z = -0.5;
+imc.floor_z = -1;
 
 %% Tolerance on force function. 
 
@@ -85,8 +84,8 @@ sim_params.ftol = 1e-4;
 sim_params.dtol = 1e-2;
 
 %% Boundary conditions
-fixed_node_indices = [1,2];
-fixed_edge_indices = [1];
+fixed_node_indices = [];
+fixed_edge_indices = [];
 input_log_node = size(rod_nodes,1);
 
 %% Plot dimensions

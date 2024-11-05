@@ -7,7 +7,7 @@ addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
 %% input
-robotDescriptionPneunet
+robotDescriptionRodContact
 
 % create geometry
 [nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
@@ -104,14 +104,9 @@ MultiRod.fixed_edges = fixed_edge_indices;
 [MultiRod.fixedDOF, MultiRod.freeDOF] = FindFixedFreeDOF(MultiRod.fixed_nodes, MultiRod.fixed_edges, MultiRod.n_DOF, MultiRod.n_nodes);
 
 % Visualize initial configuration and the fixed and free nodes: free nodes - blue, fixed - red
-plot_MultiRod(MultiRod, 0.0, sim_params);
+plot_MultiRod(MultiRod, 0.0, sim_params,imc.floor_z);
 
 %% actuation
-% kappa_bar = [-0.0628525320866699/2.*ones(n_bend_twist,1) , zeros(n_bend_twist,1)]; % quartercircle
-% kappa_bar = [-0.0628525320866699.*ones(n_bend_twist,1) , zeros(n_bend_twist,1)]; % semicircle
-kappa_bar = [-0.0628525320866699*1.5.*ones(n_bend_twist,1) , zeros(n_bend_twist,1)]; % 3quartercircle
-
-bend_twist_springs = actuatekappa(bend_twist_springs, kappa_bar);
 
 %% initial conditions on velocity / angular velocity (if any)
 
@@ -164,7 +159,7 @@ for timeStep = 1:Nsteps
     
     if mod(timeStep, sim_params.plotStep) == 0
         % visualisation
-        plot_MultiRod(MultiRod, ctime, sim_params);
+        plot_MultiRod(MultiRod, ctime, sim_params,imc.floor_z);
     end
 end
 
@@ -176,10 +171,3 @@ for i=1:Nsteps
 end
 
 writematrix(data,'rawData.txt', 'Writemode', "overwrite")
-
-% % % final position
-% % filename = 'quarter_circle.xlsx';
-% filename = 'quarter_circle_with_gravity.xlsx';
-% final_pos = MultiRod.q;
-% 
-% writematrix(final_pos, filename, Sheet=1,Range='A1');

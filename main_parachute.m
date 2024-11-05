@@ -176,11 +176,30 @@ end
 
 figure()
 plot3(current_pos_x,current_pos_y,current_pos_z)
-title('trajectory of the leading edge centerpoint')
+title('trajectory of the hanging mass')
 xlabel('x [m]')
 ylabel('y [m]')
 zlabel('z [m]')
 axis equal
-% writematrix(current_pos,filename, 'Writemode', "replacefile")
 
-% saved_pos = readmatrix(filename);
+figure()
+% Plot for x-trajectory
+subplot(3, 1, 1)  % 3 rows, 1 column, 1st subplot
+plot(time_arr, current_pos_x)
+title('x-trajectory of the hanging mass')
+xlabel('t [s]')
+ylabel('x [m]')
+
+% Plot for y-trajectory
+subplot(3, 1, 2)  % 3 rows, 1 column, 2nd subplot
+plot(time_arr, current_pos_y)
+title('y-trajectory of the hanging mass')
+xlabel('t [s]')
+ylabel('y [m]')
+
+% Plot for z-trajectory
+subplot(3, 1, 3)  % 3 rows, 1 column, 3rd subplot
+plot(time_arr, current_pos_z)
+title('z-trajectory of the hanging mass')
+xlabel('t [s]')
+ylabel('z [m]')

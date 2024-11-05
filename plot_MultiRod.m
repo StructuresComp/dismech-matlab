@@ -60,6 +60,9 @@ plot3(MultiRod.Nodes(MultiRod.fixed_nodes,1), ...
 %     [xp(3), xp(3) + m2(c,3)], 'g-');
 % end
 
+% if(sim_params.showFloor)
+%     patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
+% end
 hold off
 title(num2str(ctime, 't=%f'));
 % axis equal

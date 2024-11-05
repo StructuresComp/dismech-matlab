@@ -38,7 +38,7 @@ global use_midedge floor_present dt
         % Compute reference twist
         tangent = computeTangent(MultiRod, q);
         if(~isempty(bend_twist_springs))
-            refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist, MultiRod.undef_refTwist);
+            refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
         end
         % Compute material frame
         theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
