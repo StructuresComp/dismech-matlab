@@ -1,5 +1,6 @@
 function hinge_springs = actuateThetaBar(hinge_springs, hinge_spring_ind_to_actuate,curr_time)
-flap_freq = 4;
+% flap_freq = 4;
+flap_freq = 3.384;
 flap_amplitude = pi/2; % works
 n = size(hinge_spring_ind_to_actuate,1);
 

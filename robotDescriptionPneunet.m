@@ -6,12 +6,14 @@ sim_params.use_midedge = false; % boolean var to decide on using midedge normal 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
+sim_params.log_data = true;
+sim_params.logStep = 1;
 
 % Time step
 sim_params.dt = 1e-3;
 
 % gravity
-gravity = 0; % or 0 for off
+gravity = 1; % or 0 for off
 
 if (gravity==1)
     g = [0, 0, -9.81]'; % g = [0, 0, -0.981]';

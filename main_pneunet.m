@@ -129,6 +129,8 @@ current_pos_x(1) = MultiRod.q0(3*log_node-2);
 current_pos_y(1) = MultiRod.q0(3*log_node-1);
 current_pos_z(1) = MultiRod.q0(3*log_node);
 
+dof_with_time = zeros(MultiRod.n_DOF+1,Nsteps);
+dof_with_time(1,:) = time_arr;
 
 for timeStep = 1:Nsteps
     %% Precomputation at each timeStep: midedge normal shell bending
@@ -151,6 +153,12 @@ for timeStep = 1:Nsteps
     current_pos_x(timeStep) = MultiRod.q0(3*log_node-2);
     current_pos_y(timeStep) = MultiRod.q0(3*log_node-1);
     current_pos_z(timeStep) = MultiRod.q0(3*log_node);
+
+    if(sim_params.log_data)
+        if mod(timeStep, sim_params.logStep) == 0
+            dof_with_time(2:end,timeStep) =  MultiRod.q;
+        end
+    end
     
     %% Saving the coordinates and Plotting
     
@@ -159,11 +167,19 @@ for timeStep = 1:Nsteps
         plot_MultiRod(MultiRod, ctime, sim_params);
     end
 end
+
+data = zeros(MultiRod.n_nodes*Nsteps,4);
+for i=1:Nsteps
+    for j=1:MultiRod.n_nodes
+        data((i-1)*MultiRod.n_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
+    end
+end
+
+writematrix(data,'rawData.txt', 'Writemode', "overwrite")
+
 % % final position
-filename = 'quarter_circle.xlsx';
-% filename = 'quarter_circle_with_gravity.xlsx';
+% filename = 'quarter_circle.xlsx';
+filename = 'quarter_circle_with_gravity.xlsx';
 final_pos = MultiRod.q;
 
 writematrix(final_pos, filename, Sheet=1,Range='A1');
-
-% saved_pos = readmatrix(filename);

@@ -6,6 +6,8 @@ sim_params.use_midedge = false; % boolean var to decide on using midedge normal 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
+sim_params.log_data = true;
+sim_params.logStep = 1;
 
 % Time step
 sim_params.dt = 1e-3;
@@ -14,7 +16,7 @@ sim_params.dt = 1e-3;
 gravity = 1; % or 0 for off
 
 if (gravity==1)
-    g = [0, 0, -0.981]';
+    g = [0, 0, -0.5297]';
 else
     g = [0, 0, 0]';
 end
@@ -25,7 +27,7 @@ sim_params.g = g;
 sim_params.maximum_iter = 25;
 
 % Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 10; % sec
+sim_params.totalTime = 2; % sec
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 10;
@@ -39,16 +41,16 @@ geom.rod_cyclicity = 0;
 % material parameters
 material.density = 1000;
 material.youngs_rod = 20e9; % not used
-material.youngs_shell = 20e9; % 20 GPa
+material.youngs_shell = 6e8; % 20 GPa
 material.poisson_rod = 0.3;
 material.poisson_shell = 0.3;
 
 % environment parameters
 environment.mu = 0.25;
 environment.eta = 0;
-environment.Cd = 10;
+environment.Cd = 0.1;
 % environment.Cd = 0.0;
-environment.rho = 1;
+environment.rho = 1000;
 % point force
 environment.ptForce = [0, 0, 0];
 environment.ptForce_node = 1;

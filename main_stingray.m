@@ -14,13 +14,9 @@ robotDescriptionStingray
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
     = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
 
-n_nodes = size(nodes,1);
-n_edges = size(edges,1);
+
 n_edges_rod_only = size(rod_edges,1);
-n_edges_shell_only = size(shell_edges,1);
-n_hinge = size(elBendShell,1);
 n_edges_rod_shell = size(rod_shell_joint_edges,1);
-n_edges_shell = size(shell_edges,1);
 twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
 
 %% Create the soft robot structure
@@ -32,6 +28,7 @@ MultiRod = MultiRod(geom, material, twist_angles,...
 
 n_stretch = size(elStretchRod,1) + size(elStretchShell,1);
 n_bend_twist = size(elBendRod,1);
+n_hinge = size(elBendShell,1);
 
 % stretching spring
 if(n_stretch==0)
@@ -126,6 +123,9 @@ current_pos_x(1) = MultiRod.q0(3*log_node-2);
 current_pos_y(1) = MultiRod.q0(3*log_node-1);
 current_pos_z(1) = MultiRod.q0(3*log_node);
 
+dof_with_time = zeros(MultiRod.n_DOF+1,Nsteps);
+dof_with_time(1,:) = time_arr;
+
 
 for timeStep = 1:Nsteps
     %% Precomputation at each timeStep: midedge normal shell bending
@@ -149,6 +149,12 @@ for timeStep = 1:Nsteps
     current_pos_x(timeStep) = MultiRod.q0(3*log_node-2);
     current_pos_y(timeStep) = MultiRod.q0(3*log_node-1);
     current_pos_z(timeStep) = MultiRod.q0(3*log_node);
+
+    if(sim_params.log_data)
+        if mod(timeStep, sim_params.logStep) == 0
+            dof_with_time(2:end,timeStep) =  MultiRod.q;
+        end
+    end
     
     %% Saving the coordinates and Plotting
     
@@ -165,6 +171,43 @@ xlabel('x [m]')
 ylabel('y [m]')
 zlabel('z [m]')
 axis equal
-% writematrix(current_pos,filename, 'Writemode', "replacefile")
 
+figure()
+% Plot for x-trajectory
+subplot(3, 1, 1)  % 3 rows, 1 column, 1st subplot
+plot(time_arr, current_pos_x)
+title('x-trajectory of the leading edge centerpoint')
+xlabel('t [s]')
+ylabel('x [m]')
+
+% Plot for y-trajectory
+subplot(3, 1, 2)  % 3 rows, 1 column, 2nd subplot
+plot(time_arr, current_pos_y)
+title('y-trajectory of the leading edge centerpoint')
+xlabel('t [s]')
+ylabel('y [m]')
+
+% Plot for z-trajectory
+subplot(3, 1, 3)  % 3 rows, 1 column, 3rd subplot
+plot(time_arr, current_pos_z)
+title('z-trajectory of the leading edge centerpoint')
+xlabel('t [s]')
+ylabel('z [m]')
+
+
+data = zeros(3*MultiRod.n_faces*Nsteps,3);
+for i=1:Nsteps
+    for j=1:MultiRod.n_faces
+        n1 = MultiRod.face_nodes_shell(j,1);
+        n2 = MultiRod.face_nodes_shell(j,2);
+        n3 = MultiRod.face_nodes_shell(j,3);
+        data((i-1)*3*MultiRod.n_faces+3*j-2: (i-1)*3*MultiRod.n_faces+3*j,:) = [
+            dof_with_time(1+mapNodetoDOF(n1),i)';
+            dof_with_time(1+mapNodetoDOF(n2),i)';
+            dof_with_time(1+mapNodetoDOF(n3),i)'];
+    end
+end
+
+writematrix(data,'rawData.txt', 'Writemode', "overwrite")
+% 
 % saved_pos = readmatrix(filename);
