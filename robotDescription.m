@@ -6,6 +6,7 @@ sim_params.use_midedge = false; % boolean var to decide on using midedge normal 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
+sim_params.show_floor = true;
 
 % Time step
 sim_params.dt = 1e-2;

@@ -6,6 +6,7 @@ addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
+addpath logging/
 %% input
 robotDescriptionRodContact
 
@@ -109,7 +110,7 @@ plot_MultiRod(MultiRod, 0.0, sim_params,imc.floor_z);
 %% actuation
 
 %% initial conditions on velocity / angular velocity (if any)
-
+% MultiRod.u(u_init(1,:)) = u_init(2,:);
 %% Time stepping scheme
 
 Nsteps = round(sim_params.totalTime/sim_params.dt);
@@ -162,12 +163,13 @@ for timeStep = 1:Nsteps
         plot_MultiRod(MultiRod, ctime, sim_params,imc.floor_z);
     end
 end
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
 
-data = zeros(MultiRod.n_nodes*Nsteps,4);
-for i=1:Nsteps
-    for j=1:MultiRod.n_nodes
-        data((i-1)*MultiRod.n_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
-    end
-end
-
-writematrix(data,'rawData.txt', 'Writemode', "overwrite")
+% data = zeros(MultiRod.n_nodes*Nsteps,4);
+% for i=1:Nsteps
+%     for j=1:MultiRod.n_nodes
+%         data((i-1)*MultiRod.n_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
+%     end
+% end
+% 
+% writematrix(data,'rawData.txt', 'Writemode', "overwrite")

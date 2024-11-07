@@ -6,7 +6,7 @@ addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
-
+addpath logging/
 %% input
 robotDescriptionParachute
 

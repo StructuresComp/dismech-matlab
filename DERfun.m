@@ -37,7 +37,6 @@ while ~solved % error > sim_params.tol
     % Elastic force and jacobian calculation
     [Fs, Js, stretch_springs] = getFsJs(MultiRod, stretch_springs, q);
     if(sim_params.TwoDsim)
-        %         [Fb,Jb] = getFbJb_2D(MultiRod, bend_twist_springs, q);
         [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2);
         Ft = zeros(n_DOF,1);
         Jt= zeros(n_DOF,n_DOF);
@@ -110,7 +109,7 @@ while ~solved % error > sim_params.tol
 
     % lineSearch for optimal alpha
     if(sim_params.use_lineSearch && error>sim_params.tol)
-        alpha = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env);
+        alpha = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env, sim_params);
     else
         alpha = newtonDamper(alpha,iter);
     end

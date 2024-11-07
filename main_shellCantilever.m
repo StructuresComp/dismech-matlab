@@ -6,7 +6,7 @@ addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
-
+addpath logging/
 %% input
 robotDescriptionShellCantilever
 
@@ -147,6 +147,9 @@ for timeStep = 1:Nsteps
         plot_MultiRod(MultiRod, ctime, sim_params);
     end
 end
+
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+
 
 figure()
 plot(time_arr,current_pos)

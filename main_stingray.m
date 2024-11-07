@@ -6,6 +6,7 @@ addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
+addpath logging/
 %% input
 robotDescriptionStingray
 
@@ -194,20 +195,22 @@ title('z-trajectory of the leading edge centerpoint')
 xlabel('t [s]')
 ylabel('z [m]')
 
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
 
-data = zeros(3*MultiRod.n_faces*Nsteps,3);
-for i=1:Nsteps
-    for j=1:MultiRod.n_faces
-        n1 = MultiRod.face_nodes_shell(j,1);
-        n2 = MultiRod.face_nodes_shell(j,2);
-        n3 = MultiRod.face_nodes_shell(j,3);
-        data((i-1)*3*MultiRod.n_faces+3*j-2: (i-1)*3*MultiRod.n_faces+3*j,:) = [
-            dof_with_time(1+mapNodetoDOF(n1),i)';
-            dof_with_time(1+mapNodetoDOF(n2),i)';
-            dof_with_time(1+mapNodetoDOF(n3),i)'];
-    end
-end
 
-writematrix(data,'rawData.txt', 'Writemode', "overwrite")
+% data = zeros(3*MultiRod.n_faces*Nsteps,3);
+% for i=1:Nsteps
+%     for j=1:MultiRod.n_faces
+%         n1 = MultiRod.face_nodes_shell(j,1);
+%         n2 = MultiRod.face_nodes_shell(j,2);
+%         n3 = MultiRod.face_nodes_shell(j,3);
+%         data((i-1)*3*MultiRod.n_faces+3*j-2: (i-1)*3*MultiRod.n_faces+3*j,:) = [
+%             dof_with_time(1+mapNodetoDOF(n1),i)';
+%             dof_with_time(1+mapNodetoDOF(n2),i)';
+%             dof_with_time(1+mapNodetoDOF(n3),i)'];
+%     end
+% end
+% 
+% writematrix(data,'rawData.txt', 'Writemode', "overwrite")
 % 
 % saved_pos = readmatrix(filename);

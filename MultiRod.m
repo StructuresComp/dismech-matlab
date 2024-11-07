@@ -3,6 +3,7 @@ classdef MultiRod
         n_nodes
         n_edges
         n_faces
+        n_rod_nodes
         n_edges_rod_only
         n_edges_shell_only
         n_edges_dof
@@ -63,6 +64,7 @@ classdef MultiRod
             n_rod_nodes = size(rod_nodes,1);
             n_shell_nodes = size(shell_nodes,1);
             obj.n_nodes = n_rod_nodes + n_shell_nodes;
+            obj.n_rod_nodes = n_rod_nodes;
             n_rod_edges = size(rod_edges,1);
             n_shell_edges = size(shell_edges,1);
             n_edges_rod_shell_joint_total = size(rod_shell_joint_total_edges,1);

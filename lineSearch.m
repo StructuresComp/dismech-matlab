@@ -1,5 +1,4 @@
-function [alpha] = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env)
-global use_midedge floor_present dt
+function [alpha] = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env, sim_params)
     % Store current q
     q_old = q;
     n_nodes=MultiRod.n_nodes;
@@ -55,16 +54,22 @@ global use_midedge floor_present dt
             Fb = zeros(n_DOF,1);
             Ft = zeros(n_DOF,1);
         end
-        if (use_midedge)
+        if (sim_params.use_midedge)
             Fb_shell = getFb_shell_midedge(MultiRod, q, tau_0);
         else
             Fb_shell = getFb_shell(MultiRod, hinge_springs, q);
         end
+        % Viscous forces
+        % [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
+        [Fv,~] = getViscousForce_newest(q,q0,sim_params.dt,env.eta,MultiRod);
+        % Aerodynamic drag
+        [Fd, ~] = getAerodynamicDrag_newest(q,q0,sim_params.dt,env,MultiRod);
+
         [Fc, Ffr] = ...
-            IMC_new_only_force(imc, q, q0, dt);
+            IMC_new_only_force(imc, q, q0, sim_params.dt);
         % floor contact
-        if(floor_present)
-              [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, dt, q, q0, n_nodes, n_DOF);
+        if(sim_params.floor_present)
+              [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
         else
             Fc_floor = zeros(n_DOF,1);   
             Ffr_floor = zeros(n_DOF,1);
@@ -73,9 +78,9 @@ global use_midedge floor_present dt
         Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
         
      %% Net forces
-        Forces = Fs + Fb + Ft + Fb_shell + Fc + Ffr + Fc_floor + Ffr_floor + MultiRod.W + Fpt;
+        Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd+ Fc + Ffr + Fc_floor + Ffr_floor + MultiRod.W + Fpt;
         %  Forces = Fs + Fb + Ft + Fb_shell + Fc_floor + Ffr_floor + MultiRod.W;
-        f = MultiRod.MassMat / dt * ( (q-q0)/ dt - u) - Forces;
+        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
 
         x = 0.5 * norm(f(MultiRod.freeDOF))^2;
         error = sum(abs(f(MultiRod.freeDOF)) ); % just to check

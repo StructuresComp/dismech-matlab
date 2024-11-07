@@ -8,6 +8,7 @@ sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
+sim_params.showFloor = false;
 
 % Time step
 sim_params.dt = 1e-3;

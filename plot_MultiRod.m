@@ -1,5 +1,9 @@
-function plot_MultiRod(MultiRod, ctime, sim_params)
-
+function plot_MultiRod(MultiRod, ctime, sim_params, optional_floor_z)
+if(nargin>3)
+    floor_z = optional_floor_z;
+else
+    floor_z = 0;
+end
 n_nodes=MultiRod.n_nodes;
 q=MultiRod.q;
 edges = MultiRod.Edges;
@@ -60,9 +64,9 @@ plot3(MultiRod.Nodes(MultiRod.fixed_nodes,1), ...
 %     [xp(3), xp(3) + m2(c,3)], 'g-');
 % end
 
-% if(sim_params.showFloor)
-%     patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
-% end
+if(sim_params.showFloor)
+    patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
+end
 hold off
 title(num2str(ctime, 't=%f'));
 % axis equal
