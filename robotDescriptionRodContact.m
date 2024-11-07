@@ -35,8 +35,7 @@ sim_params.plotStep = 10;
 
 %% Input text file 
 % inputFileName = 'experiments/rodContact/new_input_for_contact.txt';
-inputFileName = 'experiments/rodcontact/input_straight_inclined.txt';
-% inputFileName = 'experiments/pneunet/input_semicircle.txt';
+inputFileName = 'experiments/rodContact/input_straight_inclined.txt';
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
