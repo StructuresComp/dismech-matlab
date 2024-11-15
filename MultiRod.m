@@ -283,10 +283,11 @@ classdef MultiRod
                     xi_is(j) = obj.q(3*obj.n_nodes + Face_i_edges(j));
                     tau_0_is(:,j) = tau_0(:,Face_i_edges(j));
                 end
+                s_is = obj.sign_faces(i,:);
 
                 init_xis(:,i) = xi_is;
 
-                [init_t, init_f, init_c] = obj.calculateInit_t_f_c_midedge(p_is, tau_0_is);
+                [init_t, init_f, init_c] = obj.calculateInit_t_f_c_midedge(p_is, tau_0_is, s_is);
 
                 init_ts(:,:,i) = init_t;
                 init_fs (:,i) = init_f';
@@ -297,15 +298,15 @@ classdef MultiRod
         end
     end
     methods (Static)
-        function [ts, fs, cs] = calculateInit_t_f_c_midedge(p_s, tau0_s)
+        function [ts, fs, cs] = calculateInit_t_f_c_midedge(p_s, tau0_s, s_s)
 
             pi = p_s(:,1);
             pj = p_s(:,2);
             pk = p_s(:,3);
 
-            tau_i0 = tau0_s(:,1);
-            tau_j0 = tau0_s(:,2);
-            tau_k0 = tau0_s(:,3);
+            tau_i0 = s_s(1)*tau0_s(:,1);
+            tau_j0 = s_s(2)*tau0_s(:,2);
+            tau_k0 = s_s(3)*tau0_s(:,3);
 
             % edges
             vi = pk - pj ; % 3*1 edge i vector

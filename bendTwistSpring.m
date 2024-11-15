@@ -17,7 +17,7 @@ classdef bendTwistSpring
     end
 
     methods
-        function obj = bendTwistSpring(nodes_edges_index, signs, undefVoronoiLen, kappaBar, refTwist, MultiRod, optional_stiffnesses)
+        function obj = bendTwistSpring(nodes_edges_index, signs, kappaBar, refTwist, MultiRod, optional_stiffnesses)
             % Constructor to initialize a BendTwistSpring object
             
             if nargin > 6
@@ -43,7 +43,8 @@ classdef bendTwistSpring
                        mapEdgetoDOF(obj.edges_ind(2), n_nodes)];
             
             % Set other properties
-            obj.voronoiLen = undefVoronoiLen;
+            obj.voronoiLen = 0.5*( MultiRod.refLen(obj.edges_ind(1)) + MultiRod.refLen(obj.edges_ind(1)) );
+%             obj.voronoiLen = undefVoronoiLen;
             obj.kappaBar = kappaBar;
             obj.refTwist = refTwist;
             obj.refTwist_init = refTwist;

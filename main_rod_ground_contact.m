@@ -58,7 +58,7 @@ if(n_bend_twist==0)
 else
     for b=1:n_bend_twist
         bend_twist_springs(b) = bendTwistSpring ( ...
-            elBendRod(b,:), elBendSign(b,:), MultiRod.voronoiRefLen(elBendRod(b,3)), [0 0], 0, MultiRod);
+            elBendRod(b,:), elBendSign(b,:), [0 0], 0, MultiRod);
     end
 end
 

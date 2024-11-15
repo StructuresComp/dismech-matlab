@@ -16,6 +16,7 @@ sim_params.dt = 1e-2;
 gravity = 1; % or 0 for off
 
 if (gravity==1)
+%     g = [0, 0, -0.981]'; 
     g = [0, 0, -9.81]';
 else
     g = [0, 0, 0]';
@@ -27,7 +28,7 @@ sim_params.g = g;
 sim_params.maximum_iter = 25;
 
 % Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 10; % sec
+sim_params.totalTime = 10; % 3 % sec
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 10;
@@ -36,7 +37,6 @@ sim_params.plotStep = 10;
 % geometry parameters
 geom.rod_r0 = 1e-3;
 geom.shell_h = 1e-3;
-geom.rod_cyclicity = 0;
 
 % material parameters
 material.density = 2000;
@@ -48,7 +48,7 @@ material.poisson_shell = 0.5;
 % environment parameters
 environment.mu = 0.25;
 environment.eta = 0;
-environment.Cd = 10;
+environment.Cd = 1;
 % environment.Cd = 0;
 environment.rho = 1;
 environment.ptForce = [0, 0, 0]; % point force
@@ -106,4 +106,4 @@ input_log_node = 1;
 %% Plot dimensions
 sim_params.plot_x = [-1,1];
 sim_params.plot_y = [-1,1];
-sim_params.plot_z = [-5,0];
+sim_params.plot_z = [-15, 0];

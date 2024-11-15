@@ -70,11 +70,11 @@ else
         end
         if(is_at_rod_shell_joint || is_at_rod_rod_joint)
             bend_twist_springs(b) = bendTwistSpring ( ...
-                elBendRod(b,:), elBendSign(b,:), MultiRod.voronoiRefLen(elBendRod(b,3)), [0 0], 0, MultiRod, [0,0]);
+                elBendRod(b,:), elBendSign(b,:), [0 0], 0, MultiRod, [0,0]);
 
         else
             bend_twist_springs(b) = bendTwistSpring ( ...
-                elBendRod(b,:), elBendSign(b,:), MultiRod.voronoiRefLen(elBendRod(b,3)), [0 0], 0, MultiRod, [MultiRod.EI, MultiRod.GJ]);
+                elBendRod(b,:), elBendSign(b,:), [0 0], 0, MultiRod, [MultiRod.EI, MultiRod.GJ]);
         end
     end
 end

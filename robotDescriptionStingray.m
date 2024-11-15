@@ -37,7 +37,6 @@ sim_params.plotStep = 10;
 % geometry parameters
 geom.rod_r0 = 1e-3;
 geom.shell_h = 1e-3;
-geom.rod_cyclicity = 0;
 
 % material parameters
 material.density = 1000;
