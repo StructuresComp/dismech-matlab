@@ -39,7 +39,7 @@ geom.rod_r0 = 1e-3;
 geom.shell_h = 1e-3;
 
 % material parameters
-material.density = 2000;
+material.density = 1500;
 material.youngs_rod = 10e6;
 material.youngs_shell = 10e8;
 material.poisson_rod = 0.5;
@@ -48,7 +48,7 @@ material.poisson_shell = 0.5;
 % environment parameters
 environment.mu = 0.25;
 environment.eta = 0;
-environment.Cd = 1;
+environment.Cd = 10;
 % environment.Cd = 0;
 environment.rho = 1;
 environment.ptForce = [0, 0, 0]; % point force
@@ -86,7 +86,8 @@ imc.floor_z = -0.5;
 % inputFileName = 'experiments/parachute/parachute_input_n11.txt';
 % inputFileName = 'experiments/parachute/triangle_parachute_n3_python.txt';
 
-inputFileName = 'experiments/parachute/triangle_parachute_n10_python.txt';
+% inputFileName = 'experiments/parachute/triangle_parachute_n10_python.txt';
+inputFileName = 'experiments/parachute/simplest_parachute.txt';
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -106,4 +107,4 @@ input_log_node = 1;
 %% Plot dimensions
 sim_params.plot_x = [-1,1];
 sim_params.plot_y = [-1,1];
-sim_params.plot_z = [-15, 0];
+sim_params.plot_z = [-20, 0];

@@ -339,7 +339,7 @@ end
 rod_shell_joint_edges_total = [rod_shell_joint_edges; ghost_rod_shell_joint_edges(2:end,:)];
 
 %% bend-twist springs
-if(~isempty(rod_edges))
+if(~isempty(rod_edges) || ~isempty(rod_shell_joint_edges))
     bend_twist_springs = [];
     bend_twist_signs  = [];
     rod_edges_modified = [rod_edges; rod_shell_joint_edges_total];
