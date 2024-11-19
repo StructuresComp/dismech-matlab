@@ -20,6 +20,11 @@ for c = 1:n_stretch
     Fs(ind) = Fs(ind) - dF(ind);
     Js(ind, ind) = Js(ind, ind) - dJ(ind, ind);
 
+    if(ismembc(c,[4,5,6,7]))
+        fprintf("Fs for edge: %d" ,c)
+        dF(ind)
+    end
+
     %% to debug
     for i=1:numel(dF)
         if (dF(i)~= 0 && ~find(ind==i))
@@ -38,5 +43,10 @@ for c = 1:n_stretch
     stretch_springs(c).dF = dF(ind);
     stretch_springs(c).dJ = dJ(ind, ind);
  
+end
+%% to debug parachute
+if(sum(abs(Fs(4:6)-Fs(10:12)))>10^-6)
+    (Fs(4:6)-Fs(10:12))
+%     error("not same aerodynamic force on left and right side")
 end
 end

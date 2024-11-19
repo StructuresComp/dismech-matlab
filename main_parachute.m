@@ -25,7 +25,7 @@ n_edges_shell = size(shell_edges,1);
 twist_angles=zeros(n_edges_rod_only+size(rod_shell_joint_total_edges,1),1);
 
 
-% hardcode
+% % hardcode
 % elBendRod = [1 1 2 5 3; 1 1 2 4 5; 2 5 3 3 5; 3 3 5 4 2; 5 4 2 5 3; 1 2 4 7 3; 1 2 4 6 5; 3 7 4 6 5; 4 6 5 3 3; 5 3 3 7 4];
 % elBendSign = ones(size(elBendRod,1),2);
 % elBendSign(2,:) = [1 -1];

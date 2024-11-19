@@ -51,7 +51,16 @@ while ~solved % error > sim_params.tol
     else
         [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q);
     end
-
+%% to debug parachute
+if(sum(abs(Fs(4:6)-Fs(10:12)))>10^-4)
+    (Fs(4:6)-Fs(10:12))
+%     error("not same aerodynamic force on left and right side")
+end
+if(sum(abs(Fb_shell(4:6)-Fb_shell(10:12)))>10^-4)
+    (Fb_shell(4:6)-Fb_shell(10:12))
+%     error("not same aerodynamic force on left and right side")
+end
+%%
     % Viscous forces
     % [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
     [Fv,Jv] = getViscousForce_newest(q,q0,sim_params.dt,env.eta,MultiRod);
@@ -108,7 +117,7 @@ while ~solved % error > sim_params.tol
     dq(freeIndex) = dq_free;
 
     % lineSearch for optimal alpha
-    if(sim_params.use_lineSearch && error>sim_params.tol)
+    if(sim_params.use_lineSearch && iter>10)
         alpha = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env, sim_params);
     else
         alpha = newtonDamper(alpha,iter);
@@ -118,15 +127,15 @@ while ~solved % error > sim_params.tol
     q(freeIndex) = q(freeIndex) - alpha.*dq_free;
 
     % Error
-    %      error = sum(abs(f_free) );
-    error = norm(f_free) ;
+         error = sum(abs(f_free) );
+%     error = norm(f_free) ;
     fprintf('Iter=%d, error=%f\n', iter, error);
 
     if(iter==1)
         error0=error;
     end
 
-    if(error<sim_params.tol)
+    if(error<=sim_params.tol)
         solved = true;
         continue;
     end

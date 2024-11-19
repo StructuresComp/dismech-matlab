@@ -111,7 +111,7 @@ classdef MultiRod
             obj.GJ = G_rod * pi * obj.r0^4 / 2;
             obj.EA = Y_rod * pi * obj.r0^2;
             
-            obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen.^3;
+            obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen;
             obj.kb = 2/sqrt(3) * Y_shell * (obj.h^3) / 12;
             if sim_params.use_midedge
                 obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));

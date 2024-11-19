@@ -20,7 +20,7 @@ classdef bendTwistSpring
         function obj = bendTwistSpring(nodes_edges_index, signs, kappaBar, refTwist, MultiRod, optional_stiffnesses)
             % Constructor to initialize a BendTwistSpring object
             
-            if nargin > 6
+            if nargin > 5
                 obj.stiff_EI = optional_stiffnesses(1);
                 obj.stiff_GJ = optional_stiffnesses(2);
             else

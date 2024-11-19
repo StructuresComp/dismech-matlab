@@ -27,7 +27,7 @@ results_all = zeros(n_mesh_dense,n_mesh_type); % to store the end_node final def
 
 for mesh_dense = 2
     results = zeros(n_mesh_type,1);
-    for mesh_type = 2
+    for mesh_type = 1
 
         %% input
 
@@ -313,11 +313,16 @@ environment = struct();
             end
         end
         % save the current position (end-1) to results
-        results(mesh_type) = current_pos;
-
-        % [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
-        clearvars -except results mesh_type mesh_dense mesh_dense_nos mesh_types n_mesh_type n_mesh_dense results_all writeOutput
-
+        results(mesh_type) = current_pos(end);
+%
+%         % [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+% %         clearvars -except results mesh_type mesh_dense mesh_dense_nos mesh_types n_mesh_type n_mesh_dense results_all writeOutput
+            
+        figure()
+        plot(time_arr,current_pos(1:end))
+        title('position of the free node with time')
+        xlabel('time [s]')
+        ylabel('position [m]')
     end % multiple test simulations for loop end
 
     % store results in results_all array which is accessible outside of the
