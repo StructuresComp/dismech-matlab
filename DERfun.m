@@ -52,20 +52,24 @@ while ~solved % error > sim_params.tol
         [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q);
     end
 %% to debug parachute
-if(sum(abs(Fs(4:6)-Fs(10:12)))>10^-4)
-    (Fs(4:6)-Fs(10:12))
-%     error("not same aerodynamic force on left and right side")
-end
-if(sum(abs(Fb_shell(4:6)-Fb_shell(10:12)))>10^-4)
-    (Fb_shell(4:6)-Fb_shell(10:12))
-%     error("not same aerodynamic force on left and right side")
-end
+% if(sum(abs(Fs(4:6)-Fs(10:12)))>10^-4)
+%     % (Fs(4:6)-Fs(10:12))
+% %     error("not same aerodynamic force on left and right side")
+% end
+% if(sum(abs(Fb_shell(4:6)-Fb_shell(10:12)))>10^-4)
+%     % (Fb_shell(4:6)-Fb_shell(10:12))
+% %     error("not same aerodynamic force on left and right side")
+% end
 %%
     % Viscous forces
     % [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
-    [Fv,Jv] = getViscousForce_newest(q,q0,sim_params.dt,env.eta,MultiRod);
+    % [Fv,Jv] = getViscousForce_newest(q,q0,sim_params.dt,env.eta,MultiRod);
+    [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+
     % Aerodynamic drag
-    [Fd, Jd] = getAerodynamicDrag_newest(q,q0,sim_params.dt,env,MultiRod);
+    % [Fd, Jd] = getAerodynamicDrag_newest(q,q0,sim_params.dt,env,MultiRod);
+    % [Fd, Jd] = getAerodynamicDrag_no_square(q,q0,sim_params.dt,env,MultiRod);
+    [Fd, Jd] = getAerodynamicDrag_correctedJacobian(q,q0,sim_params.dt,env,MultiRod);
 
     Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + MultiRod.W;
     f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;

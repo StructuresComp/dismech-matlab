@@ -70,10 +70,10 @@ end
 hold off
 title(num2str(ctime, 't=%f'));
 % axis equal
-view(3); % isometric view
+% view(3); % isometric view
 % view(0,90); % x-y plane view
 % view(90,0); % y-z plane view
-% view(0,0); % x-z plane
+view(0,0); % x-z plane
 xlabel('x');
 ylabel('y');
 zlabel('z');

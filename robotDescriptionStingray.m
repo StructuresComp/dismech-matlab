@@ -39,7 +39,7 @@ geom.rod_r0 = 1e-3;
 geom.shell_h = 1e-3;
 
 % material parameters
-material.density = 1000;
+material.density = 1100;
 material.youngs_rod = 20e9; % not used
 material.youngs_shell = 6e8; % 20 GPa
 material.poisson_rod = 0.3;
@@ -48,7 +48,7 @@ material.poisson_shell = 0.3;
 % environment parameters
 environment.mu = 0.25;
 environment.eta = 0;
-environment.Cd = 0.1;
+environment.Cd = 1;
 % environment.Cd = 0.0;
 environment.rho = 1000;
 % point force

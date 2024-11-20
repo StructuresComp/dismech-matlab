@@ -47,7 +47,7 @@ material.poisson_shell = 0.5;
 
 % environment parameters
 environment.mu = 0.25;
-environment.eta = 0;
+environment.eta = 0.0;
 environment.Cd = 10;
 % environment.Cd = 0;
 environment.rho = 1;

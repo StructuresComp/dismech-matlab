@@ -18,6 +18,7 @@ classdef MultiRod
         refLen
         voronoiRefLen
         voronoiArea
+        faceA
         MassMat
         W
         EI
@@ -99,6 +100,7 @@ classdef MultiRod
             obj.refLen = obj.calculateRefLen();
             obj.voronoiRefLen = obj.calculateVoronoiRefLen();
             obj.voronoiArea = obj.calculateVoronoiArea();
+            obj.faceA = obj.calculateFaceArea();
             
             % Mass matrix
             obj.MassMat = obj.calculateMassMatrix();
@@ -171,6 +173,16 @@ classdef MultiRod
                 voronoiArea(node1ind) = voronoiArea(node1ind) + face_A / 3;
                 voronoiArea(node2ind) = voronoiArea(node2ind) + face_A / 3;
                 voronoiArea(node3ind) = voronoiArea(node3ind) + face_A / 3;
+            end
+        end
+
+        function faceA = calculateFaceArea(obj)
+            faceA = zeros(obj.n_faces, 1);
+            for c = 1:size(obj.face_nodes_shell, 1)
+                node1ind = obj.face_nodes_shell(c, 1);
+                node2ind = obj.face_nodes_shell(c, 2);
+                node3ind = obj.face_nodes_shell(c, 3);
+                faceA(c) = 0.5 * norm(cross(obj.Nodes(node2ind, :) - obj.Nodes(node1ind, :), obj.Nodes(node3ind, :) - obj.Nodes(node2ind, :)));
             end
         end
 
