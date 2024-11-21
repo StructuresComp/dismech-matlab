@@ -48,21 +48,21 @@ plot3(MultiRod.Nodes(MultiRod.fixed_nodes,1), ...
     MultiRod.Nodes(MultiRod.fixed_nodes,2), MultiRod.Nodes(MultiRod.fixed_nodes,3),'ro')
 
 
-for c=1:n_edges_dof
-    n1 = edges(c,1);
-    n2 = edges(c,2);
-    xa = q(mapNodetoDOF(n1));
-    xb = q(mapNodetoDOF(n2));
-    xp = (xa+xb)/2;
-    p1 = plot3( [xp(1), xp(1) + a1(c,1)], [xp(2), xp(2) + a1(c,2)], ...
-    [xp(3), xp(3) + a1(c,3)], 'b--', 'LineWidth', 2);
-    p2 = plot3( [xp(1), xp(1) + a2(c,1)], [xp(2), xp(2) + a2(c,2)], ...
-    [xp(3), xp(3) + a2(c,3)], 'c--', 'LineWidth', 2);
-    p3 = plot3( [xp(1), xp(1) + m1(c,1)], [xp(2), xp(2) + m1(c,2)], ...
-    [xp(3), xp(3) + m1(c,3)], 'r-');
-    p4 = plot3( [xp(1), xp(1) + m2(c,1)], [xp(2), xp(2) + m2(c,2)], ...
-    [xp(3), xp(3) + m2(c,3)], 'g-');
-end
+% for c=1:n_edges_dof
+%     n1 = edges(c,1);
+%     n2 = edges(c,2);
+%     xa = q(mapNodetoDOF(n1));
+%     xb = q(mapNodetoDOF(n2));
+%     xp = (xa+xb)/2;
+%     p1 = plot3( [xp(1), xp(1) + a1(c,1)], [xp(2), xp(2) + a1(c,2)], ...
+%     [xp(3), xp(3) + a1(c,3)], 'b--', 'LineWidth', 2);
+%     p2 = plot3( [xp(1), xp(1) + a2(c,1)], [xp(2), xp(2) + a2(c,2)], ...
+%     [xp(3), xp(3) + a2(c,3)], 'c--', 'LineWidth', 2);
+%     p3 = plot3( [xp(1), xp(1) + m1(c,1)], [xp(2), xp(2) + m1(c,2)], ...
+%     [xp(3), xp(3) + m1(c,3)], 'r-');
+%     p4 = plot3( [xp(1), xp(1) + m2(c,1)], [xp(2), xp(2) + m2(c,2)], ...
+%     [xp(3), xp(3) + m2(c,3)], 'g-');
+% end
 
 if(sim_params.showFloor)
     patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
@@ -70,10 +70,10 @@ end
 hold off
 title(num2str(ctime, 't=%f'));
 % axis equal
-% view(3); % isometric view
+view(3); % isometric view
 % view(0,90); % x-y plane view
 % view(90,0); % y-z plane view
-view(0,0); % x-z plane
+% view(0,0); % x-z plane
 xlabel('x');
 ylabel('y');
 zlabel('z');

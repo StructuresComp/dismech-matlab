@@ -69,7 +69,8 @@ while ~solved % error > sim_params.tol
     % Aerodynamic drag
     % [Fd, Jd] = getAerodynamicDrag_newest(q,q0,sim_params.dt,env,MultiRod);
     % [Fd, Jd] = getAerodynamicDrag_no_square(q,q0,sim_params.dt,env,MultiRod);
-    [Fd, Jd] = getAerodynamicDrag_correctedJacobian(q,q0,sim_params.dt,env,MultiRod);
+%     [Fd, Jd] = getAerodynamicDrag_correctedJacobian(q,q0,sim_params.dt,env,MultiRod);
+    [Fd, Jd] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
 
     Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + MultiRod.W;
     f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
