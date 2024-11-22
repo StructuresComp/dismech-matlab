@@ -34,7 +34,7 @@ while ~solved % error > sim_params.tol
     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
     [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
-    % Elastic force and jacobian calculation
+    %% Elastic force and jacobian calculation
     [Fs, Js, stretch_springs] = getFsJs(MultiRod, stretch_springs, q);
     if(sim_params.TwoDsim)
         [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2);
@@ -51,29 +51,24 @@ while ~solved % error > sim_params.tol
     else
         [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q);
     end
-%% to debug parachute
-% if(sum(abs(Fs(4:6)-Fs(10:12)))>10^-4)
-%     % (Fs(4:6)-Fs(10:12))
-% %     error("not same aerodynamic force on left and right side")
-% end
-% if(sum(abs(Fb_shell(4:6)-Fb_shell(10:12)))>10^-4)
-%     % (Fb_shell(4:6)-Fb_shell(10:12))
-% %     error("not same aerodynamic force on left and right side")
-% end
-%%
+
+    %% External force and Jacobian calculation
+    % Gravity 
+    if(sim_params.static_sim)
+        Fg = getGravityForce(MultiRod, env);
+    else
+        Fg = MultiRod.Fg;
+    end
+
     % Viscous forces
-    % [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
-    % [Fv,Jv] = getViscousForce_newest(q,q0,sim_params.dt,env.eta,MultiRod);
     [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
 
     % Aerodynamic drag
-    % [Fd, Jd] = getAerodynamicDrag_newest(q,q0,sim_params.dt,env,MultiRod);
-    % [Fd, Jd] = getAerodynamicDrag_no_square(q,q0,sim_params.dt,env,MultiRod);
-%     [Fd, Jd] = getAerodynamicDrag_correctedJacobian(q,q0,sim_params.dt,env,MultiRod);
     [Fd, Jd] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
 
-    Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + MultiRod.W;
+    Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + Fg;
     f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
+    
     % IMC
     [Fc, Jc, Ffr, Jfr, imc] = ...
         IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
@@ -90,10 +85,7 @@ while ~solved % error > sim_params.tol
     % Add external point force
     Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
 
-    %% Net forces
-    %      Forces = Fs + Fb + Ft + Fb_shell + MultiRod.W;
-    %      JForces = Js + Jb + Jt + Jb_shell;
-    % Net forces
+%%
     Forces = Forces + Fc + Ffr + Fc_floor + Ffr_floor + Fpt;
     JForces = Js + Jb + Jt + Jb_shell + Jv + Jd + Jc + Jfr + Jc_floor + Jfr_floor;
 
@@ -117,7 +109,12 @@ while ~solved % error > sim_params.tol
     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash)
 
     % Newton's update
-    dq_free = J_free \ f_free;
+    if(Det_J==0 && sum(abs(f_free)) <= 1e-8) % if the force is zero and Jacobian is singular
+        dq_free = zeros(numel(freeIndex),1);
+    else
+        dq_free = J_free \ f_free;
+    end
+
     dq = zeros(n_DOF,1);
     dq(freeIndex) = dq_free;
 

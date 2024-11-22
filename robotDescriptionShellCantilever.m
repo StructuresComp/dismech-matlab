@@ -1,8 +1,8 @@
 % input: robotDescription.m
 
-sim_params.static_sim = false;
+sim_params.static_sim = true;
 sim_params.TwoDsim = false;
-sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
+sim_params.use_midedge = true; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
@@ -13,23 +13,13 @@ sim_params.log_data = true;
 % Time step
 sim_params.dt = 1e-2;
 
-% gravity
-gravity = 1; % or 0 for off
-
-if (gravity==1)
-    g = [0, 0, -9.81]';
-else
-    g = [0, 0, 0]';
-end
-
-sim_params.g = g;
-
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 25;
 
 % Total simulation time
 if(sim_params.static_sim)
-    sim_params.totalTime = sim_params.dt;
+%     sim_params.totalTime = sim_params.dt;
+    sim_params.totalTime = sim_params.dt*10;
 else
     sim_params.totalTime = 0.8; % sec
 end
@@ -58,6 +48,15 @@ environment.rho = 1;
 % point force
 environment.ptForce = [0, 0, 0];
 environment.ptForce_node = 1;
+
+% gravity
+gravity = 1; % or 0 for off
+if (gravity==1)
+    g = [0, 0, -9.81]';
+else
+    g = [0, 0, 0]';
+end
+environment.g = g;
 
 % imc
 imc.compute_friction = false;
@@ -95,9 +94,9 @@ inputFileName = strcat('experiments/shellCantilever/', FileName)
 
 %% Tolerance on force function. 
 
-sim_params.tol = 1e-5;
-sim_params.ftol = 0;
-sim_params.dtol = 0;
+sim_params.tol = 1e-4;
+sim_params.ftol = 1e-4;
+sim_params.dtol = 1e-2;
 
 %% Boundary conditions
 fixed_node_indices = find(shell_nodes(:,1)<=0.01)';

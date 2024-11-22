@@ -20,7 +20,7 @@ classdef MultiRod
         voronoiArea
         faceA
         MassMat
-        W
+        Fg
         EI
         EA
         GJ
@@ -50,7 +50,7 @@ classdef MultiRod
     end
     
     methods
-        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, sim_params)
+        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, sim_params, environment)
 
             % Declare local vars to store important parameters
             obj.r0 = geom.rod_r0;
@@ -105,14 +105,30 @@ classdef MultiRod
             % Mass matrix
             obj.MassMat = obj.calculateMassMatrix();
             % Weight
-            obj.W = obj.calculateWeightVector(sim_params.g);
+%             obj.W = obj.calculateWeightVector(sim_params.g);
+            obj.Fg = getGravityForce(obj,environment);
             
             % Stiffnesses
             G_rod = Y_rod / (2 * (1 + nu_rod));
-            obj.EI = Y_rod * pi * obj.r0^4 / 4;
-            obj.GJ = G_rod * pi * obj.r0^4 / 2;
-            obj.EA = Y_rod * pi * obj.r0^2;
-            
+
+            if isfield(geom, 'Axs') && ~isempty(geom.Axs)
+                obj.EA = Y_rod * geom.Axs;
+            else
+                obj.EA = Y_rod * pi * obj.r0^2;
+            end
+
+            if isfield(geom, 'Ixs') && ~isempty(geom.Ixs)
+                obj.EI = Y_rod * geom.Ixs;
+            else
+                obj.EI = Y_rod * pi * obj.r0^4 / 4;
+            end
+
+            if isfield(geom, 'Jxs') && ~isempty(geom.Jxs)
+                obj.GJ = G_rod * geom.Jxs;
+            else
+                obj.GJ = G_rod * pi * obj.r0^4 / 2;
+            end
+       
             obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen;
             obj.kb = 2/sqrt(3) * Y_shell * (obj.h^3) / 12;
             if sim_params.use_midedge
@@ -219,13 +235,13 @@ classdef MultiRod
             massMat = diag(m);
         end
 
-        function W = calculateWeightVector(obj,g)
-            W = zeros(size(obj.MassMat, 1), 1);
-            for cNode = 1:obj.n_nodes
-                ind = mapNodetoDOF(cNode);
-                W(ind) = diag(obj.MassMat(ind, ind)) .* g;
-            end
-        end
+%         function W = calculateWeightVector(obj,g)
+%             W = zeros(size(obj.MassMat, 1), 1);
+%             for cNode = 1:obj.n_nodes
+%                 ind = mapNodetoDOF(cNode);
+%                 W(ind) = diag(obj.MassMat(ind, ind)) .* g;
+%             end
+%         end
 
         function [init_ts, init_fs, init_cs, init_xis] = initialCurvatureMidedge(obj)
 
