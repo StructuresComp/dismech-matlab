@@ -19,7 +19,7 @@ sim_params.maximum_iter = 25;
 % Total simulation time
 if(sim_params.static_sim)
 %     sim_params.totalTime = sim_params.dt;
-    sim_params.totalTime = sim_params.dt*10;
+    sim_params.totalTime = sim_params.dt*50;
 else
     sim_params.totalTime = 0.8; % sec
 end
@@ -39,51 +39,25 @@ material.youngs_shell = 2e6;
 material.poisson_rod = 0;
 material.poisson_shell = 0.5;
 
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
+env.ext_force_list = ["gravity"]; 
+
 % environment parameters
-environment.mu = 0.25;
-environment.eta = 0;
-environment.Cd = 0;
-environment.rho = 1;
+env.g = [0, 0, -9.81]';
 
-% point force
-environment.ptForce = [0, 0, 0];
-environment.ptForce_node = 1;
-
-% gravity
-gravity = 1; % or 0 for off
-if (gravity==1)
-    g = [0, 0, -9.81]';
-else
-    g = [0, 0, 0]';
-end
-environment.g = g;
-
-% imc
-imc.compute_friction = false;
-imc.k_c = 100;
-imc.k_c_floor = 100;
-imc.contact_len = 2*geom.rod_r0;
-imc.delta = 0.01*imc.contact_len;
-imc.delta_floor = 0.05;
-imc.omega = 20;
-imc.h = geom.rod_r0;
-imc.scale = 1/imc.h;
-imc.C = [];
-imc.mu_k = environment.mu;
-imc.velTol = 1e-2;
-imc.floor_has_friction = false;
-imc.floor_z = -0.5;
-
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Input text file 
-% inputFileName = 'experiments/shellCantilever/input_shell_cantilever_less_dense.txt';
-% inputFileName = 'experiments/shellCantilever/equilateral_mesh_60.txt';
-% inputFileName = 'experiments/shellCantilever/random_mesh_20.txt';
-% inputFileName = 'experiments/shellCantilever/random_mesh_40.txt';
+mesh_dense_nos = [20,25,30,35,40,45,50,55,60,65];
+mesh_types = ["equilateral" , "random" , "right" , "eq_algn"]; % type of mesh
+
+% choose
+mesh_dense = 2;
+mesh_type = 1;
 
 
 FileName = strcat(mesh_types(mesh_type), '_mesh_', num2str(mesh_dense_nos(mesh_dense)), '.txt');
-inputFileName = strcat('experiments/shellCantilever/', FileName)
+inputFileName = strcat('experiments/shellCantilever/', FileName);
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -109,8 +83,6 @@ for i=1:size(edges,1)
 end
 
 %% logging
-% p = find(shell_nodes(:,1)==0.1)';
-% input_log_node = p(1);
 
 p = find(shell_nodes(:,1)==0.1)';
 if (isempty(p))

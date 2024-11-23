@@ -1,4 +1,5 @@
 function [center_hinges,sortedHinges] = hinges_on_centerline(hinge_springs, q)
+%% CAUTION: this is a custom function to find hinges on the centerline in stingray 
 n_hinge = numel(hinge_springs);
 % find the hinge indices for the hinges on the centerline
 center_hinges = [];

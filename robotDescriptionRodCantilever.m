@@ -1,7 +1,7 @@
 % input: robotDescription.m
 
-sim_params.static_sim = false;
-sim_params.TwoDsim = true;
+sim_params.static_sim = true;
+sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
@@ -21,15 +21,16 @@ if(sim_params.static_sim)
 %     sim_params.totalTime = sim_params.dt;
     sim_params.totalTime = sim_params.dt*10;
 else
-    sim_params.totalTime = 1; % sec
+    sim_params.totalTime = 0.3; % sec
 end
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 1;
 
 %% Input text file 
-inputFileName = 'experiments/rodCantilever/horizontal_rod.txt';
-% inputFileName = 'experiments/rodCantilever/horizontal_rod_n41.txt';
+% inputFileName = 'experiments/rodCantilever/horizontal_rod_n26.txt';
+inputFileName = 'experiments/rodCantilever/horizontal_rod_n51.txt';
+% inputFileName = 'experiments/rodCantilever/horizontal_rod_n101.txt';
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -48,46 +49,18 @@ geom.rod_r0 = 0.001;
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e8; % not used
+material.youngs_rod = 2e6; % not used
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;
 
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
+env.ext_force_list = ["gravity"]; 
+
 % environment parameters
-environment.mu = 0.25;
-environment.eta = 0;
-environment.Cd = 0;
-environment.rho = 1;
+env.g = [0, 0, -9.81]';
 
-% point force
-environment.ptForce = [0,0,-0.1];
-environment.ptForce_node = size(rod_nodes,1);
-
-% gravity
-gravity = 0; % or 0 for off
-if (gravity==1)
-    g = [0, 0, -9.81]';
-else
-    g = [0, 0, 0]';
-end
-environment.g = g;
-
-% imc
-imc.compute_friction = false;
-imc.k_c = 100;
-imc.k_c_floor = 100;
-imc.contact_len = 2*geom.rod_r0;
-imc.delta = 0.01*imc.contact_len;
-imc.delta_floor = 0.05;
-imc.omega = 20;
-imc.h = geom.rod_r0;
-imc.scale = 1/imc.h;
-imc.C = [];
-imc.mu_k = environment.mu;
-imc.velTol = 1e-2;
-imc.floor_has_friction = false;
-imc.floor_z = -0.5;
-
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;

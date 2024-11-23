@@ -2,7 +2,7 @@ function [F_floorContact, F_floorFric] = ...
     computeFloorContactAndFriction_only_force(imc, dt, q, q0, n_nodes, n_dof)
 delta = imc.delta_floor;
 h = imc.h;
-mu = imc.mu_k;
+mu = imc.mu_floor;
 velTol = imc.velTol;
 floor_has_friction = imc.floor_has_friction;
 floor_z = imc.floor_z;

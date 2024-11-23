@@ -83,9 +83,6 @@ else
     end
 end
 
-%% static sim (ramp gravity)
-g = environment.g;
-
 %% Prepare system
 % Reference frame (Space parallel transport at t=0)
 softRobot = computeSpaceParallel(softRobot);
@@ -134,7 +131,7 @@ dof_with_time(1,:) = time_arr;
 
 for timeStep = 1:Nsteps
     if(sim_params.static_sim)
-        environment.g = timeStep*g/Nsteps;
+        environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
     end
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
@@ -168,6 +165,8 @@ for timeStep = 1:Nsteps
         plot_MultiRod(softRobot, ctime, sim_params);
     end
 end
+
+% [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
 
 figure()
 plot(time_arr,current_pos(1:end))

@@ -27,7 +27,7 @@ twist_angles=zeros(n_edges_rod_only+size(rod_shell_joint_total_edges,1),1);
 %% Create the soft robot structure
 MultiRod = MultiRod(geom, material, twist_angles,...
     nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params);
+    face_nodes, sign_faces, face_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting springs
 
@@ -128,7 +128,7 @@ plot_MultiRod(MultiRod, 0.0, sim_params);
 
 %% add mass and weight
 MultiRod.MassMat(mapNodetoDOF(1),mapNodetoDOF(1)) = MultiRod.MassMat(mapNodetoDOF(1),mapNodetoDOF(1)).*100;
-MultiRod.W (mapNodetoDOF(1)) = MultiRod.W (mapNodetoDOF(1)).*100;
+MultiRod.Fg (mapNodetoDOF(1)) = MultiRod.Fg (mapNodetoDOF(1)).*100;
 %% Time stepping scheme
 
 Nsteps = round(sim_params.totalTime/sim_params.dt);
@@ -145,6 +145,9 @@ current_pos_z(1) = MultiRod.q0(3*log_node);
 
 
 for timeStep = 1:Nsteps
+    if(sim_params.static_sim)
+        environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
+    end
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
         tau_0 = updatePreComp_without_sign(MultiRod.q, MultiRod);

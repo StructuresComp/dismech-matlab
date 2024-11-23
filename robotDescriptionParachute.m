@@ -12,17 +12,6 @@ sim_params.logStep = 1;
 % Time step
 sim_params.dt = 1e-2;
 
-% gravity
-gravity = 1; % or 0 for off
-
-if (gravity==1)
-    g = [0, 0, -9.81]';
-else
-    g = [0, 0, 0]';
-end
-
-sim_params.g = g;
-
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 25;
 
@@ -44,51 +33,20 @@ material.youngs_shell = 10e8;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0.3;
 
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
+env.ext_force_list = ["gravity", "aerodynamic"]; 
+
 % environment parameters
-environment.mu = 0.25;
-environment.eta = 0.0;
-environment.Cd = 10;
-% environment.Cd = 0;
-environment.rho = 1;
-environment.ptForce = [0, 0, 0]; % point force
-environment.ptForce_node = 1;
+env.g = [0, 0, -9.81]';
+env.rho = 1;
+env.Cd = 10;
 
-
-% point force
-environment.ptForce = [0, 0, 0];
-environment.ptForce_node = 1;
-
-% imc
-imc.compute_friction = true;
-imc.k_c = 100;
-imc.k_c_floor = 100;
-imc.contact_len = 2*geom.rod_r0;
-imc.delta = 0.01*imc.contact_len;
-imc.delta_floor = 0.05;
-imc.omega = 20;
-imc.h = geom.rod_r0;
-imc.scale = 1/imc.h;
-imc.C = [];
-imc.mu_k = environment.mu;
-imc.velTol = 1e-2;
-imc.floor_has_friction = true;
-imc.floor_z = -0.5;
-
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Input text file 
-% inputFileName = 'experiments/parachute/parachute_input_dl25.txt';
-% inputFileName = 'experiments/parachute/parachute_single_rod.txt';
-% inputFileName = 'experiments/parachute/rods_parachute_single_rod.txt';
-% inputFileName = 'experiments/parachute/Copy_of_rods_parachute_single_rod.txt';
-
-% inputFileName = 'experiments/parachute/parachute_input_n5.txt';
-% inputFileName = 'experiments/parachute/parachute_input_n11.txt';
-% inputFileName = 'experiments/parachute/triangle_parachute_n3_python.txt';
 
 % inputFileName = 'experiments/parachute/triangle_parachute_n10_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
-% inputFileName = 'experiments/parachute/simplest_parachute_canopy.txt';
-
 inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
 
 % reading the input text file
@@ -109,4 +67,4 @@ input_log_node = 1;
 %% Plot dimensions
 sim_params.plot_x = [-2,2];
 sim_params.plot_y = [-2,2];
-sim_params.plot_z = [-20,-18];
+sim_params.plot_z = [-20,0];

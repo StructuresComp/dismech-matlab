@@ -1,4 +1,4 @@
-function [Fc, Jc, Ffr, Jfr] = computeIMCContactAndFriction(q, q0, C, delta, h, scale, k_c, mu_k, dt, vel_tol, n_dof, use_hess, friction_present)
+function [Fc, Jc, Ffr, Jfr] = computeIMCContactAndFriction(q, q0, C, delta, contact_len, scale, k_c, mu_k, dt, vel_tol, n_dof, use_hess, friction_present)
 % % Inputs
 %   C: edge_combos which can potentially come in contact: Candidate set
 % % Outputs
@@ -13,9 +13,9 @@ Jc = zeros(n_dof,n_dof);
 Ffr = zeros(n_dof,1);
 Jfr = zeros(n_dof,n_dof);
 
-K1 = 15*h/delta;
-contact_lim   = scale*(2*h + delta);
-numerical_lim = scale*(2*h - delta);
+K1 = 15*contact_len/(2*delta);
+contact_lim   = scale*(contact_len + delta);
+numerical_lim = scale*(contact_len- delta);
 
 for i = 1:num_inputs
     [dist, constraint_type, edge_combo_idx_updated] = lumelskyMinDist(q, C(i,:), scale);
@@ -25,7 +25,7 @@ for i = 1:num_inputs
     end
 %% Contact
     % input
-    input = [edge_combo_input.*scale, dist, h*scale, K1];
+    input = [edge_combo_input.*scale, dist, contact_len/2*scale, K1];
 
     if ( dist<=numerical_lim )
         % if Δ <= 2h - δ: penetration

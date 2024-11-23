@@ -18,11 +18,11 @@ alpha = 1;
 % Guess: new DOF is same as old DOF vector
 q = q0;
 iter = 1; % Number of iterations
-error = 10 * sim_params.tol;
-error0 = error;
+err = 10 * sim_params.tol;
+error0 = err;
 solved = false;
-while ~solved % error > sim_params.tol
-
+while ~solved % % error > sim_params.tol
+    %% prepare for iterations
     % Compute time parallel reference frame
     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
@@ -35,80 +35,102 @@ while ~solved % error > sim_params.tol
     [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
     %% Elastic force and jacobian calculation
-    [Fs, Js, stretch_springs] = getFsJs(MultiRod, stretch_springs, q);
+    [Fs, Js, stretch_springs] = getFsJs(MultiRod, stretch_springs, q); % stretching
     if(sim_params.TwoDsim)
-        [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2);
+        [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = zeros(n_DOF,1);
         Jt= zeros(n_DOF,n_DOF);
 
     else
-        [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2);
-        [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter);
+        [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
+        [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
     end
 
-    if (sim_params.use_midedge)
-        [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, q, tau_0);
-    else
-        [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q);
-    end
+%     if(~isempty(MultiRod.face_nodes_shell))
+        if (sim_params.use_midedge)
+            [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
+        else
+            [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q); % midedge-bending (shell)
+        end
+%     end
+
+    % Add all elastic forces and jacobian
+    Forces = Fs + Fb + Ft + Fb_shell;
+    JForces = Js + Jb + Jt + Jb_shell;
 
     %% External force and Jacobian calculation
-    % Gravity 
-    if(sim_params.static_sim)
-        Fg = getGravityForce(MultiRod, env);
-    else
-        Fg = MultiRod.Fg;
+    if ismember("gravity",env.ext_force_list) % Gravity 
+        if(sim_params.static_sim)
+            Fg = getGravityForce(MultiRod, env);
+        else
+            Fg = MultiRod.Fg;
+        end
+        Forces = Forces + Fg;
     end
 
-    % Viscous forces
-    [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+    if ismember("viscous", env.ext_force_list) % Viscous forces
+        [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
 
-    % Aerodynamic drag
-    [Fd, Jd] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
+        Forces = Forces + Fv;
+        JForces = JForces + Jv;
+    end
 
-    Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + Fg;
-    f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
-    
-    % IMC
-    [Fc, Jc, Ffr, Jfr, imc] = ...
-        IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
+    if ismember("aerodynamic", env.ext_force_list) % Aerodynamic drag
+        [Fd, Jd] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
+        Forces = Forces + Fd;
+        JForces = JForces + Jd;
+    end
 
-    % floor contact
-    if(sim_params.floor_present)
+    if ismember("pointForce", env.ext_force_list) % Point force
+        Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
+        Forces = Forces + Fpt;
+    end
+
+    if(sim_params.static_sim) 
+        f = - Forces; % Equations of motion
+        J = - JForces; % Jacobian
+    else     
+        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces; % Inertial forces added
+        J = MultiRod.MassMat / sim_params.dt^2 - JForces; % Inertial Jacobian added
+    end
+
+    if ismember("selfContact", env.ext_force_list) % IMC
+        [Fc, Jc, Ffr, Jfr, imc] = ...
+            IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
+        f = f - Fc - Ffr;
+        J = J - Jc - Jfr;
+    end
+
+    if ismember("floorContact", env.ext_force_list) % floor contact
         [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
-    else
-        Fc_floor = zeros(n_DOF,1);
-        Jc_floor = zeros(n_DOF,n_DOF);
-        Ffr_floor = zeros(n_DOF,1);
-        Jfr_floor = zeros(n_DOF,n_DOF);
+        f = f - Fc_floor - Ffr_floor;
+        J = J - Jc_floor - Jfr_floor;
     end
-    % Add external point force
-    Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
 
-%%
-    Forces = Forces + Fc + Ffr + Fc_floor + Ffr_floor + Fpt;
-    JForces = Js + Jb + Jt + Jb_shell + Jv + Jd + Jc + Jfr + Jc_floor + Jfr_floor;
-
-    if(sim_params.static_sim)
-        % Equations of motion
-        f = - Forces;
-
-        % Jacobian
-        J = - JForces;
-
-    else
-        % Equations of motion
-        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
-
-        % Jacobian
-        J = MultiRod.MassMat / sim_params.dt^2 - JForces;
-    end
+% %%
+%     Forces = Forces + Fc + Ffr + Fc_floor + Ffr_floor + Fpt;
+%     JForces = Js + Jb + Jt + Jb_shell + Jv + Jd + Jc + Jfr + Jc_floor + Jfr_floor;
+% 
+%     if(sim_params.static_sim)
+%         % Equations of motion
+%         f = - Forces;
+% 
+%         % Jacobian
+%         J = - JForces;
+% 
+%     else
+%         % Equations of motion
+%         f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
+% 
+%         % Jacobian
+%         J = MultiRod.MassMat / sim_params.dt^2 - JForces;
+%     end
 
     f_free = f(freeIndex);
     J_free = J(freeIndex, freeIndex);
     Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash)
 
-    % Newton's update
+    % J\f solving
     if(Det_J==0 && sum(abs(f_free)) <= 1e-8) % if the force is zero and Jacobian is singular
         dq_free = zeros(numel(freeIndex),1);
     else
@@ -129,20 +151,20 @@ while ~solved % error > sim_params.tol
     q(freeIndex) = q(freeIndex) - alpha.*dq_free;
 
     % Error
-         error = sum(abs(f_free) );
-%     error = norm(f_free) ;
-    fprintf('Iter=%d, error=%f\n', iter, error);
+% %          error = sum(abs(f_free) );
+    err = norm(f_free) ;
+    fprintf('Iter=%d, error=%f\n', iter, err);
 
     if(iter==1)
-        error0=error;
+        error0=err;
     end
 
-    if(error<=sim_params.tol)
+    if(err<=sim_params.tol)
         solved = true;
         continue;
     end
 
-    if(error<error0*sim_params.ftol)
+    if(err<error0*sim_params.ftol)
         solved = true;
         continue;
     end
@@ -151,7 +173,13 @@ while ~solved % error > sim_params.tol
         solved = true;
         continue;
     end
+
+    if(iter>sim_params.maximum_iter)
+        error("Could not converge in iters; exiting simulation");
+    end
+
     iter = iter + 1;
+
 end
 a1 = a1_iter;
 a2 = a2_iter;

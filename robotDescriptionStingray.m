@@ -2,75 +2,38 @@
 
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
-sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
-% hinge model for shell bending
-sim_params.use_lineSearch = false;
+sim_params.use_midedge = false; % boolean var to decide on using midedge or hinge for shell bending
+sim_params.use_lineSearch = false; % turn on linesearch to help with convergence (esp. in contact rich scenarios)
 sim_params.floor_present = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
 sim_params.showFloor = false;
-
-% Time step
-sim_params.dt = 1e-3;
-
-% gravity
-gravity = 1; % or 0 for off
-
-if (gravity==1)
-    g = [0, 0, -0.5297]';
-else
-    g = [0, 0, 0]';
-end
-
-sim_params.g = g;
-
-% Maximum number of iterations in Newton Solver
-sim_params.maximum_iter = 25;
-
-% Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 2; % sec
-
-% How often the plot should be saved? (Set plotStep to 1 to show each plot)
-sim_params.plotStep = 10;
+sim_params.dt = 1e-3; % sec % Time step
+sim_params.maximum_iter = 50; % Maximum number of iterations in Newton Solver
+sim_params.totalTime = 2; % sec % Total simulation time (it exits after t=totalTime)
+sim_params.plotStep = 10; % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 
 %% Input parameters
 % geometry parameters
-geom.rod_r0 = 1e-3;
+geom.rod_r0 = 0; % not using rod
 geom.shell_h = 1e-3;
 
 % material parameters
-material.density = 1100;
-material.youngs_rod = 20e9; % not used
-material.youngs_shell = 6e8; % 20 GPa
-material.poisson_rod = 0.3;
+material.density = 1057;
+material.youngs_rod = 0; % not used
+material.youngs_shell = 6e9; % 6e8 GPa works
+material.poisson_rod = 0; % not used
 material.poisson_shell = 0.3;
 
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
+env.ext_force_list = ["gravity", "buoyancy", "aerodynamic"]; 
+
 % environment parameters
-environment.mu = 0.25;
-environment.eta = 0;
-environment.Cd = 1;
-% environment.Cd = 0.0;
-environment.rho = 1000;
-% point force
-environment.ptForce = [0, 0, 0];
-environment.ptForce_node = 1;
+env.g = [0, 0, -9.81]';
+env.rho = 1000;
+env.Cd = 1;
 
-% imc
-imc.compute_friction = false;
-imc.k_c = 100;
-imc.k_c_floor = 100;
-imc.contact_len = 2*geom.rod_r0;
-imc.delta = 0.01*imc.contact_len;
-imc.delta_floor = 0.05;
-imc.omega = 20;
-imc.h = geom.rod_r0;
-imc.scale = 1/imc.h;
-imc.C = [];
-imc.mu_k = environment.mu;
-imc.velTol = 1e-2;
-imc.floor_has_friction = true;
-imc.floor_z = -0.5;
-
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Input text file 
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n4_python.txt'; % choose

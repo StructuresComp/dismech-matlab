@@ -27,7 +27,7 @@ twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
 %% Create the soft robot structure
 MultiRod = MultiRod(geom, material, twist_angles,...
     nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params);
+    face_nodes, sign_faces, face_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting springs
 
@@ -129,6 +129,9 @@ dof_with_time = zeros(MultiRod.n_DOF+1,Nsteps);
 dof_with_time(1,:) = time_arr;
 
 for timeStep = 1:Nsteps
+    if(sim_params.static_sim)
+        environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
+    end
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
         tau_0 = updatePreComp_without_sign(MultiRod.q, MultiRod);
@@ -164,12 +167,3 @@ for timeStep = 1:Nsteps
     end
 end
 [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
-
-% data = zeros(MultiRod.n_nodes*Nsteps,4);
-% for i=1:Nsteps
-%     for j=1:MultiRod.n_nodes
-%         data((i-1)*MultiRod.n_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
-%     end
-% end
-% 
-% writematrix(data,'rawData.txt', 'Writemode', "overwrite")

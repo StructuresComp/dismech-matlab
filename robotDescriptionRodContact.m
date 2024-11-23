@@ -13,17 +13,6 @@ sim_params.showFloor = true;
 % Time step
 sim_params.dt = 1e-3;
 
-% gravity
-gravity = 1; % or 0 for off
-
-if (gravity==1)
-    g = [0, 0, -9.81]'; % g = [0, 0, -0.981]';
-else
-    g = [0, 0, 0]';
-end
-
-sim_params.g = g;
-
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 25;
 
@@ -59,6 +48,14 @@ environment.Cd = 0;
 environment.rho = 0;
 environment.ptForce = [0, 0, 0]; % point force
 environment.ptForce_node = size(rod_nodes,1);
+% gravity
+gravity = 1; % or 0 for off
+if (gravity==1)
+    g = [0, 0, -9.81]'; % g = [0, 0, -0.981]';
+else
+    g = [0, 0, 0]';
+end
+environment.g = g;
 
 % imc
 imc.compute_friction = true;
@@ -75,6 +72,22 @@ imc.mu_k = environment.mu;
 imc.velTol = 1e-2;
 imc.floor_has_friction = true;
 imc.floor_z = -0.5;
+
+
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
+env.ext_force_list = ["gravity", "floorContact", "floorFriction", "selfContact", "selfFriction"]; 
+
+% environment parameters
+env.g = [0, 0, -9.81]';
+env.contact_stiffness = 100;
+env.mu = 0.25;
+env.floor_z = -0.5;
+env.velTol = 1e-2;
+material.contact_stiffness = 100;
+material.mu = 0.25;
+
+
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Tolerance on force function. 
 

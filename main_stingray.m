@@ -8,6 +8,12 @@ addpath shell_dynamics/
 addpath external_forces/
 addpath logging/
 %% input
+sim_params = struct();
+imc = struct();
+geom = struct();
+material = struct();
+environment = struct();
+
 robotDescriptionStingray
 
 % create geometry
@@ -23,7 +29,7 @@ twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
 %% Create the soft robot structure
 MultiRod = MultiRod(geom, material, twist_angles,...
     nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params);
+    face_nodes, sign_faces, face_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting springs
 
@@ -129,6 +135,9 @@ dof_with_time(1,:) = time_arr;
 
 
 for timeStep = 1:Nsteps
+    if(sim_params.static_sim)
+        environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
+    end
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
         tau_0 = updatePreComp_without_sign(MultiRod.q, MultiRod);
@@ -196,21 +205,3 @@ xlabel('t [s]')
 ylabel('z [m]')
 
 [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
-
-
-% data = zeros(3*MultiRod.n_faces*Nsteps,3);
-% for i=1:Nsteps
-%     for j=1:MultiRod.n_faces
-%         n1 = MultiRod.face_nodes_shell(j,1);
-%         n2 = MultiRod.face_nodes_shell(j,2);
-%         n3 = MultiRod.face_nodes_shell(j,3);
-%         data((i-1)*3*MultiRod.n_faces+3*j-2: (i-1)*3*MultiRod.n_faces+3*j,:) = [
-%             dof_with_time(1+mapNodetoDOF(n1),i)';
-%             dof_with_time(1+mapNodetoDOF(n2),i)';
-%             dof_with_time(1+mapNodetoDOF(n3),i)'];
-%     end
-% end
-% 
-% writematrix(data,'rawData.txt', 'Writemode', "overwrite")
-% 
-% saved_pos = readmatrix(filename);
