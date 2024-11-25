@@ -6,7 +6,7 @@ rod_radius = 0.32;
 
 scaleFactor = 10;
 
-fileID = fopen('rodContactData20MPa.js', 'w');
+fileID = fopen('rodContactData_kc1000_2MPa.js', 'w');
 
 fprintf(fileID, 'nNodes = %i; \n', n_nodes);
 fprintf(fileID, 'rodRadius=%d;\n', rod_radius);

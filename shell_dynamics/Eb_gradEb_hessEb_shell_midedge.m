@@ -98,9 +98,9 @@ for i=1:3
             ( (init_cs(i)*init_cs(j)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) * (dot(init_ts(:,i),init_ts(:,j))^2) ) - ...
             2 * ( (c(i)*init_cs(j)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t(:,i),init_ts(:,j))^2) );
 
-        E2 = E2 + ( (c(i)*c(j)) * (ls(i)^2*ls(j)^2) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) ) + ...
-            ( (init_cs(i)*init_cs(j)) * (ls(i)^2*ls(j)^2) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
-            2 * ( (c(i)*init_cs(j)) * (ls(i)^2*ls(j)^2) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
+        E2 = E2 + ( (c(i)*c(j)) * ((norm(t(:,i))^2)*(norm(t(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) ) + ...
+            ( (init_cs(i)*init_cs(j)) * ((ls(i)^2)*(ls(j)^2)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
+            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(norm(ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
@@ -142,17 +142,17 @@ for i=1:3
 
 
         del_E2_del_pi = del_E2_del_pi - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) + ...
-            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A)) .* (ls(i)^2*ls(j)^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A) .* (ls(i)^2*ls(j)^2);
+            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
 
         del_E2_del_pj = del_E2_del_pj - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) + ...
-            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A)) .* (ls(i)^2*ls(j)^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A) .* (ls(i)^2*ls(j)^2);
+            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
 
 
         del_E2_del_pk = del_E2_del_pk - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) + ...
-            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A)) .* (ls(i)^2*ls(j)^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A) .* (ls(i)^2*ls(j)^2);
+            (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
 
     end 
 end
@@ -166,13 +166,13 @@ for j=1:3
             + 2*c_i*s_i * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_i,init_ts(:,j)))^2 ;
 
 
-        del_E2_del_xi_i = del_E2_del_xi_i + (2*c_i*s_i* ls(1)^2) * (c(j) * (s(j)*xi(j) - f(j)) * ls(j)^2 - ...
+        del_E2_del_xi_i = del_E2_del_xi_i + (2*c_i*s_i* norm(t_i)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
              init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);
 
-        del_E2_del_xi_j = del_E2_del_xi_j + (2*c_j*s_j* ls(2)^2) * (c(j) * (s(j)*xi(j) - f(j)) * ls(j)^2 - ...
+        del_E2_del_xi_j = del_E2_del_xi_j + (2*c_j*s_j* norm(t_j)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
              init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);
 
-        del_E2_del_xi_k = del_E2_del_xi_k + (2*c_k*s_k* ls(3)^2) * (c(j) * (s(j)*xi(j) - f(j)) * ls(j)^2 - ...
+        del_E2_del_xi_k = del_E2_del_xi_k + (2*c_k*s_k* norm(t_k)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
              init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);        
 end
 
@@ -203,17 +203,17 @@ ddel_E_by_del_xi_k_xi_j = ddel_E_by_del_xi_j_xi_k;
 ddel_E_by_del_xi_k_xi_k = 2 * (c_k*c_k) * (s_k*s_k) * (dot(t_k,t_k))^2;
 
 % E2
-ddel_E2_by_del_xi_i_xi_i = 2 * (c_i*c_i) * (s_i*s_i) * (ls(1)^2*ls(1)^2);
-ddel_E2_by_del_xi_i_xi_j = 2 * (c_i*c_j) * (s_i*s_j) * (ls(1)^2*ls(2)^2);
-ddel_E2_by_del_xi_i_xi_k = 2 * (c_i*c_k) * (s_i*s_k) * (ls(1)^2*ls(3)^2);
+ddel_E2_by_del_xi_i_xi_i = 2 * (c_i*c_i) * (s_i*s_i) * (norm(t_i)^2*norm(t_i)^2);
+ddel_E2_by_del_xi_i_xi_j = 2 * (c_i*c_j) * (s_i*s_j) * (norm(t_i)^2*norm(t_j)^2);
+ddel_E2_by_del_xi_i_xi_k = 2 * (c_i*c_k) * (s_i*s_k) * (norm(t_i)^2*norm(t_k)^2);
 
 ddel_E2_by_del_xi_j_xi_i = ddel_E2_by_del_xi_i_xi_j;
-ddel_E2_by_del_xi_j_xi_j = 2 * (c_j*c_j) * (s_j*s_j) * (ls(2)^2*ls(2)^2);
-ddel_E2_by_del_xi_j_xi_k = 2 * (c_j*c_k) * (s_j*s_k) * (ls(2)^2*ls(3)^2);
+ddel_E2_by_del_xi_j_xi_j = 2 * (c_j*c_j) * (s_j*s_j) * (norm(t_j)^2*norm(t_j)^2);
+ddel_E2_by_del_xi_j_xi_k = 2 * (c_j*c_k) * (s_j*s_k) * (norm(t_j)^2*norm(t_k)^2);
 
 ddel_E2_by_del_xi_k_xi_i = ddel_E2_by_del_xi_i_xi_k;
 ddel_E2_by_del_xi_k_xi_j = ddel_E2_by_del_xi_j_xi_k;
-ddel_E2_by_del_xi_k_xi_k = 2 * (c_k*c_k) * (s_k*s_k) * (ls(3)^2*ls(3)^2);
+ddel_E2_by_del_xi_k_xi_k = 2 * (c_k*c_k) * (s_k*s_k) * (norm(t_k)^2*norm(t_k)^2);
 
 %% ddel E by del ps
 
@@ -293,13 +293,13 @@ for k=1:9
 
 
 
-            ddel_E2_by_ps(:,:,k) = ddel_E2_by_ps(:,:,k) - (c(i)*c(j)) * (ls(i)^2*ls(j)^2) .* (...
+            ddel_E2_by_ps(:,:,k) = ddel_E2_by_ps(:,:,k) - (c(i)*c(j)) * (norm(t(:,i))^2*norm(t(:,j))^2) .* (...
             (s(i)*xi(i) - f(i)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,j),unit_norm,A,char_k2,char_k1) - ...
             transpose(delfi_by_delpk(tau_0(:,j), t(:,num_k1), unit_norm, A)) * delfi_by_delpk(tau_0(:,i), t(:,num_k2), unit_norm, A)...
             + (s(j)*xi(j) - f(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) - ...
             transpose(delfi_by_delpk(tau_0(:,i), t(:,num_k1), unit_norm, A)) * delfi_by_delpk(tau_0(:,j), t(:,num_k2), unit_norm, A) ) ...
             + ...
-            2* c(i) * init_cs(j) * (ls(i)^2*ls(j)^2) * (s(j)*init_xi(j)-init_fs(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) ;
+            2* c(i) * init_cs(j) * (norm(t(:,i))^2*ls(j)^2) * (s(j)*init_xi(j)-init_fs(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) ;
 
 
 
@@ -345,17 +345,17 @@ for j=1:3
 
         %
 
-        ddel_E2_del_xi_i_del_p_i = ddel_E2_del_xi_i_del_p_i - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (ls(1)^2*ls(j)^2);
-        ddel_E2_del_xi_i_del_p_j = ddel_E2_del_xi_i_del_p_j - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (ls(1)^2*ls(j)^2);
-        ddel_E2_del_xi_i_del_p_k = ddel_E2_del_xi_i_del_p_k - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (ls(1)^2*ls(j)^2);
+        ddel_E2_del_xi_i_del_p_i = ddel_E2_del_xi_i_del_p_i - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (norm(t_i)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_i_del_p_j = ddel_E2_del_xi_i_del_p_j - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (norm(t_i)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_i_del_p_k = ddel_E2_del_xi_i_del_p_k - (2*c_i*s_i) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (norm(t_i)^2*norm(t(:,j))^2);
 
-        ddel_E2_del_xi_j_del_p_i = ddel_E2_del_xi_j_del_p_i - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (ls(2)^2*ls(j)^2);
-        ddel_E2_del_xi_j_del_p_j = ddel_E2_del_xi_j_del_p_j - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (ls(2)^2*ls(j)^2);
-        ddel_E2_del_xi_j_del_p_k = ddel_E2_del_xi_j_del_p_k - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (ls(2)^2*ls(j)^2);
+        ddel_E2_del_xi_j_del_p_i = ddel_E2_del_xi_j_del_p_i - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (norm(t_j)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_j_del_p_j = ddel_E2_del_xi_j_del_p_j - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (norm(t_j)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_j_del_p_k = ddel_E2_del_xi_j_del_p_k - (2*c_j*s_j) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (norm(t_j)^2*norm(t(:,j))^2);
 
-        ddel_E2_del_xi_k_del_p_i = ddel_E2_del_xi_k_del_p_i - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (ls(3)^2*ls(j)^2);
-        ddel_E2_del_xi_k_del_p_j = ddel_E2_del_xi_k_del_p_j - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (ls(3)^2*ls(j)^2);
-        ddel_E2_del_xi_k_del_p_k = ddel_E2_del_xi_k_del_p_k - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (ls(3)^2*ls(j)^2);
+        ddel_E2_del_xi_k_del_p_i = ddel_E2_del_xi_k_del_p_i - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) * (norm(t_k)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_k_del_p_j = ddel_E2_del_xi_k_del_p_j - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) * (norm(t_k)^2*norm(t(:,j))^2);
+        ddel_E2_del_xi_k_del_p_k = ddel_E2_del_xi_k_del_p_k - (2*c_k*s_k) * c(j) * delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) * (norm(t_k)^2*norm(t(:,j))^2);
 
 end
 

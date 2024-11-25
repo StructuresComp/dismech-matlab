@@ -47,54 +47,70 @@ while ~success
     %% compute forces
     % Force calculation
     Fs = getFs(MultiRod, stretch_springs, q);
-    if(~isempty(bend_twist_springs))
-        Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis);
-        Ft = getFt(MultiRod, bend_twist_springs, q, refTwist_iter);
-    else
-        Fb = zeros(n_DOF,1);
+
+    if(sim_params.TwoDsim)
+        Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = zeros(n_DOF,1);
-    end
-    if (sim_params.use_midedge)
-        Fb_shell = getFb_shell_midedge(MultiRod, q, tau_0);
     else
-        Fb_shell = getFb_shell(MultiRod, hinge_springs, q);
+        Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
+        Ft = getFt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
     end
-    %% External force and Jacobian calculation
-    % Gravity
-    if(sim_params.static_sim)
-        Fg = getGravityForce(MultiRod, env);
-    else
-        Fg = MultiRod.Fg;
+
+%     if(~isempty(MultiRod.face_nodes_shell))
+        if (sim_params.use_midedge)
+            Fb_shell = getFbshell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
+        else
+            Fb_shell = getFb_shell(MultiRod, hinge_springs, q); % midedge-bending (shell)
+        end
+%     end
+
+    % Add all elastic forces and jacobian
+    Forces = Fs + Fb + Ft + Fb_shell;
+
+
+    %% External force calculation
+    
+    if ismember("gravity",env.ext_force_list) % Gravity 
+        if(sim_params.static_sim)
+            Fg = getGravityForce(MultiRod, env);
+        else
+            Fg = MultiRod.Fg;
+        end
+        Forces = Forces + Fg;
     end
-    % Viscous forces
-    [Fv,~] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
 
-    % Aerodynamic drag
-    [Fd,~] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
+    if ismember("viscous", env.ext_force_list) % Viscous forces
+        [Fv,~] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+        Forces = Forces + Fv;
+    end
 
-    [Fc, Ffr] = ...
-        IMC_new_only_force(imc, q, q0, sim_params.dt);
-    % floor contact
-    if(sim_params.floor_present)
+    if ismember("aerodynamic", env.ext_force_list) % Aerodynamic drag
+        [Fd, ~] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
+        Forces = Forces + Fd;
+    end
+
+    if ismember("pointForce", env.ext_force_list) % Point force
+        Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
+        Forces = Forces + Fpt;
+    end
+
+    if(sim_params.static_sim) 
+        f = - Forces; % Equations of motion
+    else     
+        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces; % Inertial forces added
+    end
+
+    if ismember("selfContact", env.ext_force_list) % IMC
+        [Fc, Ffr] = ...
+            IMC_new_only_force(imc, q, q0, sim_params.dt);        
+        f = f - Fc - Ffr;
+    end
+
+    if ismember("floorContact", env.ext_force_list) % floor contact
         [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
-    else
-        Fc_floor = zeros(n_DOF,1);
-        Ffr_floor = zeros(n_DOF,1);
+        f = f - Fc_floor - Ffr_floor;
     end
-    % Add external point force
-    Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
-
-    %% Net forces
-    Forces = Fs + Fb + Ft + Fb_shell + Fv + Fd + Fc + Ffr + Fc_floor + Ffr_floor + Fg + Fpt;
-    if(sim_params.static_sim)
-        % Equations of motion
-        f = - Forces;
-    else
-        % Equations of motion
-        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces;
-
-    end
-
+%%
     x = 0.5 * norm(f(MultiRod.freeDOF))^2;
     error = sum(abs(f(MultiRod.freeDOF)) ); % just to check
     slope = (x - x0) / a;
