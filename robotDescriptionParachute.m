@@ -7,6 +7,7 @@ sim_params.use_midedge = false; % boolean var to decide on using midedge normal 
 sim_params.use_lineSearch = false;
 sim_params.floor_present = false;
 sim_params.showFloor = false;
+sim_params.log_data = true;
 sim_params.logStep = 1;
 
 % Time step
@@ -16,7 +17,7 @@ sim_params.dt = 1e-2;
 sim_params.maximum_iter = 25;
 
 % Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 5; % 3 % sec
+sim_params.totalTime = 1; % 3 % sec
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 10;
@@ -45,7 +46,7 @@ env.Cd = 10;
 
 %% Input text file 
 
-% inputFileName = 'experiments/parachute/triangle_parachute_n10_python.txt';
+% inputFileName = 'experiments/parachute/triangle_parachute_n3_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
 inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
 

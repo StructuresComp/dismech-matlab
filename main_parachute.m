@@ -143,6 +143,8 @@ current_pos_x(1) = MultiRod.q0(3*log_node-2);
 current_pos_y(1) = MultiRod.q0(3*log_node-1);
 current_pos_z(1) = MultiRod.q0(3*log_node);
 
+dof_with_time = zeros(MultiRod.n_DOF+1,Nsteps);
+dof_with_time(1,:) = time_arr;
 
 for timeStep = 1:Nsteps
     if(sim_params.static_sim)
@@ -170,12 +172,19 @@ for timeStep = 1:Nsteps
     current_pos_z(timeStep) = MultiRod.q0(3*log_node);
     
     %% Saving the coordinates and Plotting
+    if(sim_params.log_data)
+        if mod(timeStep, sim_params.logStep) == 0
+            dof_with_time(2:end,timeStep) =  MultiRod.q;
+        end
+    end
     
     if mod(timeStep, sim_params.plotStep) == 0
         % visualisation
         plot_MultiRod(MultiRod, ctime, sim_params);
     end
 end
+
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
 
 figure()
 plot3(current_pos_x,current_pos_y,current_pos_z)

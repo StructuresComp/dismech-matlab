@@ -35,7 +35,7 @@ geom.shell_h = 1e-3;
 % material parameters
 material.density = 1200;
 material.youngs_rod = 0; % not used
-material.youngs_shell = 2e6;
+material.youngs_shell = 2e9;
 material.poisson_rod = 0;
 material.poisson_shell = 0.5;
 

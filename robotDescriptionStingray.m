@@ -21,17 +21,17 @@ geom.shell_h = 1e-3;
 % material parameters
 material.density = 1057;
 material.youngs_rod = 0; % not used
-material.youngs_shell = 6e9; % 6e8 GPa works
+material.youngs_shell = 6e8; % 6e8 GPa works
 material.poisson_rod = 0; % not used
 material.poisson_shell = 0.3;
 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
-env.ext_force_list = ["gravity", "buoyancy", "aerodynamic"]; 
+env.ext_force_list = ["gravity", "buoyancy", "aerodynamic"];  
 
 % environment parameters
 env.g = [0, 0, -9.81]';
 env.rho = 1000;
-env.Cd = 1;
+env.Cd = 0.3;
 
 [environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 

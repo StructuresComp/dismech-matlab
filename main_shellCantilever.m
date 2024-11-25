@@ -162,7 +162,7 @@ for timeStep = 1:Nsteps
     end
 end
 
-% [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+[rod_data,shell_data] = logDataForRendering(dof_with_time, softRobot, Nsteps);
 
 figure()
 plot(time_arr,current_pos(1:end))

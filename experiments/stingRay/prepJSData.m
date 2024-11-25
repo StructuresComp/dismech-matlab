@@ -1,5 +1,5 @@
 
-df = load('rawData.txt');
+df = load('rawDataShell.txt');
 
 nTri = MultiRod.n_faces;
 

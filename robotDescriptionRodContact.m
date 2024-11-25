@@ -42,39 +42,6 @@ material.youngs_shell = 0;
 material.poisson_rod = 0.3;
 material.poisson_shell = 0.5;
 % 
-% % environment parameters
-% environment.mu = 0.25;
-% environment.eta = 0;
-% environment.Cd = 0;
-% environment.rho = 0;
-% environment.ptForce = [0, 0, 0]; % point force
-% environment.ptForce_node = size(rod_nodes,1);
-% % gravity
-% gravity = 1; % or 0 for off
-% if (gravity==1)
-%     g = [0, 0, -9.81]'; % g = [0, 0, -0.981]';
-% else
-%     g = [0, 0, 0]';
-% end
-% environment.g = g;
-% 
-% % imc
-% imc.compute_friction = true;
-% imc.k_c = 100;
-% imc.k_c_floor = 100;
-% imc.contact_len = 2*geom.rod_r0;
-% imc.delta = 0.01*imc.contact_len;
-% imc.delta_floor = 0.05;
-% imc.omega = 20;
-% imc.h = geom.rod_r0;
-% imc.scale = 1/imc.h;
-% imc.C = [];
-% imc.mu_k = environment.mu;
-% imc.velTol = 1e-2;
-% imc.floor_has_friction = true;
-% imc.floor_z = -0.5;
-
-
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 env.ext_force_list = ["gravity", "floorContact", "floorFriction", "selfContact", "selfFriction"]; 
 
