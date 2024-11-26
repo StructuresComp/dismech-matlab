@@ -185,6 +185,7 @@ for timeStep = 1:Nsteps
 end
 
 [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+% [rod_data,shell_data] = logDataForRendering_multi_rods(dof_with_time, MultiRod, Nsteps, 3, [3,2,2]);
 
 figure()
 plot3(current_pos_x,current_pos_y,current_pos_z)
