@@ -19,7 +19,7 @@ sim_params.maximum_iter = 25;
 % Total simulation time
 if(sim_params.static_sim)
 %     sim_params.totalTime = sim_params.dt;
-    sim_params.totalTime = sim_params.dt*50;
+    sim_params.totalTime = sim_params.dt*5;
 else
     sim_params.totalTime = 0.8; % sec
 end
@@ -29,13 +29,13 @@ sim_params.plotStep = 1;
 
 %% Input parameters
 % geometry parameters
-geom.rod_r0 = 1e-3;
+geom.rod_r0 = 0;
 geom.shell_h = 1e-3;
 
 % material parameters
 material.density = 1200;
 material.youngs_rod = 0; % not used
-material.youngs_shell = 2e9;
+material.youngs_shell = 2e8;
 material.poisson_rod = 0;
 material.poisson_shell = 0.5;
 
@@ -52,7 +52,7 @@ mesh_dense_nos = [20,25,30,35,40,45,50,55,60,65];
 mesh_types = ["equilateral" , "random" , "right" , "eq_algn"]; % type of mesh
 
 % choose
-mesh_dense = 2;
+mesh_dense = 5;
 mesh_type = 1;
 
 

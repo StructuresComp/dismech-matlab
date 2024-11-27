@@ -58,7 +58,7 @@ while ~success
 
 %     if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)
-            Fb_shell = getFbshell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
+            Fb_shell = getFb_shell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
         else
             Fb_shell = getFb_shell(MultiRod, hinge_springs, q); % midedge-bending (shell)
         end
