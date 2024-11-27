@@ -103,7 +103,7 @@ classdef MultiRod
             obj.faceA = obj.calculateFaceArea();
             
             % Mass matrix
-            obj.MassMat = obj.calculateMassMatrix();
+            obj.MassMat = obj.calculateMassMatrix(geom);
             % Weight
 %             obj.W = obj.calculateWeightVector(sim_params.g);
             obj.Fg = getGravityForce(obj,environment);
@@ -202,7 +202,7 @@ classdef MultiRod
             end
         end
 
-        function massMat = calculateMassMatrix(obj)
+        function massMat = calculateMassMatrix(obj, geom)
             m = zeros(obj.n_DOF, 1);
 
             % Shell faces
@@ -220,14 +220,26 @@ classdef MultiRod
 
             % Rod nodes
             for cNode = 1:obj.n_nodes
-                dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
+                if isfield(geom, 'Axs') && ~isempty(geom.Axs)
+                    dm = obj.voronoiRefLen(cNode) * geom.Axs * obj.rho;
+                else
+                    dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
+                end
+                % dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
+                % dm = obj.voronoiRefLen(cNode) * geom.Axs * obj.rho;
                 ind = mapNodetoDOF(cNode);
                 m(ind) = m(ind) + dm * ones(3, 1);
             end
 
             % Rod edges
             for cEdge = 1:obj.n_edges_dof
-                dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
+                if isfield(geom, 'Axs') && ~isempty(geom.Axs)
+                    dm = obj.refLen(cEdge) * geom.Axs * obj.rho;
+                else
+                    dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
+                end
+                % dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
+                % dm = obj.refLen(cEdge) * geom.Axs * obj.rho;
                 ind = mapEdgetoDOF(cEdge, obj.n_nodes);
                 m(ind) = dm / 2 * obj.r0^2;  % I = 1/2 m r^2
             end
