@@ -10,7 +10,7 @@ addpath logging/
 
 results = zeros(4,1);
 
-for trials = 1:4
+for trials = 1
     % environment parameters
 env.g = [0, 0, (2^(trials-1))*-9.81]';
 
