@@ -5,7 +5,7 @@ mesh_dense = [4, 20,25,30,35,40,45,50,55,60,65];
 mesh_types = ["equilateral", "random", "right isoceles", "equilateral aligned"]; % type of mesh
 %% Geometry L = 0.1 m, w = 0.02 m
 
-for i=1
+for i=2
     maxMeshSize_factor_of_L = mesh_dense(i); % change this for different mesh densities 
     % and remember to mention in inputfile name that's generated
 

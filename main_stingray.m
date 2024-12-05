@@ -204,4 +204,4 @@ title('z-trajectory of the leading edge centerpoint')
 xlabel('t [s]')
 ylabel('z [m]')
 
-[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps,sim_params.static_sim);
