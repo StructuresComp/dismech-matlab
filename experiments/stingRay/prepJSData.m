@@ -5,7 +5,7 @@ nTri = MultiRod.n_faces;
 
 scaleFactor = 100;
 
-fileID = fopen('stingRayData5s.js', 'w');
+fileID = fopen('stingRayData_n10_Y6e9_Cd0pt5_A2piby3_5s.js', 'w');
 
 fprintf(fileID, 'nTri = %i; \n', nTri);
 fprintf(fileID, 'nodes = [ \n');

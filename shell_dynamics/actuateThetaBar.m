@@ -4,8 +4,9 @@ function hinge_springs = actuateThetaBar(hinge_springs, hinge_spring_ind_to_actu
 
 % flap_freq = 4;
 flap_freq = 3.384;
-% flap_amplitude = pi/2; % works
-flap_amplitude = 2*pi/3; % works
+flap_amplitude = pi/2; % works
+% flap_amplitude = 2*pi/3; % works
+% flap_amplitude = 7*pi/12; % works
 n = size(hinge_spring_ind_to_actuate,1);
 
 % % % no phase difference

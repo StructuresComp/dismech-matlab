@@ -36,9 +36,9 @@ while ~success
 
     % Compute reference twist
     tangent = computeTangent(MultiRod, q);
-    if(~isempty(bend_twist_springs))
+    % if(~isempty(bend_twist_springs))
         refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-    end
+    % end
     % Compute material frame
     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
     [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
@@ -48,6 +48,7 @@ while ~success
     % Force calculation
     Fs = getFs(MultiRod, stretch_springs, q);
 
+    % if(~isempty(bend_twist_springs))
     if(sim_params.TwoDsim)
         Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = zeros(n_DOF,1);
@@ -55,6 +56,7 @@ while ~success
         Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
         Ft = getFt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
     end
+    % end
 
 %     if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)

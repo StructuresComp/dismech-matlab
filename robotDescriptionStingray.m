@@ -3,7 +3,7 @@
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge or hinge for shell bending
-sim_params.use_lineSearch = false; % turn on linesearch to help with convergence (esp. in contact rich scenarios)
+sim_params.use_lineSearch = true; % turn on linesearch to help with convergence (esp. in contact rich scenarios)
 sim_params.floor_present = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
