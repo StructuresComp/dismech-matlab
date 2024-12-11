@@ -178,7 +178,7 @@ for timeStep = 1:Nsteps
     end
 end
 
-[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps, sim_params.static_sim);
 
 
 % % final position

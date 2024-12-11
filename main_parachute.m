@@ -184,7 +184,7 @@ for timeStep = 1:Nsteps
     end
 end
 
-[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps);
+[rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps, sim_params.static_sim);
 % [rod_data,shell_data] = logDataForRendering_multi_rods(dof_with_time, MultiRod, Nsteps, 3, [3,2,2]);
 
 figure()
@@ -214,5 +214,19 @@ ylabel('y [m]')
 subplot(3, 1, 3)  % 3 rows, 1 column, 3rd subplot
 plot(time_arr, current_pos_z)
 title('z-trajectory of the hanging mass')
+xlabel('t [s]')
+ylabel('z [m]')
+
+%% logging node data
+filename = "parachute_data.xls";
+writematrix(time_arr', filename, Sheet=1,Range='A1');
+writematrix(current_pos_x, filename, Sheet=1,Range='B1');
+writematrix(current_pos_y, filename, Sheet=1,Range='C1');
+writematrix(current_pos_z, filename, Sheet=1,Range='D1');
+
+%% Plots for manuscript
+figure()
+plot(time_arr,current_pos_x, time_arr, current_pos_y, time_arr, current_pos_z);
+title('time trajectory of the hanging mass')
 xlabel('t [s]')
 ylabel('z [m]')

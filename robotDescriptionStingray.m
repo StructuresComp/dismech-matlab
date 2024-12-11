@@ -47,9 +47,9 @@ env.Cd = 0.5; % higher drag
 %% Input text file 
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n4_python.txt'; % choose
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n8_python.txt'; % choose
-% inputFileName = 'experiments/stingRay/curve_input/stingray_n10_python.txt'; % choose
+inputFileName = 'experiments/stingRay/curve_input/stingray_n10_python.txt'; % choose
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n20_python.txt'; % choose
-inputFileName = 'experiments/stingRay/curve_input/stingray_n15_python.txt'; % choose
+% inputFileName = 'experiments/stingRay/curve_input/stingray_n15_python.txt'; % choose
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);

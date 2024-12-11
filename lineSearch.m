@@ -30,25 +30,30 @@ while ~success
     %% NewtonUpdate
     q(MultiRod.freeDOF) = q_old(MultiRod.freeDOF)-a*dq(MultiRod.freeDOF);
     %% prepSystemForIteration
-
-    % Compute time parallel reference frame
-    [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
-
-    % Compute reference twist
-    tangent = computeTangent(MultiRod, q);
-    % if(~isempty(bend_twist_springs))
-        refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-    % end
-    % Compute material frame
-    theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
-    [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
+% 
+%     % Compute time parallel reference frame
+%     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
+% 
+%     % Compute reference twist
+%     tangent = computeTangent(MultiRod, q);
+%     % if(~isempty(bend_twist_springs))
+%         refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
+%     % end
+%     % Compute material frame
+%     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
+%     [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
 
     %% compute forces
     % Force calculation
+    Forces = zeros(n_DOF,1);
+    
+    if(~isempty(bend_twist_springs))
     Fs = getFs(MultiRod, stretch_springs, q);
+    Forces = Forces + Fs;
+    end
 
-    % if(~isempty(bend_twist_springs))
+    if(~isempty(bend_twist_springs))
     if(sim_params.TwoDsim)
         Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = zeros(n_DOF,1);
@@ -56,18 +61,20 @@ while ~success
         Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
         Ft = getFt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
     end
-    % end
+    Forces = Forces + Fb + Ft;
+    end
 
-%     if(~isempty(MultiRod.face_nodes_shell))
+    if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)
             Fb_shell = getFb_shell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
         else
             Fb_shell = getFb_shell(MultiRod, hinge_springs, q); % midedge-bending (shell)
         end
-%     end
+        Forces = Forces + Fb_shell;
+    end
 
     % Add all elastic forces and jacobian
-    Forces = Fs + Fb + Ft + Fb_shell;
+%     Forces = Fs + Fb + Ft + Fb_shell;
 
 
     %% External force calculation

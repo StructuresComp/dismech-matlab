@@ -17,7 +17,7 @@ sim_params.dt = 1e-2;
 sim_params.maximum_iter = 25;
 
 % Total simulation time (it exits after t=totalTime)
-sim_params.totalTime = 1; % 3 % sec
+sim_params.totalTime = 3; % 3 % sec
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 10;
@@ -46,9 +46,9 @@ env.Cd = 10;
 
 %% Input text file 
 
-inputFileName = 'experiments/parachute/triangle_parachute_n4_python.txt';
+% inputFileName = 'experiments/parachute/triangle_parachute_n4_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
-% inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
+inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
