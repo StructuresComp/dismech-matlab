@@ -30,18 +30,18 @@ while ~success
     %% NewtonUpdate
     q(MultiRod.freeDOF) = q_old(MultiRod.freeDOF)-a*dq(MultiRod.freeDOF);
     %% prepSystemForIteration
-% 
-%     % Compute time parallel reference frame
-%     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
-% 
-%     % Compute reference twist
-%     tangent = computeTangent(MultiRod, q);
-%     % if(~isempty(bend_twist_springs))
-%         refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-%     % end
-%     % Compute material frame
-%     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
-%     [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
+
+    % Compute time parallel reference frame
+    [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
+
+    % Compute reference twist
+    tangent = computeTangent(MultiRod, q);
+    % if(~isempty(bend_twist_springs))
+        refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
+    % end
+    % Compute material frame
+    theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
+    [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
 
     %% compute forces

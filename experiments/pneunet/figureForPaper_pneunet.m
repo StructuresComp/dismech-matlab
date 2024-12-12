@@ -1,9 +1,10 @@
+close all
 FONT = 'Arial';
 FONTSIZE = 12;
 pWidth = 4; % inches
 pHeight = 3;
 colpos = [247 148 30;0 166 81;237 28 36;0 174 239; 0 0 0]/255; % colors
-
+set(groot, 'DefaultLineLineWidth', 1);
 %% 
 
 filename = 'pneunet_nat_curve.xlsx';
@@ -35,17 +36,17 @@ for j=1:3
 end
 hold off
 
-list = ["rod 1"];
+list = ["$\mathbf{(a)} \bar{\kappa} = -0.0314$"];
 for i=2:1:n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "rod 2";
+list(end+1) = "$\mathbf{(b)} \bar{\kappa} = -0.0629$";
 for i=n_edges+2:1:2*n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "rod 3";
+list(end+1) = "$\mathbf{(c)} \bar{\kappa} = -0.0943$";
 for i=2*n_edges+2:1:3*n_edges
     list(end+1) = "";
 end
@@ -58,11 +59,11 @@ end
 % plot(x, y, '^', 'Color', colpos(1,:) );
 
 box on
-xlabel('x [m]', 'Fontname',FONT,'FontSize',FONTSIZE);
-ylabel('z [m]', 'Fontname',FONT,'FontSize',FONTSIZE);
-AX = legend(list, 'Location', 'SouthEast');
-LEG = findobj(AX,'type','text');
-set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
+xlabel('$x$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
+ylabel('$z$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
+% AX = legend(list, 'Location', 'none','Interpreter', 'latex');
+% LEG = findobj(AX,'type','text');
+% set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
 set(gca,'Fontname', FONT,'FontSize',FONTSIZE);
 set(gcf, 'PaperUnits','inches', 'PaperPosition',[0 0 pWidth pHeight], ...
     'PaperSize', [pWidth pHeight]);
@@ -98,24 +99,24 @@ for j=1:3
     end
 end
 
-list = ["rod 1"];
+list = ["$\mathbf{(a) } \bar{\kappa} = -0.0314 $"];
 for i=2:1:n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "rod 2";
+list(end+1) = "$\mathbf{(b) } \bar{\kappa} = -0.0629 $";
 for i=n_edges+2:1:2*n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "rod 3";
+list(end+1) = "$\mathbf{(c) } \bar{\kappa} = -0.0943 $";
 for i=2*n_edges+2:1:3*n_edges
     list(end+1) = "";
 end
 box on
-xlabel('x [m]', 'Fontname',FONT,'FontSize',FONTSIZE);
-ylabel('z [m]', 'Fontname',FONT,'FontSize',FONTSIZE);
-AX = legend(list, 'Location', 'SouthEast');
+xlabel('$x$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
+ylabel('$z$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
+AX = legend(list, 'Location','best','Interpreter', 'latex');
 LEG = findobj(AX,'type','text');
 set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
 set(gca,'Fontname', FONT,'FontSize',FONTSIZE);

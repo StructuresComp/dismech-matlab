@@ -54,7 +54,6 @@ env.velTol = 1e-2;
 material.contact_stiffness = 100;
 material.mu = 0.25;
 
-
 [environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Tolerance on force function. 
@@ -66,7 +65,7 @@ sim_params.dtol = 1e-2;
 %% Boundary conditions
 fixed_node_indices = []; % [4,6]
 fixed_edge_indices = [];
-input_log_node = size(rod_nodes,1);
+input_log_node = 1;
 
 %% initial conditions
 % u_init = [3:3:9; -1*ones(1,3)];

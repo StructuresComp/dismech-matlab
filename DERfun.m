@@ -26,16 +26,16 @@ while ~solved % % error > sim_params.tol
     Forces = zeros(n_DOF,1);
     JForces = zeros(n_DOF,n_DOF);
     %% prepare for iterations
-%     % Compute time parallel reference frame
-%     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
-% 
-%     % Compute reference twist
-%     tangent = computeTangent(MultiRod, q);
-%     refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-% 
-%     % Compute material frame
-%     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
-%     [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta);
+    % Compute time parallel reference frame
+    [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
+
+    % Compute reference twist
+    tangent = computeTangent(MultiRod, q);
+    refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
+
+    % Compute material frame
+    theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
+    [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
     %% Elastic force and jacobian calculation
     if(~isempty(stretch_springs))
@@ -45,23 +45,23 @@ while ~solved % % error > sim_params.tol
     JForces = JForces + Js;
     end
 
-%     if(~isempty(bend_twist_springs))
-%         if(sim_params.TwoDsim)
-%             [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
-% 
-%             Forces = Forces + Fb;
-%             JForces = JForces + Jb;
-%             %         Ft = zeros(n_DOF,1);
-%             %         Jt= zeros(n_DOF,n_DOF);
-% 
-%         else
-%             [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
-%             [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
-% 
-%             Forces = Forces + Fb + Ft;
-%             JForces = JForces + Jb + Jt;
-%         end
-%     end
+    if(~isempty(bend_twist_springs))
+        if(sim_params.TwoDsim)
+            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
+
+            Forces = Forces + Fb;
+            JForces = JForces + Jb;
+            %         Ft = zeros(n_DOF,1);
+            %         Jt= zeros(n_DOF,n_DOF);
+
+        else
+            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
+            [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
+
+            Forces = Forces + Fb + Ft;
+            JForces = JForces + Jb + Jt;
+        end
+    end
 
     if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)
@@ -88,12 +88,12 @@ while ~solved % % error > sim_params.tol
         Forces = Forces + Fg;
     end
 
-%     if ismember("viscous", env.ext_force_list) % Viscous forces
-%         [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
-% 
-%         Forces = Forces + Fv;
-%         JForces = JForces + Jv;
-%     end
+    if ismember("viscous", env.ext_force_list) % Viscous forces
+        [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+
+        Forces = Forces + Fv;
+        JForces = JForces + Jv;
+    end
 
     if ismember("aerodynamic", env.ext_force_list) % Aerodynamic drag
         [Fd, Jd] = getAerodynamicDrag(q,q0,sim_params.dt,env,MultiRod);
@@ -101,10 +101,10 @@ while ~solved % % error > sim_params.tol
         JForces = JForces + Jd;
     end
 
-%     if ismember("pointForce", env.ext_force_list) % Point force
-%         Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
-%         Forces = Forces + Fpt;
-%     end
+    if ismember("pointForce", env.ext_force_list) % Point force
+        Fpt = addPointForce(env.ptForce, env.ptForce_node, MultiRod);
+        Forces = Forces + Fpt;
+    end
 
     if(sim_params.static_sim) 
         f = - Forces; % Equations of motion
@@ -114,18 +114,18 @@ while ~solved % % error > sim_params.tol
         J = MultiRod.MassMat / sim_params.dt^2 - JForces; % Inertial Jacobian added
     end
 
-%     if ismember("selfContact", env.ext_force_list) % IMC
-%         [Fc, Jc, Ffr, Jfr, imc] = ...
-%             IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
-%         f = f - Fc - Ffr;
-%         J = J - Jc - Jfr;
-%     end
-% 
-%     if ismember("floorContact", env.ext_force_list) % floor contact
-%         [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
-%         f = f - Fc_floor - Ffr_floor;
-%         J = J - Jc_floor - Jfr_floor;
-%     end
+    if ismember("selfContact", env.ext_force_list) % IMC
+        [Fc, Jc, Ffr, Jfr, imc] = ...
+            IMC_new(imc, q, q0, MultiRod.edge_combos, iter, sim_params.dt, f, MultiRod.fixedDOF);
+        f = f - Fc - Ffr;
+        J = J - Jc - Jfr;
+    end
+
+    if ismember("floorContact", env.ext_force_list) % floor contact
+        [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
+        f = f - Fc_floor - Ffr_floor;
+        J = J - Jc_floor - Jfr_floor;
+    end
 
     f_free = f(freeIndex);
     J_free = J(freeIndex, freeIndex);
@@ -182,17 +182,17 @@ while ~solved % % error > sim_params.tol
     iter = iter + 1;
 
 end
-% a1 = a1_iter;
-% a2 = a2_iter;
+a1 = a1_iter;
+a2 = a2_iter;
 u = (q - q0) / sim_params.dt;
 
 %% update
 MultiRod.q=q;
 MultiRod.u=u;
-% MultiRod.a1=a1;
-% MultiRod.a2=a2;
-% % MultiRod.m1 = m1;
-% MultiRod.m2 = m2;
-% MultiRod.refTwist = refTwist_iter;
+MultiRod.a1=a1;
+MultiRod.a2=a2;
+MultiRod.m1 = m1;
+MultiRod.m2 = m2;
+MultiRod.refTwist = refTwist_iter;
 
 end
