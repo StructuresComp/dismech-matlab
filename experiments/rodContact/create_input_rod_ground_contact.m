@@ -1,13 +1,13 @@
 % create straight inclined rod input file
-n_nodes = 21;
+n_nodes = 41;
 start = [0,0,0];
-last = [0.5,0.25,0.5];
+last = [0.05,0.025,0.05];
 nodes = [linspace(start(1),last(1),n_nodes)' linspace(start(2),last(2),n_nodes)' linspace(start(3),last(3),n_nodes)' ];
 edges = zeros(n_nodes-1,2);
 for i=1:n_nodes-1
     edges(i,:) = [i,i+1];
 end
-filename = 'input_straight_inclined_21.txt';
+filename = 'input_straight_inclined_smaller_n41.txt';
 fid = fopen(filename,'w');
 if fid ~= -1
     fprintf(fid,'*rodNodes');

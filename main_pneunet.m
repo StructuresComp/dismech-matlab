@@ -183,7 +183,8 @@ end
 
 % % final position
 % filename = 'quarter_circle.xlsx';
-filename = 'quarter_circle_with_gravity.xlsx';
+filename = 'nat_curve_new.xlsx';
+% filename = 'deformed_new.xlsx';
 final_pos = MultiRod.q;
 
 writematrix(final_pos, filename, Sheet=1,Range='C1');

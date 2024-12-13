@@ -1,3 +1,4 @@
+close all
 FONT = 'Times New Roman'; % 'cmr12'
 FONTSIZE = 11;
 pWidth = 9; % inches
@@ -8,7 +9,7 @@ set(groot, 'DefaultLineLineWidth', 2);
 %% 
 
 filename1 = 'rod_contact2e6_data.xls';
-filename2 = 'rod_contact20e9_data.xls';
+filename2 = 'rod_contact2e9_data.xls';
 qs1 = readmatrix(filename1);
 qs2 = readmatrix(filename2);
 
@@ -38,27 +39,35 @@ axis tight;
 
 % Add dashed vertical lines at specific x-axis values
 
-time_to_mark = [0.318318, 0.430, 0.521, 0.610];
+time_to_mark = [0.1003, 0.1135, 0.1393, 0.2016, 0.3434, 0.4015];
 
 xline(time_to_mark(1), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 0
 xline(time_to_mark(2), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 0.1
 xline(time_to_mark(3), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 0.22
 xline(time_to_mark(4), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 1.025
+xline(time_to_mark(5), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 1.025
+xline(time_to_mark(6), '--', 'Color', 'k', 'LineWidth', 1.5); % Line at x = 1.025
+
+
 % Add labels for the vertical lines
 y_limits = ylim; % Get current y-axis limits
-text(time_to_mark(1), y_limits(2), '\bf{a,e}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+text(time_to_mark(1), y_limits(2), '\bf{a}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
-text(time_to_mark(2), y_limits(2), '\bf{b,f}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+text(time_to_mark(2), y_limits(2), '\bf{b}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
-text(time_to_mark(3), y_limits(2), '\bf{c,g}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+text(time_to_mark(3), y_limits(2), '\bf{c}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
-text(time_to_mark(4), y_limits(2), '\bf{d,h}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+text(time_to_mark(4), y_limits(2), '\bf{d}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+    'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
+text(time_to_mark(5), y_limits(2), '\bf{e}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
+    'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
+text(time_to_mark(6), y_limits(2), '\bf{f}', 'FontSize', FONTSIZE, 'Interpreter', 'latex', ...
     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
 
 box on
 xlabel('Simulation time, t [sec]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
 ylabel('Displacement, $\mathbf{x}$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
-AX = legend(["x (2 MPa)", "y (2 MPa)", "z (2 MPa)", "x (20 GPa)", " y (20 GPa)", "z (20 GPa)"], 'Location', 'east', 'Interpreter', 'latex');
+AX = legend(["x (2 MPa)", "y (2 MPa)", "z (2 MPa)", "x (2 GPa)", " y (2 GPa)", "z (2 GPa)"], 'Location', 'east', 'Interpreter', 'latex');
 LEG = findobj(AX,'type','text');
 set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
 set(gca,'Fontname', FONT,'FontSize',FONTSIZE);

@@ -4,9 +4,9 @@ df = load('rawDataRod.txt');
 n_nodes = MultiRod.n_nodes;
 rod_radius = 0.32;
 
-scaleFactor = 10;
+scaleFactor = 100;
 
-fileID = fopen('rodContactData_kc1000_2MPa.js', 'w');
+fileID = fopen('rodContactDataFinal_2GPa.js', 'w');
 
 fprintf(fileID, 'nNodes = %i; \n', n_nodes);
 fprintf(fileID, 'rodRadius=%d;\n', rod_radius);

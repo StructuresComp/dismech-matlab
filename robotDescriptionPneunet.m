@@ -23,7 +23,8 @@ sim_params.totalTime = sim_params.dt; % sec
 sim_params.plotStep = 1;
 
 %% Input text file 
-inputFileName = 'experiments/pneunet/input_straight_horizontal.txt';
+% inputFileName = 'experiments/pneunet/input_straight_horizontal.txt';
+inputFileName = 'experiments/pneunet/input_straight_horizontal_shorter.txt';
 
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -46,8 +47,8 @@ env.ext_force_list = ["gravity", "pointForce"];
 % environment parameters
 env.g = [0, 0, -9.81]';
 
-% environment.ptForce = [0, 0, 0];
-env.ptForce = [1.75, 0, 0.07]; % point force
+env.ptForce = [0, 0, 0];
+% env.ptForce = 100*[1.75, 0, 0.07]; % point force
 env.ptForce_node = size(rod_nodes,1);
 
 [environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
@@ -63,6 +64,9 @@ fixed_edge_indices = [1];
 input_log_node = size(rod_nodes,1);
 
 %% Plot dimensions
-sim_params.plot_x = [-1,1];
-sim_params.plot_y = [-1,1];
-sim_params.plot_z = [-1,1];
+% sim_params.plot_x = [-1,1];
+% sim_params.plot_y = [-1,1];
+% sim_params.plot_z = [-1,1];
+sim_params.plot_x = [-0.1,0.1];
+sim_params.plot_y = [-0.1,0.1];
+sim_params.plot_z = [-0.1,0.1];

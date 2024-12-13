@@ -46,7 +46,7 @@ if ismember("floorContact", env.ext_force_list)
     imc.floor_z = env.floor_z;
     imc.k_c_floor = env.contact_stiffness;
     imc.h = geom.rod_r0;
-    imc.delta_floor = 10*geom.rod_r0;
+    imc.delta_floor = 1*geom.rod_r0;
     imc.omega = 20; % # iters before jacobian for contact forces is used
     imc.scale = 1/imc.h;
 
