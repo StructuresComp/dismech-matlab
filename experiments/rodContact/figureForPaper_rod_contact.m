@@ -3,7 +3,7 @@ FONT = 'Times New Roman'; % 'cmr12'
 FONTSIZE = 11;
 pWidth = 9; % inches
 pHeight = 3;
-colpos = [247 148 30;0 166 81;237 28 36;0 174 239; 0 0 0]/255; % colors
+% colpos = [247 148 30;0 166 81;237 28 36;0 174 239; 0 0 0]/255; % colors
 set(groot, 'DefaultLineLineWidth', 2);
 
 %% 
@@ -24,14 +24,19 @@ current_pos_z_2 = qs2(:,4);
 
 h1 = figure(1);
 hold on;
-plot(time_arr, current_pos_x_1, ...
-     time_arr, current_pos_y_1, ...
-     time_arr, current_pos_z_1);
+% plot(time_arr, current_pos_x_1, ...
+%      time_arr, current_pos_y_1, ...
+%      time_arr, current_pos_z_1);
+% 
+% 
+% plot(time_arr, current_pos_x_2,'-.', ...
+%      time_arr, current_pos_y_2,'-.', ...
+%      time_arr, current_pos_z_2,'-.');
+
+plot(time_arr, current_pos_z_1);
 
 
-plot(time_arr, current_pos_x_2,'-.', ...
-     time_arr, current_pos_y_2,'-.', ...
-     time_arr, current_pos_z_2,'-.');
+plot(time_arr, current_pos_z_2,'-.', Color=[0.9290 0.6940 0.1250]);
 
 % title('time trajectory of the leading edge centerpoint')
 % Ensure axis limits are tight
@@ -66,8 +71,10 @@ text(time_to_mark(6), y_limits(2), '\bf{f}', 'FontSize', FONTSIZE, 'Interpreter'
 
 box on
 xlabel('Simulation time, t [sec]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
-ylabel('Displacement, $\mathbf{x}$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
-AX = legend(["x (2 MPa)", "y (2 MPa)", "z (2 MPa)", "x (2 GPa)", " y (2 GPa)", "z (2 GPa)"], 'Location', 'east', 'Interpreter', 'latex');
+ylabel('Displacement, $z$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
+AX = legend(["2 MPa", "2 GPa"], 'Location', 'east', 'Interpreter', 'latex');
+% AX = legend(["x (2 MPa)", "y (2 MPa)", "z (2 MPa)", "x (2 GPa)", " y (2 GPa)", "z (2 GPa)"], 'Location', 'east', 'Interpreter', 'latex');
+
 LEG = findobj(AX,'type','text');
 set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
 set(gca,'Fontname', FONT,'FontSize',FONTSIZE);

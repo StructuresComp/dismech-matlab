@@ -1,3 +1,4 @@
+close all
 FONT = 'Times New Roman'; % 'cmr12'
 FONTSIZE = 11;
 pWidth = 8; % inches
@@ -16,9 +17,10 @@ current_pos_y = qs(:,3);
 current_pos_z = qs(:,4)- qs(1,4).*ones(size(qs,1),1);
 
 h1 = figure(1);
-plot(time_arr, current_pos_x, ...
-     time_arr, current_pos_y, '--', ...
-     time_arr, current_pos_z);
+hold on;
+plot(time_arr, current_pos_x, Color=[0.8500 0.3250 0.0980]);
+plot(time_arr, current_pos_y, Color=[0.4660 0.6740 0.1880],LineStyle="--");
+plot(time_arr, current_pos_z, Color=[0 0.4470 0.7410]);
 
 % title('time trajectory of the leading edge centerpoint')
 % Ensure axis limits are tight
@@ -48,7 +50,7 @@ text(time_to_mark(5), y_limits(2), '\bf{e}', 'FontSize', FONTSIZE, 'Interpreter'
 
 box on
 xlabel('Simulation time, t [sec]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
-ylabel('Displacement, $\mathbf{x}$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
+ylabel('Displacement [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
 AX = legend(["x", "y", "z"], 'Location', 'best', 'Interpreter', 'latex');
 LEG = findobj(AX,'type','text');
 set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
@@ -56,3 +58,5 @@ set(gca,'Fontname', FONT,'FontSize',FONTSIZE);
 set(gcf, 'PaperUnits','inches', 'PaperPosition',[0 0 pWidth pHeight], ...
     'PaperSize', [pWidth pHeight]);
 saveas(h1, 'parachute_traj.pdf');
+
+hold off

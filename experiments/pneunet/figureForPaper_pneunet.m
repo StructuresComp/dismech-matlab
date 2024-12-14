@@ -36,17 +36,17 @@ for j=1:3
 end
 hold off
 
-list = ["$\mathbf{(a)} \bar{\kappa} = -0.0314$"];
+list = ["$\mathbf{(a)} \bar{\kappa} = 15.7$ m$^{-1}$"];
 for i=2:1:n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "$\mathbf{(b)} \bar{\kappa} = -0.0629$";
+list(end+1) = "$\mathbf{(b)} \bar{\kappa} = 31.45$ m$^{-1}$";
 for i=n_edges+2:1:2*n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "$\mathbf{(c)} \bar{\kappa} = -0.0943$";
+list(end+1) = "$\mathbf{(c)} \bar{\kappa} = 47.15$ m$^{-1}$";
 for i=2*n_edges+2:1:3*n_edges
     list(end+1) = "";
 end
@@ -99,17 +99,17 @@ for j=1:3
     end
 end
 
-list = ["$\mathbf{(a) } \bar{\kappa} = -0.0314 $"];
+list = ["$\mathbf{(a)} \bar{\kappa} = 15.7$ m$^{-1}$"];
 for i=2:1:n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "$\mathbf{(b) } \bar{\kappa} = -0.0629 $";
+list(end+1) = "$\mathbf{(b)} \bar{\kappa} = 31.45$ m$^{-1}$";
 for i=n_edges+2:1:2*n_edges
     list(end+1) = "";
 end
 
-list(end+1) = "$\mathbf{(c) } \bar{\kappa} = -0.0943 $";
+list(end+1) = "$\mathbf{(c)} \bar{\kappa} = 47.15$ m$^{-1}$";
 for i=2*n_edges+2:1:3*n_edges
     list(end+1) = "";
 end
@@ -117,7 +117,10 @@ axis tight
 box on
 xlabel('Node position, $x$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
 ylabel('Node position, $z$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE,'Interpreter', 'latex');
-AX = legend(list, 'Location','best','Interpreter', 'latex');
+% AX = legend(list, 'Location','south','Interpreter', 'latex');
+
+AX = legend(list, 'Location','none','Interpreter', 'latex', 'Position',[0.55 0.2 0.1 0.2]);
+
 LEG = findobj(AX,'type','text');
 set(LEG,'Fontname',FONT,'FontSize',FONTSIZE);
 set(gca,'Fontname', FONT,'FontSize',FONTSIZE);
