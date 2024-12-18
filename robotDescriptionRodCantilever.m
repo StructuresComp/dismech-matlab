@@ -1,7 +1,7 @@
 % input: robotDescription.m
 
 sim_params.static_sim = true;
-sim_params.TwoDsim = false;
+sim_params.TwoDsim = true;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;

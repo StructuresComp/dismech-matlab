@@ -40,6 +40,7 @@ for i=1:n_edges
     n2pos = q(mapNodetoDOF(n2));
     if(ismembc(i,MultiRod.fixed_edges))
         plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'r-');
+        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko');
     else
         plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko-');
     end

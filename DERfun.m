@@ -23,8 +23,10 @@ error0 = err;
 solved = false;
 while ~solved % % error > sim_params.tol
 
+    % intialize force and Jacobian
     Forces = zeros(n_DOF,1);
     JForces = zeros(n_DOF,n_DOF);
+
     %% prepare for iterations
     % Compute time parallel reference frame
     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
@@ -51,9 +53,6 @@ while ~solved % % error > sim_params.tol
 
             Forces = Forces + Fb;
             JForces = JForces + Jb;
-            %         Ft = zeros(n_DOF,1);
-            %         Jt= zeros(n_DOF,n_DOF);
-
         else
             [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
             [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
@@ -74,10 +73,6 @@ while ~solved % % error > sim_params.tol
         
     end
 
-%     % Add all elastic forces and jacobian
-%     Forces = Fs + Fb + Ft + Fb_shell;
-%     JForces = Js + Jb + Jt + Jb_shell;
-
     %% External force and Jacobian calculation
     if ismember("gravity",env.ext_force_list) % Gravity 
         if(sim_params.static_sim)
@@ -89,7 +84,7 @@ while ~solved % % error > sim_params.tol
     end
 
     if ismember("viscous", env.ext_force_list) % Viscous forces
-        [Fv,Jv] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+        [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
 
         Forces = Forces + Fv;
         JForces = JForces + Jv;
@@ -129,7 +124,7 @@ while ~solved % % error > sim_params.tol
 
     f_free = f(freeIndex);
     J_free = J(freeIndex, freeIndex);
-    Det_J = det(J_free); % to debug (takes very high values when the simulation starts to crash)
+    Det_J = det(J_free); % to debug
 
     % J\f solving
     if(Det_J==0 && sum(abs(f_free)) <= 1e-8) % if the force is zero and Jacobian is singular
@@ -152,7 +147,7 @@ while ~solved % % error > sim_params.tol
     q(freeIndex) = q(freeIndex) - alpha.*dq_free;
 
     % Error
-% %          error = sum(abs(f_free) );
+%     error = sum(abs(f_free) );
     err = norm(f_free) ;
     fprintf('Iter=%d, error=%f\n', iter, err);
 

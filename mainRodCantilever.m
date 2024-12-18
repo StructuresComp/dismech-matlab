@@ -107,6 +107,9 @@ softRobot.undef_refTwist = undef_refTwist;
 %% Boundary Conditions
 
 softRobot.fixed_nodes = fixed_node_indices;
+if(sim_params.TwoDsim)
+    fixed_edge_indices = [fixed_edge_indices, 1:softRobot.n_edges_dof]; % all rod thetas are fixed
+end
 softRobot.fixed_edges = fixed_edge_indices;
 [softRobot.fixedDOF, softRobot.freeDOF] = FindFixedFreeDOF(softRobot.fixed_nodes, softRobot.fixed_edges, softRobot.n_DOF, softRobot.n_nodes);
 
