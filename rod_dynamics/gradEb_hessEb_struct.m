@@ -55,9 +55,6 @@ tilde_d2 = (m2e + m2f) / chi; % 1x3 vector
 kappa1 = 0.5 * dot( kb, m2e + m2f); % scalar
 kappa2 = -0.5 * dot( kb, m1e + m1f); % scalar
 
-% kappa1 = kappa(c, 1);
-% kappa2 = kappa(c, 2);
-
 Dkappa1De = 1.0 / norm_e * (-kappa1 * tilde_t + cross(tf,tilde_d2));
 Dkappa1Df = 1.0 / norm_f * (-kappa1 * tilde_t - cross(te,tilde_d2));
 
@@ -93,58 +90,69 @@ tmp = cross(tf, tilde_d2);
 tf_c_d2t_o_tt = tmp' * tilde_t ; % must be 3x3
 tt_o_tf_c_d2t = tf_c_d2t_o_tt' ; % must be 3x3
 kb_o_d2e = kb' * m2e ; % must be 3x3
-d2e_o_kb = kb_o_d2e' ; % must be 3x3
+d2e_o_kb = kb_o_d2e' ; % must be 3x3 % not used in Panetta
 
 Id3 = eye(3);
+% Bergou 
 D2kappa1De2 ...
     = 1.0 / norm2_e * (2 * kappa1 * tt_o_tt - tf_c_d2t_o_tt - tt_o_tf_c_d2t) ...
     - kappa1 / (chi * norm2_e) * (Id3 - te'*te) ...
     + 1.0 / (4.0 * norm2_e) * (kb_o_d2e + d2e_o_kb);
+% Panetta
 
 tmp = cross(te, tilde_d2);
 te_c_d2t_o_tt = tmp' * tilde_t;
 tt_o_te_c_d2t = te_c_d2t_o_tt';
 kb_o_d2f = kb' * m2f;
-d2f_o_kb = kb_o_d2f';
+d2f_o_kb = kb_o_d2f'; % not used in Panetta
+tf_o_tf = tf'*tf;
 
+% Bergou
 D2kappa1Df2 ...
     = 1.0 / norm2_f * (2 * kappa1 * tt_o_tt + te_c_d2t_o_tt + tt_o_te_c_d2t) ...
-    - kappa1 / (chi * norm2_f) * (Id3 - tf'*tf) ...
+    - kappa1 / (chi * norm2_f) * (Id3 - tf_o_tf) ...
     + 1.0 / (4.0 * norm2_f) * (kb_o_d2f + d2f_o_kb);
+% Panetta
+
 
 D2kappa1DeDf ...
     = -kappa1/(chi * norm_e * norm_f) * (Id3 + te'*tf) ...
     + 1.0 / (norm_e*norm_f) * (2 * kappa1 * tt_o_tt - tf_c_d2t_o_tt + ...
     tt_o_te_c_d2t - crossMat(tilde_d2));
-D2kappa1DfDe = D2kappa1DeDf';
+D2kappa1DfDe = D2kappa1DeDf'; % check this (seems other way round)
 
 tmp = cross(tf, tilde_d1);
 tf_c_d1t_o_tt = tmp'*tilde_t; % must be 3x3
 tt_o_tf_c_d1t = tf_c_d1t_o_tt'; % must be 3x3
 kb_o_d1e = kb'*m1e; % must be 3x3
-d1e_o_kb = kb_o_d1e'; % must be 3x3
+d1e_o_kb = kb_o_d1e'; % must be 3x3 % not used in Panetta
 
+% Bergou
 D2kappa2De2 ...
     = 1.0 / norm2_e * (2 * kappa2 * tt_o_tt + tf_c_d1t_o_tt + tt_o_tf_c_d1t) ...
     - kappa2 / (chi * norm2_e) * (Id3 - te'*te) ...
     - 1.0 / (4.0 * norm2_e) * (kb_o_d1e + d1e_o_kb);
+% Panetta
 
 tmp = cross(te, tilde_d1);
 te_c_d1t_o_tt = tmp'*tilde_t; % must be 3x3
 tt_o_te_c_d1t = te_c_d1t_o_tt'; % must be 3x3
 kb_o_d1f = kb'*m1f; % must be 3x3
-d1f_o_kb =  kb_o_d1f'; % must be 3x3
+d1f_o_kb =  kb_o_d1f'; % must be 3x3 % not used in Panetta
 
+% Bergou
 D2kappa2Df2 ...
     = 1.0 / norm2_f * (2 * kappa2 * tt_o_tt - te_c_d1t_o_tt - tt_o_te_c_d1t) ...
     - kappa2 / (chi * norm2_f) * (Id3 - tf'*tf) ...
     - 1.0 / (4.0 * norm2_f) * (kb_o_d1f + d1f_o_kb); % must be 3x3
+% Panetta 
+
 
 D2kappa2DeDf ...
     = -kappa2/(chi * norm_e * norm_f) * (Id3 + te'*tf) ...
     + 1.0 / (norm_e*norm_f) * (2 * kappa2 * tt_o_tt + tf_c_d1t_o_tt - tt_o_te_c_d1t + crossMat(tilde_d1));
 % must be 3x3
-D2kappa2DfDe = D2kappa2DeDf'; % must be 3x3
+D2kappa2DfDe = D2kappa2DeDf'; % must be 3x3 % check this (seems other way round)
 
 D2kappa1Dthetae2 = -0.5 * dot(kb, m2e);
 D2kappa1Dthetaf2 = -0.5 * dot(kb, m2f);

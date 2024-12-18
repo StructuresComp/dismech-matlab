@@ -38,32 +38,40 @@ for i=1:n_edges
     n2 = edges(i,2);
     n1pos = q(mapNodetoDOF(n1));
     n2pos = q(mapNodetoDOF(n2));
+    plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko');
+
+    % fixed nodes are drawn in red
+    if(ismembc(n1, int64(MultiRod.fixed_nodes)))
+        plot3(n1pos(1), n1pos(2), n1pos(3),'ro');
+    end
+    if(ismembc(n2, int64(MultiRod.fixed_nodes)))
+        plot3(n2pos(1), n2pos(2), n2pos(3),'ro');
+    end
+
+    % fixed edges are drawn in red
     if(ismembc(i,MultiRod.fixed_edges))
         plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'r-');
-        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko');
     else
-        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko-');
+        plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'k-');
+
     end
 end
-plot3(MultiRod.Nodes(MultiRod.fixed_nodes,1), ...
-    MultiRod.Nodes(MultiRod.fixed_nodes,2), MultiRod.Nodes(MultiRod.fixed_nodes,3),'ro')
 
-
-% for c=1:n_edges_dof
-%     n1 = edges(c,1);
-%     n2 = edges(c,2);
-%     xa = q(mapNodetoDOF(n1));
-%     xb = q(mapNodetoDOF(n2));
-%     xp = (xa+xb)/2;
-%     p1 = plot3( [xp(1), xp(1) + a1(c,1)], [xp(2), xp(2) + a1(c,2)], ...
-%     [xp(3), xp(3) + a1(c,3)], 'b--', 'LineWidth', 2);
-%     p2 = plot3( [xp(1), xp(1) + a2(c,1)], [xp(2), xp(2) + a2(c,2)], ...
-%     [xp(3), xp(3) + a2(c,3)], 'c--', 'LineWidth', 2);
-%     p3 = plot3( [xp(1), xp(1) + m1(c,1)], [xp(2), xp(2) + m1(c,2)], ...
-%     [xp(3), xp(3) + m1(c,3)], 'r-');
-%     p4 = plot3( [xp(1), xp(1) + m2(c,1)], [xp(2), xp(2) + m2(c,2)], ...
-%     [xp(3), xp(3) + m2(c,3)], 'g-');
-% end
+for c=1:n_edges_dof
+    n1 = edges(c,1);
+    n2 = edges(c,2);
+    xa = q(mapNodetoDOF(n1));
+    xb = q(mapNodetoDOF(n2));
+    xp = (xa+xb)/2;
+    p1 = plot3( [xp(1), xp(1) + a1(c,1)], [xp(2), xp(2) + a1(c,2)], ...
+    [xp(3), xp(3) + a1(c,3)], 'b--', 'LineWidth', 2);
+    p2 = plot3( [xp(1), xp(1) + a2(c,1)], [xp(2), xp(2) + a2(c,2)], ...
+    [xp(3), xp(3) + a2(c,3)], 'c--', 'LineWidth', 2);
+    p3 = plot3( [xp(1), xp(1) + m1(c,1)], [xp(2), xp(2) + m1(c,2)], ...
+    [xp(3), xp(3) + m1(c,3)], 'r-');
+    p4 = plot3( [xp(1), xp(1) + m2(c,1)], [xp(2), xp(2) + m2(c,2)], ...
+    [xp(3), xp(3) + m2(c,3)], 'g-');
+end
 
 if(sim_params.showFloor)
     patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
