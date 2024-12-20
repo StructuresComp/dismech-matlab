@@ -27,6 +27,7 @@ sim_params.plotStep = 100;
 % inputFileName = 'experiments/rodContact/input_straight_inclined.txt';
 % inputFileName = 'experiments/rodContact/input_straight_inclined_21.txt';
 inputFileName = 'experiments/rodContact/input_straight_inclined_smaller_n21.txt';
+% inputFileName = 'experiments/rodContact/input_straight_horizontal_smaller_n2.txt';
 % reading the input text file
 [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
 
@@ -69,7 +70,7 @@ fixed_edge_indices = [];
 input_log_node = 1;
 
 %% initial conditions
-% u_init = [3:3:9; -1*ones(1,3)];
+% u_init = [2:3:size(rod_nodes,1)*3; 0.1*ones(1,size(rod_nodes,1))];
 
 %% Plot dimensions
 sim_params.plot_x = [-0.1,0.1];

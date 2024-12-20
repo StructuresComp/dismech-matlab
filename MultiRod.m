@@ -228,8 +228,6 @@ classdef MultiRod
                 else
                     dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
                 end
-                % dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
-                % dm = obj.voronoiRefLen(cNode) * geom.Axs * obj.rho;
                 ind = mapNodetoDOF(cNode);
                 m(ind) = m(ind) + dm * ones(3, 1);
             end

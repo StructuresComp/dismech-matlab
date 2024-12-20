@@ -14,6 +14,6 @@ if(isnan(f))
 assert(~isnan(f),'floor contact force is not real (NaN).');
 end
 Fgd = f * kc;
-J = (2*v * log(v + 1) + v) / ((v + 1)^2);
+J = (2*v * log(v + 1) + 2*v^2) / ((v + 1)^2);
 Jgd = J * kc;
 

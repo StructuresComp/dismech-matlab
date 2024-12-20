@@ -29,7 +29,7 @@ for i = 1:n_nodes
 
     f = f * contact_stiffness;
 
-    J = (2*v * log(v + 1) + v) / ((v + 1)^2);
+    J = (2*v * log(v + 1) + 2*v^2) / ((v + 1)^2);
     J = J * contact_stiffness;
 
     F_floorContact(ind) = F_floorContact(ind) - f; 
@@ -38,17 +38,17 @@ for i = 1:n_nodes
     if(floor_has_friction)
         curr_node = q(node_ind(1:2));
         pre_node = q0(node_ind(1:2));
-        [ffr, friction_type] = computeFloorFriction(curr_node, pre_node, f, mu, dt, velTol);
+        [ffr, friction_type] = computeFloorFriction(curr_node, pre_node, abs(f), mu, dt, velTol);
 
         if(friction_type=="ZeroVel") 
             continue;
         end
 
         idx = [node_ind(1), node_ind(2)];
-        F_floorFric (idx) = F_floorFric (idx) - ffr;
+        F_floorFric (idx) = F_floorFric (idx) + ffr;
 
-        Jfr = computeFloorFrictionJacobian(curr_node, pre_node, f, J, mu, dt, velTol, friction_type);
-        J_floorFric(idx,idx) = J_floorFric(idx,idx) - Jfr;
+        Jfr = computeFloorFrictionJacobian(curr_node, pre_node, abs(f), -J, mu, dt, velTol, friction_type);
+        J_floorFric(idx,idx) = J_floorFric(idx,idx) + Jfr;
 
     end
 

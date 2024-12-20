@@ -73,10 +73,6 @@ while ~success
         Forces = Forces + Fb_shell;
     end
 
-    % Add all elastic forces and jacobian
-%     Forces = Fs + Fb + Ft + Fb_shell;
-
-
     %% External force calculation
     
     if ismember("gravity",env.ext_force_list) % Gravity 
@@ -116,7 +112,8 @@ while ~success
     end
 
     if ismember("floorContact", env.ext_force_list) % floor contact
-        [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
+        % [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
+        [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force_custom_gd(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
         f = f - Fc_floor - Ffr_floor;
     end
 %%

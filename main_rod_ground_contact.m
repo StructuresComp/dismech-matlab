@@ -169,7 +169,7 @@ end
 [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps, sim_params.static_sim);
 
 %% logging node data
-filename = "rod_contact2e9_data.xls";
+filename = "rod_contact2e9_newest.xls";
 writematrix(time_arr', filename, Sheet=1,Range='A1');
 writematrix(current_pos_x, filename, Sheet=1,Range='B1');
 writematrix(current_pos_y, filename, Sheet=1,Range='C1');
@@ -179,5 +179,6 @@ writematrix(current_pos_z, filename, Sheet=1,Range='D1');
 figure()
 plot(time_arr,current_pos_x, time_arr, current_pos_y, time_arr, current_pos_z);
 title('time trajectory of the hanging mass')
+legend(['x'; 'y'; 'z'])
 xlabel('t [s]')
 ylabel('z [m]')

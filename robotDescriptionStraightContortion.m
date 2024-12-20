@@ -42,14 +42,14 @@ geom.rod_r0 = 0.001;
 % % geom cross section of rod
 b = 0.02;
 h = 0.001;
-geom.Axs = b*h;
-geom.Ixs = b*h^3/12;
-geom.Jxs = b*h^3/6;
-% geom.rod_r0 = h; % for contact
+% geom.Axs = b*h;
+% geom.Ixs = b*h^3/12;
+% geom.Jxs = b*h^3/6;
+geom.rod_r0 = h; % for contact
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e7; % not used
+material.youngs_rod = 2e6; % not used
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;

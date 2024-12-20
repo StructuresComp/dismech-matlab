@@ -117,7 +117,8 @@ while ~solved % % error > sim_params.tol
     end
 
     if ismember("floorContact", env.ext_force_list) % floor contact
-        [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
+        % [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
+        [Fc_floor,Jc_floor, Ffr_floor, Jfr_floor] = computeFloorContactAndFriction_custom_ground(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
         f = f - Fc_floor - Ffr_floor;
         J = J - Jc_floor - Jfr_floor;
     end

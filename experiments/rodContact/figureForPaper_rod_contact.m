@@ -8,8 +8,8 @@ set(groot, 'DefaultLineLineWidth', 2);
 
 %% 
 
-filename1 = 'rod_contact2e6_data.xls';
-filename2 = 'rod_contact2e9_data.xls';
+filename1 = 'rod_contact2e6_newest.xls';
+filename2 = 'rod_contact2e9_newest.xls';
 qs1 = readmatrix(filename1);
 qs2 = readmatrix(filename2);
 
