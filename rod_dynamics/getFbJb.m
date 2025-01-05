@@ -19,32 +19,22 @@ for c = 1:n_bend
     node0p = q(mapNodetoDOF(n0))';
     node1p = q(mapNodetoDOF(n1))';
     node2p = q(mapNodetoDOF(n2))';
-%     m1e = m1(e0,:);
-%     m2e = m2(e0,:);
-%     m1f = m1(e1,:);
-%     m2f = m2(e1,:);
 
     m1e = m1(e0,:);
     m2e = bend_twist_springs(c).sgn(1) * m2(e0,:);
     m1f = m1(e1,:);
     m2f = bend_twist_springs(c).sgn(2) * m2(e1,:);
-    %%
-
-    % m1e = bend_twist_springs(c).sgn(1) * m1(e0,:);
-    % m2e = bend_twist_springs(c).sgn(1) * m2(e0,:);
-    % m1f = bend_twist_springs(c).sgn(2) * m1(e1,:);
-    % m2f = bend_twist_springs(c).sgn(2) * m2(e1,:);
-    %%
-    % 
-    % m1e = bend_twist_springs(c).sgn(1) * m1(e0,:);
-    % m2e = m2(e0,:);
-    % m1f = bend_twist_springs(c).sgn(2) * m1(e1,:);
-    % m2f = m2(e1,:);
 %%
     ind = bend_twist_springs(c).ind; % Size 11
-% 
+
+    % Bergou
     [dF, dJ] = ...
     gradEb_hessEb_struct(n_DOF, ind, node0p, node1p, node2p, m1e, m2e, m1f, m2f, bend_twist_springs(c));
+
+    % Panetta
+%      [dF, dJ] = ...
+%     gradEb_hessEb_panetta(n_DOF, ind, node0p, node1p, node2p, m1e, m2e, m1f, m2f, bend_twist_springs(c));
+
 
     %% change sign of forces if the edges were flipped for alignment earlier
     if bend_twist_springs(c).sgn(1) ~= 1

@@ -21,7 +21,8 @@ classdef MultiRod
         faceA
         MassMat
         Fg
-        EI
+        EI1
+        EI2
         EA
         GJ
         ks
@@ -117,10 +118,12 @@ classdef MultiRod
                 obj.EA = Y_rod * pi * obj.r0^2;
             end
 
-            if isfield(geom, 'Ixs') && ~isempty(geom.Ixs)
-                obj.EI = Y_rod * geom.Ixs;
+            if isfield(geom, 'Ixs1') && ~isempty(geom.Ixs1) && isfield(geom, 'Ixs2') && ~isempty(geom.Ixs2)
+                obj.EI1 = Y_rod * geom.Ixs1;
+                obj.EI2 = Y_rod * geom.Ixs2;
             else
-                obj.EI = Y_rod * pi * obj.r0^4 / 4;
+                obj.EI1 = Y_rod * pi * obj.r0^4 / 4;
+                obj.EI2 = Y_rod * pi * obj.r0^4 / 4;
             end
 
             if isfield(geom, 'Jxs') && ~isempty(geom.Jxs)

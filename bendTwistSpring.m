@@ -17,17 +17,17 @@ classdef bendTwistSpring
     end
 
     methods
-        function obj = bendTwistSpring(nodes_edges_index, signs, kappaBar, refTwist, MultiRod, optional_stiffnesses)
+        function obj = bendTwistSpring(nodes_edges_index, signs, kappaBar, refTwist, MultiRod, optional_stiffnesses_EI, optional_stiffnesses_GJ)
             % Constructor to initialize a BendTwistSpring object
             
             if nargin > 5
-                obj.stiff_EI = optional_stiffnesses(1);
-                obj.stiff_GJ = optional_stiffnesses(2);
+                obj.stiff_EI = [optional_stiffnesses_EI(1), optional_stiffnesses_EI(2)];
+                obj.stiff_GJ = optional_stiffnesses_GJ;
             else
-                obj.stiff_EI = MultiRod.EI;
+                obj.stiff_EI = [MultiRod.EI1, MultiRod.EI2];
                 obj.stiff_GJ = MultiRod.GJ;
             end
-            
+
             n_nodes = MultiRod.n_nodes;
             
             % Extract node and edge indices from nodes_edges_index

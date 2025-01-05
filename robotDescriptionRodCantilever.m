@@ -38,14 +38,14 @@ inputFileName = 'experiments/rodCantilever/horizontal_rod_n51.txt';
 %% Input parameters
 % geometry parameters
 geom.shell_h = 0;
-geom.rod_r0 = 0.001;
+geom.rod_r0 = 0.001; % for contact
 % % geom cross section of rod
 b = 0.02;
 h = 0.001;
 geom.Axs = b*h;
-geom.Ixs = b*h^3/12;
+geom.Ixs1 = b*h^3/12;
+geom.Ixs2 = h*b^3/12;
 geom.Jxs = b*h^3/6;
-% geom.rod_r0 = h; % for contact
 
 % material parameters
 material.density = 1200;

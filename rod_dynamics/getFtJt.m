@@ -19,20 +19,20 @@ for c = 1:n_twist
     node0p = q(mapNodetoDOF(n0))';
     node1p = q(mapNodetoDOF(n1))';
     node2p = q(mapNodetoDOF(n2))';
-%     theta_e = q(mapEdgetoDOF(e0, n_nodes));
-%     theta_f = q(mapEdgetoDOF(e1, n_nodes));
 
     theta_e = bend_twist_springs(c).sgn(1) * q(mapEdgetoDOF(e0, n_nodes));
     theta_f = bend_twist_springs(c).sgn(2) * q(mapEdgetoDOF(e1, n_nodes));
 
     ind = bend_twist_springs(c).ind; % Size 11
 
-    % [dF, dJ] = ...
-    %     gradEt_hessEt_struct(n_DOF, ind, node0p, node1p, node2p, ...
-    %     theta_e, theta_f, refTwist(c), bend_twist_springs(c));
-[dF, dJ] = ...
+    % Bergou
+    [dF, dJ] = ...
         gradEt_hessEt_struct_new(n_DOF, ind, node0p, node1p, node2p, ...
         theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
+    % Panetta
+%     [dF, dJ] = ...
+%         gradEt_hessEt_panetta(n_DOF, ind, node0p, node1p, node2p, ...
+%         theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
 
     %% change sign of forces if the edges were flipped for alignment earlier
     if bend_twist_springs(c).sgn(1) ~= 1

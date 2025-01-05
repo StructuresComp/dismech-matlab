@@ -11,10 +11,10 @@ sim_params.logStep = 1;
 sim_params.log_data = true;
 
 % Time step
-sim_params.dt = 1e-3;
+sim_params.dt = 1e-2;
 
 % Maximum number of iterations in Newton Solver
-sim_params.maximum_iter = 25;
+sim_params.maximum_iter = 100;
 
 % Total simulation time
 if(sim_params.static_sim)
@@ -40,12 +40,12 @@ inputFileName = 'experiments/rodCantilever/horizontal_rod_n21.txt';
 geom.shell_h = 0;
 geom.rod_r0 = 0.001;
 % % geom cross section of rod
-b = 0.02;
-h = 0.001;
+% b = 0.02;
+% h = 0.001;
 % geom.Axs = b*h;
 % geom.Ixs = b*h^3/12;
 % geom.Jxs = b*h^3/6;
-geom.rod_r0 = h; % for contact
+% geom.rod_r0 = h; % for contact
 
 % material parameters
 material.density = 1200;
@@ -64,8 +64,8 @@ env.g = [0, 0, -9.81]';
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
-sim_params.ftol = 1e-4;
-sim_params.dtol = 1e-2;
+sim_params.ftol = 1e-10;
+sim_params.dtol = 1e-10;
 
 %% Boundary conditions
 fixed_node_indices = find(rod_nodes(:,1)<=0.01)';

@@ -10,7 +10,8 @@ function [dF] = ...
 
 kappaBar = bend_twist_spring.kappaBar;
 l_k = bend_twist_spring.voronoiLen;
-EI = bend_twist_spring.stiff_EI;
+EI1 = bend_twist_spring.stiff_EI(1);
+EI2 = bend_twist_spring.stiff_EI(2);
 %
 % Inputs:
 % node0: 1x3 vector - position of the node prior to the "turning" node
@@ -78,8 +79,8 @@ gradKappa(ind(10), 2) = -0.5 * dot(kb, m2e);
 gradKappa(ind(11), 2) = -0.5 * dot(kb, m2f);
 
 %% Gradient of Eb
-EIMat = [ EI 0; ...
-    0 EI];
+EIMat = [ EI1 0; ...
+    0 EI2];
 kappaVector = [kappa1 kappa2];
 dkappaVector = kappaVector - kappaBar;
 dF = gradKappa * EIMat * dkappaVector' / l_k;
