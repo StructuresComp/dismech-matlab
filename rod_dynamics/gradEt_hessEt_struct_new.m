@@ -81,5 +81,5 @@ dF = (GJ/l_k * integratedTwist) .* gradTwist;
 
 %% Hessian of Et
 dJ = GJ/l_k .* (integratedTwist .* DDtwist + gradTwist*gradTwist');
-
+dJ = dJ';
 end

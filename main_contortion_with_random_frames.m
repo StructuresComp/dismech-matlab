@@ -1,5 +1,6 @@
 clc
 clear all
+close all
 % add to path
 addpath util_functions/
 addpath contact_functions/
@@ -15,7 +16,7 @@ geom = struct();
 material = struct();
 environment = struct();
 
-robotDescriptionRodCantilever
+robotDescriptionStraightContortion
 
 [nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
@@ -84,14 +85,16 @@ else
 end
 
 %% Prepare system
-% Reference frame (Space parallel transport at t=0)
-softRobot = computeSpaceParallel(softRobot);
-% softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
-% for c=2:softRobot.n_edges_dof
-%     frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
-%     softRobot.a1(c,:) = frame(:,1);
-%     softRobot.a2(c,:) = frame(:,2);
-% end
+
+%% Reference frame (randomly intiitalize)
+% softRobot = computeSpaceParallel(softRobot);
+softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
+for c=2:softRobot.n_edges_dof
+    frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
+    softRobot.a1(c,:) = frame(:,1);
+    softRobot.a2(c,:) = frame(:,2);
+end
+
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle
@@ -123,8 +126,8 @@ softRobot.fixed_edges = fixed_edge_indices;
 plot_MultiRod(softRobot, 0.0, sim_params);
 
 %% initial conditions on velocity / angular velocity (if any)
-
-
+u0 = 0.1;
+w0 = 2;
 %% Time stepping scheme
 
 Nsteps = round(sim_params.totalTime/sim_params.dt);
@@ -142,6 +145,17 @@ for timeStep = 1:Nsteps
     if(sim_params.static_sim)
         environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
     end
+
+    % contorting moving BC
+    if(ctime<0.15)
+        softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) = softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) + u0*sim_params.dt.*ones(size(1:3:3*size(softRobot.fixed_nodes,2)/2,1));
+    else
+        for i=1:size(softRobot.fixed_edges,2)/2
+            softRobot.q0(mapEdgetoDOF(i,softRobot.n_nodes)) = softRobot.q0(mapEdgetoDOF(i,softRobot.n_nodes)) + w0*sim_params.dt;
+%         softRobot.q0(mapEdgetoDOF(2,softRobot.n_nodes)) = softRobot.q0(mapEdgetoDOF(2,softRobot.n_nodes)) + w0*sim_params.dt;
+        end
+    end
+
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
         tau_0 = updatePreComp_without_sign(softRobot.q, softRobot);

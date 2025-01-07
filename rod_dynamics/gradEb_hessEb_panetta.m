@@ -267,5 +267,5 @@ dF = gradKappa * EIMat * dkappaVector' / l_k;
 dJ = 1.0 / l_k * gradKappa * EIMat * transpose(gradKappa);
 temp = 1.0 / l_k * dkappaVector * EIMat;
 dJ = dJ + temp(1) * DDkappa1 + temp(2) * DDkappa2;
-
+dJ = dJ';
 end

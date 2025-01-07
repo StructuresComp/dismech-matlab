@@ -9,9 +9,10 @@ sim_params.floor_present = false;
 sim_params.showFloor = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
+sim_params.bergou_DER = true;
 
 % Time step
-sim_params.dt = 1e-2;
+sim_params.dt = 1e-3;
 
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 100;

@@ -58,6 +58,7 @@ env.ext_force_list = ["gravity"];
 %% initial configuration (non-zero init curvature)
 rod_nodes = rand(3,3);
 twist_angles = rand(2,1);
+% twist_angles = [0;0];
 
 rod_edges = [1,2; 2,3];
 
@@ -141,10 +142,12 @@ q = softRobot.q;
 
 %%
 [Fb, Jb, bend_twist_springs] = getFbJb(softRobot, bend_twist_springs, softRobot.q, m1, m2);
+[Ft, Jt, bend_twist_springs] = getFtJt(softRobot, bend_twist_springs, softRobot.q, refTwist); % twisting
 
 
 change = 1e-8;
 Jb_FDM = zeros(11,11);
+Jt_FDM = zeros(11,11);
 
 for c = 1:softRobot.n_DOF
     q_change = q;
@@ -165,16 +168,19 @@ for c = 1:softRobot.n_DOF
     Fb_change = getFb(softRobot, bend_twist_springs, q_change, m1, m2);
     Jb_FDM(c,:) = (Fb_change - Fb) .* (1/change);
 
+    Ft_change = getFt(softRobot, bend_twist_springs, q_change, refTwist); % twisting
+    Jt_FDM(c,:) = (Ft_change - Ft) .* (1/change);
+
 end
 
-Jb_FDM = Jb_FDM'; % why this?
-
+% Jb_FDM = Jb_FDM'; % why this?
+% Jt_FDM = Jt_FDM'; % why this?
 % diff_grad = gradE_FDM - gradE
 % diff_hess = hessE_FDM - hessE
 % 
 % %%
 % 
-h1 = figure();
+figure(2);
 plot( reshape(Jb, [121,1]), 'ro');
 hold on
 plot( reshape(Jb_FDM, [121,1]), 'b^');
@@ -182,3 +188,14 @@ hold off
 legend('Analytical', 'Finite Difference');
 xlabel('Index');
 ylabel('Hessian');
+title('Bending hessian')
+
+figure(3);
+plot( reshape(Jt, [121,1]), 'ro');
+hold on
+plot( reshape(Jt_FDM, [121,1]), 'b^');
+hold off
+legend('Analytical', 'Finite Difference');
+xlabel('Index');
+ylabel('Hessian');
+title('Twisting hessian')

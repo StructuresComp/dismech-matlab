@@ -49,13 +49,13 @@ while ~solved % % error > sim_params.tol
 
     if(~isempty(bend_twist_springs))
         if(sim_params.TwoDsim)
-            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
+            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
 
             Forces = Forces + Fb;
             JForces = JForces + Jb;
         else
-            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
-            [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
+            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+            [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
 
             Forces = Forces + Fb + Ft;
             JForces = JForces + Jb + Jt;

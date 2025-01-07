@@ -68,7 +68,7 @@ tilde_t = (te + tf) / chi;
 % panetta
 D2mDe2 = -0.5 / norm2_e * ( kb' * (te + tilde_t) ...
     + 2.0 / chi * crossMat(tf));
-D2mDf2 = -0.5 / norm2_f  * ( kb' * (tf + tilde_t) ...
+D2mDf2 = -0.5 / norm2_f * ( kb' * (tf + tilde_t) ...
     - 2.0 / chi * crossMat(te));
 D2mDeDf = 0.5 / ( norm_e * norm_f ) * ( 2.0 / chi * crossMat( te ) - ...
     kb' * tilde_t );
@@ -91,5 +91,5 @@ dF = (GJ/l_k * integratedTwist) .* gradTwist;
 
 %% Hessian of Et
 dJ = GJ/l_k .* (integratedTwist .* DDtwist + gradTwist*gradTwist');
-
+dJ = dJ';
 end

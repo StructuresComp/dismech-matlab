@@ -1,4 +1,4 @@
-function [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist)
+function [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist, sim_params)
 global bug 
 
 n_DOF = MultiRod.n_DOF;
@@ -25,14 +25,24 @@ for c = 1:n_twist
 
     ind = bend_twist_springs(c).ind; % Size 11
 
-    % Bergou
-    [dF, dJ] = ...
-        gradEt_hessEt_struct_new(n_DOF, ind, node0p, node1p, node2p, ...
-        theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
-    % Panetta
-%     [dF, dJ] = ...
-%         gradEt_hessEt_panetta(n_DOF, ind, node0p, node1p, node2p, ...
-%         theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
+    if(isfield(sim_params, 'bergou_DER') )
+        if(sim_params.bergou_DER)
+            % Bergou
+            [dF, dJ] = ...
+                gradEt_hessEt_struct_new(n_DOF, ind, node0p, node1p, node2p, ...
+                theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
+        else
+            % Panetta
+            [dF, dJ] = ...
+                gradEt_hessEt_panetta(n_DOF, ind, node0p, node1p, node2p, ...
+                theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
+        end
+    else
+        % Panetta
+        [dF, dJ] = ...
+            gradEt_hessEt_panetta(n_DOF, ind, node0p, node1p, node2p, ...
+            theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
+    end
 
     %% change sign of forces if the edges were flipped for alignment earlier
     if bend_twist_springs(c).sgn(1) ~= 1
