@@ -86,10 +86,10 @@ end
 
 %% Prepare system
 
-%% Reference frame (randomly intiitalize)
+%% Reference frame (randomly inititalize)
 % softRobot = computeSpaceParallel(softRobot);
 softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
-for c=2:softRobot.n_edges_dof
+for c=1:softRobot.n_edges_dof
     frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
     softRobot.a1(c,:) = frame(:,1);
     softRobot.a2(c,:) = frame(:,2);
@@ -126,7 +126,7 @@ softRobot.fixed_edges = fixed_edge_indices;
 plot_MultiRod(softRobot, 0.0, sim_params);
 
 %% initial conditions on velocity / angular velocity (if any)
-u0 = 0.1;
+u0 = 0.05;
 w0 = 2;
 %% Time stepping scheme
 
@@ -136,7 +136,7 @@ current_pos = zeros(Nsteps,1);
 time_arr = linspace(0,sim_params.totalTime,Nsteps);
 
 log_node = input_log_node;
-current_pos(1) = softRobot.q0(3*log_node);
+current_pos(1) = softRobot.q0(3*log_node-2);
 
 dof_with_time = zeros(softRobot.n_DOF+1,Nsteps);
 dof_with_time(1,:) = time_arr;
@@ -147,7 +147,7 @@ for timeStep = 1:Nsteps
     end
 
     % contorting moving BC
-    if(ctime<0.15)
+    if(ctime<0.2)
         softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) = softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) + u0*sim_params.dt.*ones(size(1:3:3*size(softRobot.fixed_nodes,2)/2,1));
     else
         for i=1:size(softRobot.fixed_edges,2)/2
@@ -173,7 +173,7 @@ for timeStep = 1:Nsteps
     softRobot.q0 = softRobot.q;
 
     % log values
-    current_pos(timeStep) = softRobot.q0(3*log_node);
+    current_pos(timeStep) = softRobot.q0(3*log_node-2);
 
     if(sim_params.log_data)
         if mod(timeStep, sim_params.logStep) == 0

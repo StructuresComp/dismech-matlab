@@ -9,10 +9,10 @@ sim_params.floor_present = false;
 sim_params.showFloor = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
-sim_params.bergou_DER = true;
+sim_params.bergou_DER = 1;
 
 % Time step
-sim_params.dt = 1e-3;
+sim_params.dt = 1e-2;
 
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 100;
@@ -26,7 +26,7 @@ else
 end
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
-sim_params.plotStep = 10;
+sim_params.plotStep = 1;
 
 %% Input text file 
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n26.txt';
@@ -80,7 +80,7 @@ for i=1:size(rod_edges,1)
 end
 
 %% logging
-input_log_node = size(rod_nodes,1);
+input_log_node = 1;
 
 %% Plot dimensions
 sim_params.plot_x = [0,0.1];

@@ -85,13 +85,13 @@ end
 
 %% Prepare system
 % Reference frame (Space parallel transport at t=0)
-softRobot = computeSpaceParallel(softRobot);
-% softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
-% for c=2:softRobot.n_edges_dof
-%     frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
-%     softRobot.a1(c,:) = frame(:,1);
-%     softRobot.a2(c,:) = frame(:,2);
-% end
+% softRobot = computeSpaceParallel(softRobot);
+softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
+for c=1:softRobot.n_edges_dof
+    frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
+    softRobot.a1(c,:) = frame(:,1);
+    softRobot.a2(c,:) = frame(:,2);
+end
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle

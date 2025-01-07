@@ -28,6 +28,7 @@ end
 sim_params.plotStep = 1;
 
 %% Input text file 
+% inputFileName = 'experiments/rodCantilever/horizontal_rod_n3.txt';
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n26.txt';
 inputFileName = 'experiments/rodCantilever/horizontal_rod_n51.txt';
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n101.txt';
