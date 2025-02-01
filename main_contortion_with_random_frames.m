@@ -1,4 +1,4 @@
-clc
+% clc
 clear all
 close all
 % add to path
@@ -94,7 +94,9 @@ for c=1:softRobot.n_edges_dof
     softRobot.a1(c,:) = frame(:,1);
     softRobot.a2(c,:) = frame(:,2);
 end
-
+% load('random_frame_trial.mat')
+% softRobot.a1 = a1;
+% softRobot.a2 = a2;
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle

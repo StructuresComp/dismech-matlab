@@ -19,6 +19,7 @@ sim_params.floor_present = false;
 sim_params.showFloor = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
+sim_params.bergou_DER = 0;
 
 % Time step
 sim_params.dt = 1e-2;
@@ -94,7 +95,13 @@ else
 end
 %% Prepare system
 % Reference frame (Space parallel transport at t=0)
-softRobot = computeSpaceParallel(softRobot);
+% softRobot = computeSpaceParallel(softRobot);
+softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
+for c=1:softRobot.n_edges_dof
+    frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
+    softRobot.a1(c,:) = frame(:,1);
+    softRobot.a2(c,:) = frame(:,2);
+end
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle
@@ -141,8 +148,11 @@ q = softRobot.q;
     [m1, m2] = computeMaterialDirectors(a1,a2,theta);
 
 %%
-[Fb, Jb, bend_twist_springs] = getFbJb(softRobot, bend_twist_springs, softRobot.q, m1, m2);
-[Ft, Jt, bend_twist_springs] = getFtJt(softRobot, bend_twist_springs, softRobot.q, refTwist); % twisting
+[Fb, Jb, bend_twist_springs] = getFbJb(softRobot, bend_twist_springs, softRobot.q, m1, m2, sim_params);
+[Ft, Jt, bend_twist_springs] = getFtJt(softRobot, bend_twist_springs, softRobot.q, refTwist, sim_params); % twisting
+
+%% Trial
+% [Fb_trial, Jb_trial, Ft_trial, Jt_trial, Jb_FDM_trial, Jt_FDM_trial, bend_twist_springs] = getFbJb_FtJt_and_FDM(softRobot, bend_twist_springs, softRobot.q, m1, m2, refTwist, sim_params);
 
 
 change = 1e-8;
@@ -158,7 +168,7 @@ for c = 1:softRobot.n_DOF
 
     % Compute reference twist
     tangent = computeTangent(softRobot, q_change);
-    refTwist = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, refTwist);
+    refTwist_change = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, refTwist);
 
     % Compute material frame
     theta = q_change(3*n_nodes + 1 : 3*n_nodes + softRobot.n_edges_dof);
@@ -168,7 +178,7 @@ for c = 1:softRobot.n_DOF
     Fb_change = getFb(softRobot, bend_twist_springs, q_change, m1, m2);
     Jb_FDM(c,:) = (Fb_change - Fb) .* (1/change);
 
-    Ft_change = getFt(softRobot, bend_twist_springs, q_change, refTwist); % twisting
+    Ft_change = getFt(softRobot, bend_twist_springs, q_change, refTwist_change); % twisting
     Jt_FDM(c,:) = (Ft_change - Ft) .* (1/change);
 
 end
@@ -180,7 +190,11 @@ end
 % 
 % %%
 % 
-figure(2);
+
+%%
+
+figure(10);
+subplot(2,1,1)
 plot( reshape(Jb, [121,1]), 'ro');
 hold on
 plot( reshape(Jb_FDM, [121,1]), 'b^');
@@ -190,7 +204,7 @@ xlabel('Index');
 ylabel('Hessian');
 title('Bending hessian')
 
-figure(3);
+subplot(2,1,2)
 plot( reshape(Jt, [121,1]), 'ro');
 hold on
 plot( reshape(Jt_FDM, [121,1]), 'b^');
@@ -199,3 +213,24 @@ legend('Analytical', 'Finite Difference');
 xlabel('Index');
 ylabel('Hessian');
 title('Twisting hessian')
+%%
+% figure(20);
+% subplot(2,1,1)
+% plot( reshape(Jb_trial, [121,1]), 'ro');
+% hold on
+% plot( reshape(Jb_FDM_trial, [121,1]), 'b^');
+% hold off
+% legend('Analytical', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Hessian');
+% title('Bending hessian')
+% 
+% subplot(2,1,2)
+% plot( reshape(Jt_trial, [121,1]), 'ro');
+% hold on
+% plot( reshape(Jt_FDM_trial, [121,1]), 'b^');
+% hold off
+% legend('Analytical', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Hessian');
+% title('Twisting hessian')

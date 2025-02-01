@@ -49,13 +49,36 @@ while ~solved % % error > sim_params.tol
 
     if(~isempty(bend_twist_springs))
         if(sim_params.TwoDsim)
-            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+            if(isfield(sim_params, 'FDM'))
+                if(sim_params.FDM)
+                    [Fb, Jb, ~,~, ~,~, bend_twist_springs] = getFbJb_FtJt_and_FDM(MultiRod, bend_twist_springs, q, m1, m2, refTwist_iter, sim_params); % bending (rod)          
+                else
+                    [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+                end
+            else
+
+                [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+            end
 
             Forces = Forces + Fb;
             JForces = JForces + Jb;
         else
-            [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
-            [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
+
+            if(isfield(sim_params, 'FDM'))
+                if(sim_params.FDM)
+                    [Fb, Jb, Ft, Jt, Jb_FDM, Jt_FDM, bend_twist_springs] = getFbJb_FtJt_and_FDM(MultiRod, bend_twist_springs, q, m1, m2, refTwist_iter, sim_params); % bending (rod)          
+                else
+                    [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+                    [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
+                end
+            else
+                [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+                [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
+
+            end
+
+            % [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
+            % [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
 
             Forces = Forces + Fb + Ft;
             JForces = JForces + Jb + Jt;

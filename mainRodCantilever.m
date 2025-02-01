@@ -86,6 +86,7 @@ end
 %% Prepare system
 % Reference frame (Space parallel transport at t=0)
 % softRobot = computeSpaceParallel(softRobot);
+
 softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
 for c=1:softRobot.n_edges_dof
     frame = randomOrthonormalFrame(softRobot.tangent(c,:)');

@@ -41,20 +41,24 @@ for i=1:n_edges
     plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko');
 
     % fixed nodes are drawn in red
+    if(~isempty(MultiRod.fixed_nodes))
     if(ismembc(n1, int64(MultiRod.fixed_nodes)))
         plot3(n1pos(1), n1pos(2), n1pos(3),'ro');
     end
     if(ismembc(n2, int64(MultiRod.fixed_nodes)))
         plot3(n2pos(1), n2pos(2), n2pos(3),'ro');
     end
+    end
 
     % fixed edges are drawn in red
+    % if(~isempty(MultiRod.fixed_edges))
     if(ismembc(i,MultiRod.fixed_edges))
         plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'r-');
     else
         plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'k-');
 
     end
+    % end
 end
 
 for c=1:n_edges_dof

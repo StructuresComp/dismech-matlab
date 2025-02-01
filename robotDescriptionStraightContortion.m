@@ -9,7 +9,8 @@ sim_params.floor_present = false;
 sim_params.showFloor = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
-sim_params.bergou_DER = 1;
+sim_params.bergou_DER = 0;
+sim_params.FDM = 1;
 
 % Time step
 sim_params.dt = 1e-2;

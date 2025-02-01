@@ -3,7 +3,7 @@ FONT = 'Times New Roman';
 FONTSIZE = 12;
 pWidth = 4; % inches
 pHeight = 3;
-
+set(groot, 'DefaultLineLineWidth', 1);
 % Data from the table
 YoungsModulus = [5e10, 2e10, 1e10, 5e9, 2e9, 1e9, 5e8, 2e8, 1e8, 5e7, 2e7, 1e7];
 EB = [-2.3168e-05, -5.7927e-05, -1.15854e-04, -2.3168e-04, -5.7927e-04, -1.15854e-03, -2.3168e-03,-5.7927e-03, -1.15854e-02, -2.3168e-02, -5.7927e-02, -1.15854e-01];
@@ -59,7 +59,7 @@ grid on;
 
 % Labels, legend, and formatting
 xlabel('Young''s Modulus, E [Pa]', 'Fontname', FONT, 'FontSize', FONTSIZE,'Interpreter', 'latex');
-ylabel('Diffrence in Deflection, $e$ [m]', 'Fontname', FONT, 'FontSize', FONTSIZE,'Interpreter', 'latex');
+ylabel('Difference in Deflection, $e$ [m]', 'Fontname', FONT, 'FontSize', FONTSIZE,'Interpreter', 'latex');
 AX = legend( 'DER', 'Hinge Shell', 'Mid-edge Shell', 'Location', 'Best','Interpreter', 'latex');
 LEG = findobj(AX, 'type', 'text');
 set(LEG, 'Fontname', FONT, 'FontSize', FONTSIZE);

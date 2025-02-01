@@ -8,8 +8,8 @@ set(groot, 'DefaultLineLineWidth', 2);
 
 %% 
 
-filename1 = 'rod_contact2e6_newest.xls';
-filename2 = 'rod_contact2e9_newest.xls';
+filename1 = 'rod_contact2e6_data.xls';
+filename2 = 'rod_contact2e9_data.xls';
 qs1 = readmatrix(filename1);
 qs2 = readmatrix(filename2);
 
@@ -72,7 +72,7 @@ text(time_to_mark(6), y_limits(2), '\bf{f}', 'FontSize', FONTSIZE, 'Interpreter'
 box on
 xlabel('Simulation time, t [sec]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
 ylabel('Displacement, $z$ [m]', 'Fontname',FONT,'FontSize',FONTSIZE, 'Interpreter', 'latex');
-AX = legend(["2 MPa", "2 GPa"], 'Location', 'east', 'Interpreter', 'latex');
+AX = legend(["E = 2 MPa", "E = 2 GPa"], 'Location', 'east', 'Interpreter', 'latex');
 % AX = legend(["x (2 MPa)", "y (2 MPa)", "z (2 MPa)", "x (2 GPa)", " y (2 GPa)", "z (2 GPa)"], 'Location', 'east', 'Interpreter', 'latex');
 
 LEG = findobj(AX,'type','text');
