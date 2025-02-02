@@ -48,10 +48,11 @@ env.Cd = 10;
 
 % inputFileName = 'experiments/parachute/triangle_parachute_n4_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
-inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
+% inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
+inputFileName = 'experiments/parachute/Copy_of_hexparachute_n6_python.txt';
 
 % reading the input text file
-[rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Tolerance on force function. 
 

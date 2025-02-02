@@ -60,11 +60,11 @@ FileName = strcat(mesh_types(mesh_type), '_mesh_', num2str(mesh_dense_nos(mesh_d
 inputFileName = strcat('experiments/shellCantilever/', FileName);
 
 % reading the input text file
-[rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
 
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
+    = createGeometry(nodes, rod_edges, rod_shell_joint_edges, face_nodes);
 
 %% Tolerance on force function. 
 
@@ -73,7 +73,7 @@ sim_params.ftol = 1e-4;
 sim_params.dtol = 1e-2;
 
 %% Boundary conditions
-fixed_node_indices = find(shell_nodes(:,1)<=0.01)';
+fixed_node_indices = find(nodes(:,1)<=0.01)';
 fixed_edge_indices = [];
 
 for i=1:size(edges,1)
@@ -84,11 +84,11 @@ end
 
 %% logging
 
-p = find(shell_nodes(:,1)==0.1)';
+p = find(nodes(:,1)==0.1)';
 if (isempty(p))
-    p = find(shell_nodes(1,:)>0.1);
+    p = find(nodes(1,:)>0.1);
 end
-Nodes_p = [shell_nodes(p,:)';p];
+Nodes_p = [nodes(p,:)';p];
 input_log_node = Nodes_p(4,find(Nodes_p(2,:) == 0));
 
 if (isempty(input_log_node))

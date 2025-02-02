@@ -3,7 +3,6 @@ classdef MultiRod
         n_nodes
         n_edges
         n_faces
-        n_rod_nodes
         n_edges_rod_only
         n_edges_shell_only
         n_edges_dof
@@ -51,8 +50,7 @@ classdef MultiRod
     end
     
     methods
-        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, sim_params, environment)
-
+        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, sim_params, environment)
             % Declare local vars to store important parameters
             obj.r0 = geom.rod_r0;
             obj.h = geom.shell_h;
@@ -63,10 +61,7 @@ classdef MultiRod
             obj.nu_shell = material.poisson_shell;
             
             % Node and edge counts
-            n_rod_nodes = size(rod_nodes,1);
-            n_shell_nodes = size(shell_nodes,1);
-            obj.n_nodes = n_rod_nodes + n_shell_nodes;
-            obj.n_rod_nodes = n_rod_nodes;
+            obj.n_nodes = size(Nodes,1);
             n_rod_edges = size(rod_edges,1);
             n_shell_edges = size(shell_edges,1);
             n_edges_rod_shell_joint_total = size(rod_shell_joint_total_edges,1);

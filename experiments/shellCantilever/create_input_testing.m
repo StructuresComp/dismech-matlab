@@ -44,7 +44,7 @@ for i=1:10
 
         fid = fopen(filename,'w');
         if fid ~= -1
-            fprintf(fid,'*shellNodes');
+            fprintf(fid,'*Nodes');
             fclose(fid);
         end
         writematrix(Nodes',filename, 'WriteMode','append')

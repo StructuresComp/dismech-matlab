@@ -1,8 +1,8 @@
 function [rod_data,shell_data] = logDataForRendering(dof_with_time, MultiRod, Nsteps, static_sim)
-
+n_rod_nodes = length(unique(MultiRod.Edges));
 if(static_sim)
-    rod_data = zeros(MultiRod.n_rod_nodes,4);
-    for j=1:MultiRod.n_rod_nodes
+    rod_data = zeros(n_rod_nodes,4);
+    for j=1:n_rod_nodes
         rod_data(j,:) = [dof_with_time(1,end), dof_with_time(1+mapNodetoDOF(j),end)'];
     end
 
@@ -22,10 +22,10 @@ if(static_sim)
     return;
 end
 
-rod_data = zeros(MultiRod.n_rod_nodes*Nsteps,4);
+rod_data = zeros(n_rod_nodes*Nsteps,4);
 for i=1:Nsteps
-    for j=1:MultiRod.n_rod_nodes
-        rod_data((i-1)*MultiRod.n_rod_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
+    for j=1:n_rod_nodes
+        rod_data((i-1)*n_rod_nodes+j,:) = [dof_with_time(1,i), dof_with_time(1+mapNodetoDOF(j),i)'];
     end
 end
 

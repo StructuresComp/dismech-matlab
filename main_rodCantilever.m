@@ -17,9 +17,9 @@ environment = struct();
 
 robotDescriptionRodCantilever
 
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
+    = createGeometry(nodes, rod_edges, rod_shell_joint_edges, face_nodes);
 
 n_nodes = size(nodes,1);
 n_edges = size(edges,1);
@@ -32,7 +32,7 @@ twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
 
 %% Create the soft robot structure
 softRobot = MultiRod(geom, material, twist_angles,...
-    nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
+    nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
     face_nodes, sign_faces, face_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting springs
@@ -85,14 +85,7 @@ end
 
 %% Prepare system
 % Reference frame (Space parallel transport at t=0)
-% softRobot = computeSpaceParallel(softRobot);
-
-softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
-for c=1:softRobot.n_edges_dof
-    frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
-    softRobot.a1(c,:) = frame(:,1);
-    softRobot.a2(c,:) = frame(:,2);
-end
+softRobot = computeSpaceParallel(softRobot);
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle

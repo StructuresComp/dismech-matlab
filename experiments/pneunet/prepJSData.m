@@ -1,5 +1,5 @@
 
-df = load('rawData.txt');
+df = load('rawDataRod.txt');
 
 n_nodes = MultiRod.n_nodes;
 rod_radius = 0.32;

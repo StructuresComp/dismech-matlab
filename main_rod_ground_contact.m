@@ -11,9 +11,9 @@ addpath logging/
 robotDescriptionRodContact
 
 % create geometry
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
+    = createGeometry(nodes, rod_edges, rod_shell_joint_edges, face_nodes);
 
 n_nodes = size(nodes,1);
 n_edges = size(edges,1);
@@ -26,7 +26,7 @@ twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
 
 %% Create the soft robot structure
 MultiRod = MultiRod(geom, material, twist_angles,...
-    nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
+    nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
     face_nodes, sign_faces, face_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting springs

@@ -27,7 +27,7 @@ sim_params.plotStep = 1;
 inputFileName = 'experiments/pneunet/input_straight_horizontal_shorter.txt';
 
 % reading the input text file
-[rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Input parameters
 % geometry parameters
@@ -49,7 +49,7 @@ env.g = [0, 0, -9.81]';
 
 env.ptForce = [0, 0, 0];
 % env.ptForce = 100*[1.75, 0, 0.07]; % point force
-env.ptForce_node = size(rod_nodes,1);
+env.ptForce_node = size(nodes,1);
 
 [environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 %% Tolerance on force function. 
@@ -61,7 +61,7 @@ sim_params.dtol = 1e-2;
 %% Boundary conditions
 fixed_node_indices = [1,2];
 fixed_edge_indices = [1];
-input_log_node = size(rod_nodes,1);
+input_log_node = size(nodes,1);
 
 %% Plot dimensions
 % sim_params.plot_x = [-1,1];

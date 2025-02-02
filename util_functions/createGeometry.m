@@ -15,18 +15,16 @@
 % Sign face edges
 % tau
 
-function [Nodes, Edges,rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_edges_total, face_nodes, face_edges, ...
-    rod_stretch_springs, shell_stretch_springs, bend_twist_springs, bend_twist_signs, hinges, sign_faces, face_unit_norms] = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes)
+function [Nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_edges_total, face_nodes, face_edges, ...
+    rod_stretch_springs, shell_stretch_springs, bend_twist_springs, bend_twist_signs, hinges, sign_faces, face_unit_norms] = createGeometry(nodes, rod_edges, rod_shell_joint_edges, face_nodes)
 
-n_rod_nodes = size(rod_nodes,1);
-n_shell_nodes = size(shell_nodes,1);
-n_nodes = n_rod_nodes + n_shell_nodes;
+n_nodes = size(nodes,1);
 n_rod_edges = size(rod_edges,1);
 n_rod_shell_joints = size(rod_shell_joint_edges,1);
 n_edges = n_rod_edges + n_rod_shell_joints;
 n_faces = size(face_nodes,1);
 
-Nodes = [rod_nodes; shell_nodes];
+Nodes = nodes;
 %% shell related computations
 % Each elements is a triangle -> 
 % node'k'_number gives the node id no. which is
@@ -42,7 +40,7 @@ Nodes = [rod_nodes; shell_nodes];
 
 nEdges=3*n_faces; % actual no. of edges is less than 3*numElements
 shell_edge_index=1;
-shell_edges=zeros(nEdges,2);
+shell_edges=int64(zeros(nEdges,2));
 hinge_index=1;
 hinges=zeros(nEdges,4);
 third_node=zeros(nEdges,1);

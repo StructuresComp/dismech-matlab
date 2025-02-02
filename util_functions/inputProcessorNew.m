@@ -1,6 +1,6 @@
 % Khalid Jawed, khalidjm@seas.ucla.edu
 
-function [rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, faceNodes] = inputProcessorNew(inputFileName)
+function [nodes, rod_edges, rod_shell_joint_edges, faceNodes] = inputProcessorNew(inputFileName)
 
 % fid = fopen('input.txt', 'r');
 fid = fopen(inputFileName, 'r');
@@ -8,13 +8,9 @@ fid = fopen(inputFileName, 'r');
 tline = fgetl(fid);
 typeSpec = '';
 
-% Container for rod nodes
-rod_nodes = [];
-rod_nodeNo = 0;
-
-% Container for shell nodes
-shell_nodes = [];
-shell_nodeNo = 0;
+% Container for nodes
+nodes = [];
+nodeNo = 0;
 
 % Container for rod edges
 rod_edges = [];
@@ -50,16 +46,16 @@ while ischar(tline)
         
         if numel(dataLine) == 0
             % do nothing
-        elseif strcmp('*rodnodes', typeSpec) == true
+        elseif strcmp('*nodes', typeSpec) == true
             
             if numel(dataLine) ~= 3
                 fprintf('Warning. Invalid input for rodNodes.\n');
             else
-                rod_nodeNo = rod_nodeNo + 1;
+                nodeNo = nodeNo + 1;
                 node1 = str2double( dataLine{1} );
                 node2 = str2double( dataLine{2} );
                 node3 = str2double( dataLine{3} );
-                rod_nodes = [rod_nodes; node1, node2, node3];
+                nodes = [nodes; node1, node2, node3];
             end
             
         elseif strcmp('*rodedges', typeSpec) == true
@@ -85,17 +81,17 @@ while ischar(tline)
                 faceNodes = [faceNodes; node1, node2, node3];
             end
             
-        elseif strcmp('*shellnodes', typeSpec) == true
-            
-            if numel(dataLine) ~= 3
-                fprintf('Warning. Invalid input for shellNodes.\n');
-            else
-                shell_nodeNo = shell_nodeNo + 1;
-                node1 = str2double( dataLine{1} );
-                node2 = str2double( dataLine{2} );
-                node3 = str2double( dataLine{3} );
-                shell_nodes = [shell_nodes; node1, node2, node3];
-            end
+        % elseif strcmp('*shellnodes', typeSpec) == true
+        % 
+        %     if numel(dataLine) ~= 3
+        %         fprintf('Warning. Invalid input for shellNodes.\n');
+        %     else
+        %         shell_nodeNo = shell_nodeNo + 1;
+        %         node1 = str2double( dataLine{1} );
+        %         node2 = str2double( dataLine{2} );
+        %         node3 = str2double( dataLine{3} );
+        %         shell_nodes = [shell_nodes; node1, node2, node3];
+        %     end
                   
      
         elseif strcmp('*rodshelljointedges', typeSpec) == true
