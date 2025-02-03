@@ -27,7 +27,7 @@ sim_params.plotStep = 1;
 inputFileName = 'experiments/pneunet/input_straight_horizontal_shorter.txt';
 
 % reading the input text file
-[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Input parameters
 % geometry parameters

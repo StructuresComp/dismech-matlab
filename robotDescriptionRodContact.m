@@ -29,8 +29,7 @@ sim_params.plotStep = 100;
 inputFileName = 'experiments/rodContact/input_straight_inclined_smaller_n21.txt';
 % inputFileName = 'experiments/rodContact/input_straight_horizontal_smaller_n2.txt';
 % reading the input text file
-[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
-
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 %% Input parameters
 % geometry parameters
 geom.rod_r0 = 1e-3;

@@ -1,6 +1,6 @@
 % Khalid Jawed, khalidjm@seas.ucla.edu
 
-function [nodes, rod_edges, rod_shell_joint_edges, faceNodes] = inputProcessorNew(inputFileName)
+function [nodes, edges, faceNodes] = inputProcessorNew(inputFileName)
 
 % fid = fopen('input.txt', 'r');
 fid = fopen(inputFileName, 'r');
@@ -13,12 +13,8 @@ nodes = [];
 nodeNo = 0;
 
 % Container for rod edges
-rod_edges = [];
+edges = [];
 rod_edgeNo = 0;
-
-% Container for rod shell joint edges
-rod_shell_joint_edges = [];
-rod_shell_jointNo = 0;
 
 % Container for face_nodes
 faceNodes = [];
@@ -66,7 +62,7 @@ while ischar(tline)
                 rod_edgeNo = rod_edgeNo + 1;
                 edge1 = int64( str2double( dataLine{1} ) );
                 edge2 = int64( str2double( dataLine{2} ) );
-                rod_edges = [rod_edges; edge1, edge2];
+                edges = [edges; edge1, edge2];
             end
 
         elseif strcmp('*facenodes', typeSpec) == true
@@ -81,29 +77,6 @@ while ischar(tline)
                 faceNodes = [faceNodes; node1, node2, node3];
             end
             
-        % elseif strcmp('*shellnodes', typeSpec) == true
-        % 
-        %     if numel(dataLine) ~= 3
-        %         fprintf('Warning. Invalid input for shellNodes.\n');
-        %     else
-        %         shell_nodeNo = shell_nodeNo + 1;
-        %         node1 = str2double( dataLine{1} );
-        %         node2 = str2double( dataLine{2} );
-        %         node3 = str2double( dataLine{3} );
-        %         shell_nodes = [shell_nodes; node1, node2, node3];
-        %     end
-                  
-     
-        elseif strcmp('*rodshelljointedges', typeSpec) == true
-            
-            if numel(dataLine) ~= 2
-                fprintf('Warning. Invalid input for elStretchShell.\n');
-            else
-                rod_shell_jointNo = rod_shell_jointNo + 1;
-                node1 = int64( str2double( dataLine{1} ) );
-                node2 = int64( str2double( dataLine{2} ) );
-                rod_shell_joint_edges = [rod_shell_joint_edges; node1, node2];
-            end
                     
         end
     end

@@ -35,7 +35,7 @@ inputFileName = 'experiments/rodCantilever/horizontal_rod_n21.txt';
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n101.txt';
 
 % reading the input text file
-[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Input parameters
 % geometry parameters
@@ -74,8 +74,8 @@ fixed_node_indices = find(nodes(:,1)<=0.01)';
 fixed_node_indices = [fixed_node_indices, find(nodes(:,1)>=0.09)'];
 fixed_edge_indices = [];
 
-for i=1:size(rod_edges,1)
-    if ( ismember(rod_edges(i,1),fixed_node_indices) && ismember(rod_edges(i,2),fixed_node_indices) )
+for i=1:size(edges,1)
+    if ( ismember(edges(i,1),fixed_node_indices) && ismember(edges(i,2),fixed_node_indices) )
         fixed_edge_indices = [fixed_edge_indices, i];
     end
 end

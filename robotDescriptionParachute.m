@@ -52,7 +52,7 @@ env.Cd = 10;
 inputFileName = 'experiments/parachute/Copy_of_hexparachute_n6_python.txt';
 
 % reading the input text file
-[nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Tolerance on force function. 
 

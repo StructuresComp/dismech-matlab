@@ -17,10 +17,9 @@ environment = struct();
 robotDescriptionStingray
 
 % create geometry
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
-
+    = createGeometry(nodes, edges, face_nodes);
 
 n_edges_rod_only = size(rod_edges,1);
 n_edges_rod_shell = size(rod_shell_joint_edges,1);

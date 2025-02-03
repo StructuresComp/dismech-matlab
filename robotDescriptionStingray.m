@@ -52,7 +52,7 @@ inputFileName = 'experiments/stingRay/curve_input/stingray_n10_python.txt'; % ch
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n15_python.txt'; % choose
 
 % reading the input text file
-[rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
 %% Tolerance on force function. 
 

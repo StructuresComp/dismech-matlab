@@ -60,12 +60,12 @@ FileName = strcat(mesh_types(mesh_type), '_mesh_', num2str(mesh_dense_nos(mesh_d
 inputFileName = strcat('experiments/squarePlate/', FileName);
 
 % reading the input text file
-[rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes] = inputProcessorNew(inputFileName);
+[nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+% create geometry
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
-
+    = createGeometry(nodes, edges, face_nodes);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
@@ -73,10 +73,10 @@ sim_params.ftol = 1e-4;
 sim_params.dtol = 1e-2;
 
 %% Boundary conditions
-fixed_node_indices_bound1 = find(shell_nodes(:,1)==0)';
-fixed_node_indices_bound2 = find(shell_nodes(:,2)==0)';
-fixed_node_indices_bound3 = find(shell_nodes(:,1)==0.1)';
-fixed_node_indices_bound4 = find(shell_nodes(:,2)==0.1)';
+fixed_node_indices_bound1 = find(nodes(:,1)==0)';
+fixed_node_indices_bound2 = find(nodes(:,2)==0)';
+fixed_node_indices_bound3 = find(nodes(:,1)==0.1)';
+fixed_node_indices_bound4 = find(nodes(:,2)==0.1)';
 
 fixed_node_indices = [fixed_node_indices_bound1, fixed_node_indices_bound2, fixed_node_indices_bound3, fixed_node_indices_bound4];
 

@@ -15,16 +15,17 @@
 % Sign face edges
 % tau
 
-function [Nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_edges_total, face_nodes, face_edges, ...
-    rod_stretch_springs, shell_stretch_springs, bend_twist_springs, bend_twist_signs, hinges, sign_faces, face_unit_norms] = createGeometry(nodes, rod_edges, rod_shell_joint_edges, face_nodes)
+function [nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_edges_total, face_nodes, face_edges, ...
+    rod_stretch_springs, shell_stretch_springs, bend_twist_springs, bend_twist_signs, hinges, sign_faces, face_unit_norms] = createGeometry(nodes, edges, face_nodes)
+
+% find the rod-shell joint edges
+[rod_shell_joint_edges, rod_edges] = separate_joint_edges(face_nodes, edges);
 
 n_nodes = size(nodes,1);
 n_rod_edges = size(rod_edges,1);
 n_rod_shell_joints = size(rod_shell_joint_edges,1);
 n_edges = n_rod_edges + n_rod_shell_joints;
 n_faces = size(face_nodes,1);
-
-Nodes = nodes;
 %% shell related computations
 % Each elements is a triangle -> 
 % node'k'_number gives the node id no. which is
@@ -62,9 +63,9 @@ for c=1:n_faces
     node1_number = face_nodes(c,1);
     node2_number = face_nodes(c,2);
     node3_number = face_nodes(c,3);
-    node1_position = Nodes(node1_number,:);
-    node2_position = Nodes(node2_number,:);
-    node3_position = Nodes(node3_number,:);
+    node1_position = nodes(node1_number,:);
+    node2_position = nodes(node2_number,:);
+    node3_position = nodes(node3_number,:);
     
     % face normal calculation:
     face_normal = cross(([node2_position]-[node1_position]),([node3_position]-[node1_position]));
