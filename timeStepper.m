@@ -1,5 +1,5 @@
 function [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = ...
-    DERfun (MultiRod, stretch_springs, bend_twist_springs, hinge_springs, tau_0, env, imc, sim_params)
+    timeStepper (MultiRod, stretch_springs, bend_twist_springs, hinge_springs, tau_0, env, imc, sim_params)
 
 % create local variables in function to store the struct values
 n_nodes=MultiRod.n_nodes;

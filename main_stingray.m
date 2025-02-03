@@ -147,7 +147,7 @@ for timeStep = 1:Nsteps
     hinge_springs = actuateThetaBar(hinge_springs, sorted_center_hinges, ctime);
     %%  DER error iteration
     [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = ...
-        DERfun(MultiRod, stretch_springs, bend_twist_springs, hinge_springs, tau_0,environment,imc,sim_params);
+        timeStepper(MultiRod, stretch_springs, bend_twist_springs, hinge_springs, tau_0,environment,imc,sim_params);
 
     ctime = ctime + sim_params.dt
     
