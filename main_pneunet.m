@@ -107,6 +107,9 @@ MultiRod.undef_refTwist = undef_refTwist;
 %% Boundary Conditions
 
 MultiRod.fixed_nodes = fixed_node_indices;
+if(sim_params.TwoDsim)
+    fixed_edge_indices = [fixed_edge_indices, 1:MultiRod.n_edges_dof]; % all rod thetas are fixed
+end
 MultiRod.fixed_edges = fixed_edge_indices;
 [MultiRod.fixedDOF, MultiRod.freeDOF] = FindFixedFreeDOF(MultiRod.fixed_nodes, MultiRod.fixed_edges, MultiRod.n_DOF, MultiRod.n_nodes);
 

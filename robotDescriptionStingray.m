@@ -64,7 +64,7 @@ sim_params.dtol = 1e-2;
 fixed_node_indices = [];
 fixed_edge_indices = [];
 
-[~,input_log_node] = ismember([0,0.5,0],shell_nodes,"rows");
+[~,input_log_node] = ismember([0,0.5,0],nodes,"rows");
 
 %% Plot dimensions
 sim_params.plot_x = [-1,1];
