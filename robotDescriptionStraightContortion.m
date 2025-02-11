@@ -5,8 +5,7 @@ sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = true;
 sim_params.logStep = 1;
 sim_params.log_data = true;
 sim_params.bergou_DER = 0;
@@ -41,13 +40,6 @@ inputFileName = 'experiments/rodCantilever/horizontal_rod_n21.txt';
 % geometry parameters
 geom.shell_h = 0;
 geom.rod_r0 = 0.001;
-% % geom cross section of rod
-% b = 0.02;
-% h = 0.001;
-% geom.Axs = b*h;
-% geom.Ixs = b*h^3/12;
-% geom.Jxs = b*h^3/6;
-% geom.rod_r0 = h; % for contact
 
 % material parameters
 material.density = 1200;
@@ -62,7 +54,6 @@ env.ext_force_list = ["gravity"];
 % environment parameters
 env.g = [0, 0, -9.81]';
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
@@ -73,12 +64,6 @@ sim_params.dtol = 1e-10;
 fixed_node_indices = find(nodes(:,1)<=0.01)';
 fixed_node_indices = [fixed_node_indices, find(nodes(:,1)>=0.09)'];
 fixed_edge_indices = [];
-
-for i=1:size(edges,1)
-    if ( ismember(edges(i,1),fixed_node_indices) && ismember(edges(i,2),fixed_node_indices) )
-        fixed_edge_indices = [fixed_edge_indices, i];
-    end
-end
 
 %% logging
 input_log_node = 1;

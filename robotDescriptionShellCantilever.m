@@ -5,8 +5,7 @@ sim_params.TwoDsim = false;
 sim_params.use_midedge = true; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
 
@@ -24,7 +23,7 @@ else
     sim_params.totalTime = 0.8; % sec
 end
 
-% How often the plot should be saved? (Set plotStep to 1 to show each plot)
+% How often the plot should be shown? (Set plotStep to 1 to show each plot)
 sim_params.plotStep = 1;
 
 %% Input parameters
@@ -45,14 +44,12 @@ env.ext_force_list = ["gravity"];
 % environment parameters
 env.g = [0, 0, -9.81]';
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
-
 %% Input text file 
 mesh_dense_nos = [20,25,30,35,40,45,50,55,60,65];
 mesh_types = ["equilateral" , "random" , "right" , "eq_algn"]; % type of mesh
 
 % choose
-mesh_dense = 5;
+mesh_dense = 1;
 mesh_type = 1;
 
 
@@ -61,11 +58,6 @@ inputFileName = strcat('experiments/shellCantilever/', FileName);
 
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
-
-% create geometry
-[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
-    elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(nodes, edges, face_nodes);
 
 %% Tolerance on force function. 
 
@@ -76,12 +68,6 @@ sim_params.dtol = 1e-2;
 %% Boundary conditions
 fixed_node_indices = find(nodes(:,1)<=0.01)';
 fixed_edge_indices = [];
-
-for i=1:size(edges,1)
-    if ( ismember(edges(i,1),fixed_node_indices) && ismember(edges(i,2),fixed_node_indices) )
-        fixed_edge_indices = [fixed_edge_indices, i];
-    end
-end
 
 %% logging
 
@@ -97,6 +83,6 @@ if (isempty(input_log_node))
 end
 
 %% Plot dimensions
-sim_params.plot_x = [0,0.1];
+sim_params.plot_x = [0,0.15];
 sim_params.plot_y = [-0.05,0.05];
 sim_params.plot_z = [-0.05,0.05];

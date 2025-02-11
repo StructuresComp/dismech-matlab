@@ -5,8 +5,7 @@ sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
 
@@ -42,14 +41,12 @@ env.g = [0, 0, -9.81]';
 env.rho = 1;
 env.Cd = 10;
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
-
 %% Input text file 
 
 % inputFileName = 'experiments/parachute/triangle_parachute_n4_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
-% inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
-inputFileName = 'experiments/parachute/Copy_of_hexparachute_n6_python.txt';
+inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
+% inputFileName = 'experiments/parachute/Copy_of_hexparachute_n6_python.txt';
 
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);

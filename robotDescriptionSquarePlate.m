@@ -1,12 +1,9 @@
-% input: robotDescription.m
-
 sim_params.static_sim = true;
 sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
 
@@ -42,17 +39,15 @@ material.poisson_shell = 0.3;
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 env.ext_force_list = ["gravity"]; 
 
-% % environment parameters
-% env.g = [0, 0, -9.81]';
-
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
+% environment parameters
+env.g = [0, 0, -9.81]';
 
 %% Input text file 
 mesh_dense_nos = [4, 20,25,30,35,40,45,50,55,60,65];
 mesh_types = ["equilateral" , "random" , "right" , "eq_algn"]; % type of mesh
 
 % choose
-mesh_dense = 4;
+mesh_dense = 1;
 mesh_type = 2;
 
 
@@ -62,10 +57,6 @@ inputFileName = strcat('experiments/squarePlate/', FileName);
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 
-% create geometry
-[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
-    elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(nodes, edges, face_nodes);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
@@ -78,15 +69,8 @@ fixed_node_indices_bound2 = find(nodes(:,2)==0)';
 fixed_node_indices_bound3 = find(nodes(:,1)==0.1)';
 fixed_node_indices_bound4 = find(nodes(:,2)==0.1)';
 
-fixed_node_indices = [fixed_node_indices_bound1, fixed_node_indices_bound2, fixed_node_indices_bound3, fixed_node_indices_bound4];
-
+fixed_node_indices = unique([fixed_node_indices_bound1, fixed_node_indices_bound2, fixed_node_indices_bound3, fixed_node_indices_bound4]);
 fixed_edge_indices = [];
-
-for i=1:size(edges,1)
-    if ( ismember(edges(i,1),fixed_node_indices) && ismember(edges(i,2),fixed_node_indices) )
-        fixed_edge_indices = [fixed_edge_indices, i];
-    end
-end
 
 %% logging
 

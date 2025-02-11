@@ -4,14 +4,13 @@ sim_params.static_sim = false;
 sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge or hinge for shell bending
 sim_params.use_lineSearch = true; % turn on linesearch to help with convergence (esp. in contact rich scenarios)
-sim_params.floor_present = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 sim_params.dt = 1e-3; % sec % Time step
 sim_params.maximum_iter = 50; % Maximum number of iterations in Newton Solver
 sim_params.totalTime = 5; % sec % Total simulation time (it exits after t=totalTime)
-sim_params.plotStep = 100; % How often the plot should be saved? (Set plotStep to 1 to show each plot)
+sim_params.plotStep = 100; % How often the plot should be shown? (Set plotStep to 1 to show each plot)
 
 %% Input parameters
 % geometry parameters
@@ -40,9 +39,6 @@ env.Cd = 0.3;
 %% better motion
 material.youngs_shell = 6e9; % stiffer
 env.Cd = 0.5; % higher drag
-
-%%
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 
 %% Input text file 
 % inputFileName = 'experiments/stingRay/curve_input/stingray_n4_python.txt'; % choose

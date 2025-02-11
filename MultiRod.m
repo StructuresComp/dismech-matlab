@@ -237,8 +237,6 @@ classdef MultiRod
                 else
                     dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
                 end
-                % dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
-                % dm = obj.refLen(cEdge) * geom.Axs * obj.rho;
                 ind = mapEdgetoDOF(cEdge, obj.n_nodes);
                 m(ind) = dm / 2 * obj.r0^2;  % I = 1/2 m r^2
             end
@@ -246,13 +244,6 @@ classdef MultiRod
             massMat = diag(m);
         end
 
-%         function W = calculateWeightVector(obj,g)
-%             W = zeros(size(obj.MassMat, 1), 1);
-%             for cNode = 1:obj.n_nodes
-%                 ind = mapNodetoDOF(cNode);
-%                 W(ind) = diag(obj.MassMat(ind, ind)) .* g;
-%             end
-%         end
 
         function [init_ts, init_fs, init_cs, init_xis] = initialCurvatureMidedge(obj)
 

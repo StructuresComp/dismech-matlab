@@ -5,10 +5,9 @@ sim_params.TwoDsim = true;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
 sim_params.log_data = true;
 sim_params.logStep = 1;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 
 % Time step
 sim_params.dt = 1e-3;
@@ -51,7 +50,6 @@ env.ptForce = [0, 0, 0];
 % env.ptForce = 100*[1.75, 0, 0.07]; % point force
 env.ptForce_node = size(nodes,1);
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;

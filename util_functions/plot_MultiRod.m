@@ -1,9 +1,5 @@
-function plot_MultiRod(MultiRod, ctime, sim_params, optional_floor_z)
-if(nargin>3)
-    floor_z = optional_floor_z;
-else
-    floor_z = 0;
-end
+function plot_MultiRod(MultiRod, ctime, sim_params, environment,imc)
+
 n_nodes=MultiRod.n_nodes;
 q=MultiRod.q;
 edges = MultiRod.Edges;
@@ -60,7 +56,7 @@ for i=1:n_edges
     end
     % end
 end
-
+if(sim_params.showFrames)
 for c=1:n_edges_dof
     n1 = edges(c,1);
     n2 = edges(c,2);
@@ -76,9 +72,14 @@ for c=1:n_edges_dof
     p4 = plot3( [xp(1), xp(1) + m2(c,1)], [xp(2), xp(2) + m2(c,2)], ...
     [xp(3), xp(3) + m2(c,3)], 'g-');
 end
+    legend([p1,p2,p3,p4], 'a_1','a_2','m_1','m_2');
+end
 
-if(sim_params.showFloor)
-    patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1])
+if(isfield(environment, 'showFloor'))
+    if(environment.showFloor)
+        floor_z = imc.floor_z;
+        patch([5 -5 -5 5], [5 5 -5 -5], [floor_z floor_z floor_z floor_z], [1 1 1 1]);
+    end
 end
 hold off
 title(num2str(ctime, 't=%f'));
@@ -90,9 +91,7 @@ view(3); % isometric view
 xlabel('x');
 ylabel('y');
 zlabel('z');
-if(n_edges_dof)
-    % legend([p1,p2,p3,p4], 'a_1','a_2','m_1','m_2');
-end
+
 drawnow
 
 end

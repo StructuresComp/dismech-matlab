@@ -5,12 +5,11 @@ sim_params.TwoDsim = true;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = false;
 sim_params.logStep = 1;
 sim_params.log_data = true;
 sim_params.bergou_DER = 0;
-sim_params.FDM = 1;
+sim_params.FDM = 0;
 
 % Time step
 sim_params.dt = 1e-2;
@@ -63,7 +62,6 @@ env.ext_force_list = ["gravity"];
 % environment parameters
 env.g = [0, 0, -9.81]';
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
@@ -73,12 +71,6 @@ sim_params.dtol = 1e-2;
 %% Boundary conditions
 fixed_node_indices = find(nodes(:,1)<=0.01)';
 fixed_edge_indices = [];
-
-for i=1:size(edges,1)
-    if ( ismember(edges(i,1),fixed_node_indices) && ismember(edges(i,2),fixed_node_indices) )
-        fixed_edge_indices = [fixed_edge_indices, i];
-    end
-end
 
 %% logging
 input_log_node = size(nodes,1);

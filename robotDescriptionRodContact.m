@@ -5,10 +5,9 @@ sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = true;
-sim_params.floor_present = true;
 sim_params.log_data = true;
 sim_params.logStep = 10;
-sim_params.showFloor = true;
+sim_params.showFrames = false;
 
 % Time step
 sim_params.dt = 1e-4;
@@ -23,11 +22,8 @@ sim_params.totalTime = 1; % sec
 sim_params.plotStep = 100;
 
 %% Input text file 
-% inputFileName = 'experiments/rodContact/new_input_for_contact.txt';
-% inputFileName = 'experiments/rodContact/input_straight_inclined.txt';
-% inputFileName = 'experiments/rodContact/input_straight_inclined_21.txt';
 inputFileName = 'experiments/rodContact/input_straight_inclined_smaller_n21.txt';
-% inputFileName = 'experiments/rodContact/input_straight_horizontal_smaller_n2.txt';
+
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
 %% Input parameters
@@ -43,7 +39,6 @@ material.poisson_rod = 0.3;
 material.poisson_shell = 0.5;
 % 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
-% env.ext_force_list = ["gravity", "floorContact", "floorFriction", "selfContact", "selfFriction"]; 
 env.ext_force_list = ["gravity", "floorContact", "floorFriction"]; 
 
 % environment parameters
@@ -55,8 +50,6 @@ env.velTol = 1e-2;
 material.contact_stiffness = 100;
 material.mu = 0.25;
 
-[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
-
 %% Tolerance on force function. 
 
 sim_params.tol = 1e-4;
@@ -64,7 +57,7 @@ sim_params.ftol = 1e-4;
 sim_params.dtol = 1e-2;
 
 %% Boundary conditions
-fixed_node_indices = []; % [4,6]
+fixed_node_indices = [];
 fixed_edge_indices = [];
 input_log_node = 1;
 

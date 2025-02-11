@@ -49,6 +49,7 @@ if ismember("floorContact", env.ext_force_list)
     imc.delta_floor = 1*geom.rod_r0;
     imc.omega = 20; % # iters before jacobian for contact forces is used
     imc.scale = 1/imc.h;
+    environment.showFloor = true;
 
     if ismember("floorFriction", env.ext_force_list)
         imc.floor_has_friction = true;
