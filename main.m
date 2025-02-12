@@ -10,13 +10,11 @@ addpath external_forces/
 addpath logging/
 
 % % Examples:
-% robotDescriptionRodCantilever
+robotDescriptionRodCantilever
 % robotDescriptionShellCantilever
 % robotDescriptionParachute
 % robotDescriptionRodContact
 % robotDescriptionSquarePlate
-
-robotDescriptionRodCantilever
 
 % create geometry
 [nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...

@@ -38,9 +38,5 @@ else
 end
 imc.C= C;
 imc.k_c = k_c;
-% 
-% if(iter>=omega)
-% iter
-% end
 
 end

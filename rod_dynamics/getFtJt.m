@@ -1,5 +1,4 @@
 function [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist, sim_params)
-global bug 
 
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
@@ -60,20 +59,6 @@ for c = 1:n_twist
     Ft(ind) = Ft(ind) - dF(ind);
     Jt(ind, ind) = Jt(ind, ind) - dJ(ind, ind);
 
-    %% to debug
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end
-    for j=1:numel(dF)
-        if (dJ(i,j)~= 0 && (~find(ind==i) || ~find(ind==j)))
-            fprintf("Bug: dJ getting changed at wrong indices")
-            bug=1;
-        end
-    end
-
-    end
     %% update spring forces in the spring structs
     bend_twist_springs(c).dFt = dF(ind);
     bend_twist_springs(c).dJt = dJ(ind, ind);

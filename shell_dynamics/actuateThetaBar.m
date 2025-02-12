@@ -2,11 +2,8 @@ function hinge_springs = actuateThetaBar(hinge_springs, hinge_spring_ind_to_actu
 %% CAUTION: this is a custom actuation for flapping motion in stingray, 
 % if some other kind of actuation is needed, one can create a similar function
 
-% flap_freq = 4;
-flap_freq = 3.384;
-flap_amplitude = pi/2; % works
-% flap_amplitude = 2*pi/3; % works
-% flap_amplitude = 7*pi/12; % works
+flap_freq = 3.384; % 4
+flap_amplitude = pi/2; % 2*pi/3 % 7*pi/12;
 n = size(hinge_spring_ind_to_actuate,1);
 
 % % % no phase difference
@@ -14,8 +11,8 @@ n = size(hinge_spring_ind_to_actuate,1);
 % % thetas = theta.*ones(n);
 
 %% thetas phase difference
-% total_phase_difference = 3*pi; % between front end and back end % odd*pi % works
-total_phase_difference = pi; % between front end and back end % odd*pi % works
+% between front end and back end
+total_phase_difference = pi; %3*pi % odd*pi
 
 del_phase = total_phase_difference/(n-1);
 thetas = zeros(n,1);

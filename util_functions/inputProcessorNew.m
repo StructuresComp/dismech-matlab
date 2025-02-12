@@ -1,5 +1,3 @@
-% Khalid Jawed, khalidjm@seas.ucla.edu
-
 function [nodes, edges, faceNodes] = inputProcessorNew(inputFileName)
 
 % fid = fopen('input.txt', 'r');
@@ -45,7 +43,7 @@ while ischar(tline)
         elseif strcmp('*nodes', typeSpec) == true
             
             if numel(dataLine) ~= 3
-                fprintf('Warning. Invalid input for rodNodes.\n');
+                fprintf('Warning. Invalid input for Nodes.\n');
             else
                 nodeNo = nodeNo + 1;
                 node1 = str2double( dataLine{1} );
@@ -54,10 +52,10 @@ while ischar(tline)
                 nodes = [nodes; node1, node2, node3];
             end
             
-        elseif strcmp('*rodedges', typeSpec) == true
+        elseif strcmp('*edges', typeSpec) == true
             
             if numel(dataLine) ~= 2
-                fprintf('Warning. Invalid input for rodEdges.\n');
+                fprintf('Warning. Invalid input for Edges.\n');
             else
                 rod_edgeNo = rod_edgeNo + 1;
                 edge1 = int64( str2double( dataLine{1} ) );
@@ -65,10 +63,10 @@ while ischar(tline)
                 edges = [edges; edge1, edge2];
             end
 
-        elseif strcmp('*facenodes', typeSpec) == true
+        elseif strcmp('*triangles', typeSpec) == true
             
             if numel(dataLine) ~= 3
-                fprintf('Warning. Invalid input for faceNodes.\n');
+                fprintf('Warning. Invalid input for Triangles.\n');
             else
                 faceNo = faceNo + 1;
                 node1 = int64( str2double( dataLine{1} ) );

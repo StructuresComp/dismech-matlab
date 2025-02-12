@@ -50,7 +50,7 @@ for i=1:10
         writematrix(Nodes',filename, 'WriteMode','append')
         fid = fopen(filename, 'at');
         if fid ~= -1
-            fprintf(fid,'*FaceNodes');
+            fprintf(fid,'*Triangles');
             fclose(fid);
         end
         writematrix(face_nodes',filename, 'WriteMode','append')

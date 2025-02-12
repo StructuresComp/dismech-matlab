@@ -139,8 +139,5 @@ gradTheta(10:12) = - t41;
 
 %%
 grad = gradTheta;
-if(sum(isnan(grad))>0)
-    grad
-end
 
 end

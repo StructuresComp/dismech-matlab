@@ -1,19 +1,24 @@
 % Input:
-% Rod nodes
-% Shell nodes
-% Rod edges
-% Shell edges
-% Rod-Shell joint edges
-% Face nodes
+% nodes,
+% edges
+% face_nodes
 
 % Ouput:
-% Stretch springs
-% Bend twist springs
-% Hinge springs
-% FOR MIDEDGE-
-% Face edges
-% Sign face edges
-% tau
+% nodes, 
+% Edges, 
+% rod_edges, 
+% shell_edges, 
+% rod_shell_joint_edges, 
+% rod_shell_joint_edges_total, 
+% face_nodes, 
+% face_edges,
+% rod_stretch_springs, 
+% shell_stretch_springs, 
+% bend_twist_springs, 
+% bend_twist_signs, 
+% hinges, 
+% sign_faces, 
+% face_unit_norms
 
 function [nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_edges_total, face_nodes, face_edges, ...
     rod_stretch_springs, shell_stretch_springs, bend_twist_springs, bend_twist_signs, hinges, sign_faces, face_unit_norms] = createGeometry(nodes, edges, face_nodes)

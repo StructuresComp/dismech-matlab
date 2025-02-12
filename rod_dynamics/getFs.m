@@ -1,7 +1,5 @@
 function Fs = getFs(MultiRod, stretch_springs, q)
 
-global bug 
-
 n_stretch = numel(stretch_springs);
 n_DOF = MultiRod.n_DOF;
 
@@ -15,14 +13,6 @@ for c = 1:n_stretch
     ind = stretch_springs(c).ind;
     dF = gradEs(n_DOF, ind, node0p, node1p, stretch_springs(c));
     Fs(ind) = Fs(ind) - dF(ind);
-
-    %% to debug
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end                                      
-    end
  
 end
 end

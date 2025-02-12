@@ -1,7 +1,5 @@
 function Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2)
 
-global bug 
-
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
 n_bend = numel(bend_twist_springs);
@@ -39,16 +37,5 @@ for c = 1:n_bend
     end
 
     Fb(ind) = Fb(ind) - dF(ind);
-
-    %% to debug
-    if(isnan(sum(Fb)))
-        Fb
-    end
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end
-    end
 end
 end

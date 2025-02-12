@@ -1,7 +1,5 @@
 function [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params)
 
-global bug 
-
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
 n_bend = numel(bend_twist_springs);
@@ -59,27 +57,7 @@ for c = 1:n_bend
 
     Fb(ind) = Fb(ind) - dF(ind);
     Jb(ind, ind) = Jb(ind, ind) - dJ(ind, ind);
-    if(isnan(sum(Fb)))
-        Fb
-    end
-    if(isnan(sum(dJ(ind, ind),"all")))
-        Jb
-    end
 
-    %% to debug
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end
-        for j=1:numel(dF)
-            if (dJ(i,j)~= 0 && (~find(ind==i) || ~find(ind==j)))
-                fprintf("Bug: dJ getting changed at wrong indices")
-                bug=1;
-            end
-        end
-
-    end
     %% update spring forces in the spring structs
     bend_twist_springs(c).dFb = dF(ind);
     bend_twist_springs(c).dJb = dJ(ind, ind);

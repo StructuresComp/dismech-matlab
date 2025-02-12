@@ -22,7 +22,6 @@ sim_params.totalTime = sim_params.dt; % sec
 sim_params.plotStep = 1;
 
 %% Input text file 
-% inputFileName = 'experiments/pneunet/input_straight_horizontal.txt';
 inputFileName = 'experiments/pneunet/input_straight_horizontal_shorter.txt';
 
 % reading the input text file

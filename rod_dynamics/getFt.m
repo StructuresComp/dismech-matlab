@@ -1,7 +1,5 @@
 function Ft = getFt(MultiRod, bend_twist_springs, q, refTwist)
 
-global bug 
-
 n_DOF = MultiRod.n_DOF;
 n_nodes = MultiRod.n_nodes;
 n_twist = numel(bend_twist_springs);
@@ -25,9 +23,6 @@ for c = 1:n_twist
 
     ind = bend_twist_springs(c).ind; % Size 11
 
-    % [dF] = ...
-    %     gradEt(n_DOF, ind, node0p, node1p, node2p, ...
-    %     theta_e, theta_f, refTwist(c), bend_twist_springs(c));
     [dF] = ...
         gradEt_new(n_DOF, ind, node0p, node1p, node2p, ...
         theta_e, theta_f, refTwist(c), bend_twist_springs(c), undef_refTwist(c));
@@ -42,13 +37,6 @@ for c = 1:n_twist
     end
 
     Ft(ind) = Ft(ind) - dF(ind);
-    %% to debug
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end
-    end
 
 end
 end

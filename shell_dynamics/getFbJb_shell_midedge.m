@@ -37,13 +37,6 @@ for i=1:n_faces
             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
             init_ts, init_cs, init_fs, init_xis);
 
-%     [~, gradE, hessE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms_nat_curv (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), ...
-%             init_ts, init_cs, init_fs, init_xis);
-
-    % [~, gradE, hessE, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~] = Energy_Grad_Hess_with2terms (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-    %         s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3));
-
     ind = [];
     for j=1:3
         ind = [ind, 3*Face_i_nodes(j)-2:3*Face_i_nodes(j)];

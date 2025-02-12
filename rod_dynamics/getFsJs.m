@@ -1,7 +1,5 @@
 function [Fs, Js, stretch_springs] = getFsJs(MultiRod, stretch_springs, q)
 
-global bug 
-
 n_stretch = numel(stretch_springs);
 n_DOF = MultiRod.n_DOF;
 
@@ -20,25 +18,6 @@ for c = 1:n_stretch
     Fs(ind) = Fs(ind) - dF(ind);
     Js(ind, ind) = Js(ind, ind) - dJ(ind, ind);
 
-    % if(ismembc(c,[4,5,6,7]))
-    %     fprintf("Fs for edge: %d" ,c)
-    %     dF(ind)
-    % end
-
-    %% to debug
-    for i=1:numel(dF)
-        if (dF(i)~= 0 && ~find(ind==i))
-            fprintf("Bug: dF getting changed at wrong indices")
-            bug=1;
-        end
-    for j=1:numel(dF)
-        if (dJ(i,j)~= 0 && (~find(ind==i) || ~find(ind==j)))
-            fprintf("Bug: dJ getting changed at wrong indices")
-            bug=1;
-        end
-    end
-
-    end
     %% update spring forces in the spring structs
     stretch_springs(c).dF = dF(ind);
     stretch_springs(c).dJ = dJ(ind, ind);

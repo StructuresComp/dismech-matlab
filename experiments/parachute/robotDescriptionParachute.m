@@ -2,8 +2,7 @@
 
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
-sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
-% hinge model for shell bending
+sim_params.use_midedge = false;
 sim_params.use_lineSearch = false;
 sim_params.showFrames = false;
 sim_params.log_data = true;

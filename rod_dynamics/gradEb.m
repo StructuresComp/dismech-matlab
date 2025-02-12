@@ -55,9 +55,6 @@ tilde_d2 = (m2e + m2f) / chi; % 1x3 vector
 kappa1 = 0.5 * dot( kb, m2e + m2f); % scalar
 kappa2 = -0.5 * dot( kb, m1e + m1f); % scalar
 
-% kappa1 = kappa(c, 1);
-% kappa2 = kappa(c, 2);
-
 Dkappa1De = 1.0 / norm_e * (-kappa1 * tilde_t + cross(tf,tilde_d2));
 Dkappa1Df = 1.0 / norm_f * (-kappa1 * tilde_t - cross(te,tilde_d2));
 

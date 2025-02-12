@@ -76,10 +76,6 @@ while ~solved % % error > sim_params.tol
                 [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
 
             end
-
-            % [Fb, Jb, bend_twist_springs] = getFbJb(MultiRod, bend_twist_springs, q, m1, m2, sim_params); % bending (rod)
-            % [Ft, Jt, bend_twist_springs] = getFtJt(MultiRod, bend_twist_springs, q, refTwist_iter, sim_params); % twisting
-
             Forces = Forces + Fb + Ft;
             JForces = JForces + Jb + Jt;
         end
@@ -171,7 +167,6 @@ while ~solved % % error > sim_params.tol
     q(freeIndex) = q(freeIndex) - alpha.*dq_free;
 
     % Error
-%     error = sum(abs(f_free) );
     err = norm(f_free) ;
     fprintf('Iter=%d, error=%f\n', iter, err);
 

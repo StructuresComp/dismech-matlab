@@ -1,6 +1,5 @@
 function [Ffr, Jfr] = computeFrictionForceAndJacobian(q, q0, C, Fc, Jc, ndof, find_jacob, mu_k, dt, vel_tol) % friction
-%%
-% assert(size(C, 2) == 4);
+
 num_inputs = size(C, 1);
 edge_combo_input = zeros(1,12);
 edge_combo_input0 = zeros(1,12);
@@ -28,17 +27,6 @@ for i = 1:num_inputs
             Jfr(ind,ind) = Jfr(ind,ind) - jfr;
         end
     end
-%         if(use_autodiff_for_hess)
-%             % using autodiff
-%             xs_dl = dlarray(edge_combo_input);
-%             hessEc =  dlfeval...
-%                 (@contactHessAutodiff, xs_dl);        
-%         else
-%             % using FDM
-%             change = 1e-8;
-%             hessEc = contactHessFDM(edge_combo_input, gradEc, change);
-%         end
-%         Jc(ind,ind) = -hessEc;
 end
 
 end

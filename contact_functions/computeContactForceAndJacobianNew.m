@@ -56,7 +56,6 @@ for i = 1:num_inputs
         end
 
     elseif ( dist > numerical_lim && dist < contact_lim )
-%     elseif ( (dist > ((2*h-delta)*scale) ) && (dist < ((2*h+delta)) ) )
         % if (2h - δ) < Δ < (2h + δ): contact zone but no penetration
         if (constraint_type=="PointToPoint")
             gradEc = grad_E_con_p2p(input);

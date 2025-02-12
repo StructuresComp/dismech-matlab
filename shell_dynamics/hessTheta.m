@@ -117,10 +117,6 @@ hessTheta(7:9, 1:3) = transpose(hessTheta(1:3, 7:9));
 hessTheta(10:12, 1:3) = transpose(hessTheta(1:3, 10:12));
 hessTheta(7:9, 4:6) = transpose(hessTheta(4:6, 7:9));
 hessTheta(10:12, 4:6) = transpose(hessTheta(4:6, 10:12));
-
-if(sum(isnan(hessTheta))>0)
-    hessTheta
-end
     
 end
 

@@ -16,13 +16,13 @@ end
 filename = 'input_straight_horizontal_shorter.txt';
 fid = fopen(filename,'w');
 if fid ~= -1
-    fprintf(fid,'*rodNodes');
+    fprintf(fid,'*Nodes');
     fclose(fid);
 end
 writematrix(nodes,filename, 'WriteMode','append')
 fid = fopen(filename, 'at');
 if fid ~= -1
-    fprintf(fid,'*rodEdges');
+    fprintf(fid,'*Edges');
     fclose(fid);
 end
 writematrix(edges,filename, 'WriteMode','append')

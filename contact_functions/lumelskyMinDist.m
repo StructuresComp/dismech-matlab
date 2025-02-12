@@ -6,11 +6,6 @@ idx2_old = edge_combo_idx(2);
 idx3_old = edge_combo_idx(3);
 idx4_old = edge_combo_idx(4);
 
-% xis = q(mapNodetoDOF(idx1_old));
-% xie = q(mapNodetoDOF(idx2_old));
-% xjs = q(mapNodetoDOF(idx3_old));
-% xje = q(mapNodetoDOF(idx4_old));
-
 % scale
 xis = scale .* q(mapNodetoDOF(idx1_old));
 xie = scale .* q(mapNodetoDOF(idx2_old));
