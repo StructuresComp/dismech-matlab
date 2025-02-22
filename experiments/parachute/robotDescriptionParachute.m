@@ -36,16 +36,21 @@ material.poisson_shell = 0.3;
 env.ext_force_list = ["gravity", "aerodynamic"]; 
 
 % environment parameters
-env.g = [0, 0, -9.81]';
-env.rho = 1;
-env.Cd = 10;
+% env.g = [0, 0, -9.81]';
+% env.rho = 1;
+% env.Cd = 10;
+
+env.g = [0, 0, -0.1]';
+env.rho = 0;
+env.Cd = 0;
 
 %% Input text file 
 
 % inputFileName = 'experiments/parachute/triangle_parachute_n4_python.txt';
 % inputFileName = 'experiments/parachute/simplest_parachute.txt';
-inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
+% inputFileName = 'experiments/parachute/hexparachute_n6_python.txt';
 % inputFileName = 'experiments/parachute/Copy_of_hexparachute_n6_python.txt';
+inputFileName = 'experiments/parachute/rod_shell.txt';
 
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
