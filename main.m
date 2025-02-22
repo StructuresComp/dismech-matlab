@@ -8,6 +8,7 @@ addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
 addpath logging/
+addpath(genpath('experiments')); 
 
 % % Examples:
 robotDescriptionRodCantilever
