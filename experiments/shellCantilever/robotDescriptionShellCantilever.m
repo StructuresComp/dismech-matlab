@@ -13,7 +13,7 @@ sim_params.log_data = true;
 sim_params.dt = 1e-2;
 
 % Maximum number of iterations in Newton Solver
-sim_params.maximum_iter = 25;
+sim_params.maximum_iter = 50;
 
 % Total simulation time
 if(sim_params.static_sim)

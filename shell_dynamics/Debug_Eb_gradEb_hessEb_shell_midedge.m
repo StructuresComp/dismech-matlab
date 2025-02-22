@@ -1,5 +1,5 @@
-function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, t_i, t_j, t_k, c_i, c_j, c_k] = ...
-    Eb_gradEb_hessEb_shell_midedge ...
+function [E_with_stiff, gradE_with_stiff, hessE_with_stiff] = ...
+    Debug_Eb_gradEb_hessEb_shell_midedge ...
     (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
     init_ts, init_cs, init_fs, init_xi, ...
     optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
@@ -104,7 +104,8 @@ for i=1:3
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
-
+% E_with_stiff = stiff*(E2).*A ;
+% E_with_stiff = stiff*(E).*A ;
 %% Gradient of Energy
 
 % initialize
@@ -185,6 +186,8 @@ gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
 gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
+% gradE_with_stiff = stiff.*(gradE2).*A;
+% gradE_with_stiff = stiff.*(gradE).*A;
 
 %% Hessian of Energy
 
@@ -374,6 +377,8 @@ hessE2 = [ddel_E2_by_ps(:,:,1) , ddel_E2_by_ps(:,:,2) , ddel_E2_by_ps(:,:,3) , d
     ddel_E2_del_xi_j_del_p_i , ddel_E2_del_xi_j_del_p_j , ddel_E2_del_xi_j_del_p_k , ddel_E2_by_del_xi_j_xi_i , ddel_E2_by_del_xi_j_xi_j , ddel_E2_by_del_xi_j_xi_k ;...
     ddel_E2_del_xi_k_del_p_i , ddel_E2_del_xi_k_del_p_j , ddel_E2_del_xi_k_del_p_k , ddel_E2_by_del_xi_k_xi_i , ddel_E2_by_del_xi_k_xi_j , ddel_E2_by_del_xi_k_xi_k ]' ;
 
-hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+% hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+% hessE_with_stiff = stiff.*(hessE2).*A;
+hessE_with_stiff = stiff.*(hessE).*A;
 
 end

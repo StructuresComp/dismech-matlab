@@ -1,8 +1,8 @@
 function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, E, gradE, hessE, E2, gradE2, hessE2, t_i, t_j, t_k, c_i, c_j, c_k] = ...
     Energy_Grad_Hess_with2terms_nat_curv ...
-    (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, ...
+    (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ...
     init_ts, init_cs, init_fs, init_xi, ...
-    optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k, optional_A)
+    optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
 
 % *************************************************************************
 % Inputs:
@@ -39,7 +39,7 @@ lk = norm(vk);
 
 % triangle face normal
 normal = cross(vk, vi);
-actual_A = norm(normal)/2; % area of triangular face
+% A = norm(normal)/2; % area of triangular face
 unit_norm = normal/norm(normal); % normalized triangle face normal vector
 
 % t_i's (tangent (perpendicular to edge, in plane of triangle) of length =
@@ -51,12 +51,12 @@ actual_t_k = cross(vk,unit_norm);
 actual_ts = [actual_t_i, actual_t_j, actual_t_k];
 
 % c_i's :  scalars
-actual_c_i = 1/( actual_A*li*dot((actual_t_i/norm(actual_t_i)),tau_i0) );
-actual_c_j = 1/( actual_A*lj*dot((actual_t_j/norm(actual_t_j)),tau_j0) );
-actual_c_k = 1/( actual_A*lk*dot((actual_t_k/norm(actual_t_k)),tau_k0) );
+actual_c_i = 1/( A*li*dot((actual_t_i/norm(actual_t_i)),tau_i0) );
+actual_c_j = 1/( A*lj*dot((actual_t_j/norm(actual_t_j)),tau_j0) );
+actual_c_k = 1/( A*lk*dot((actual_t_k/norm(actual_t_k)),tau_k0) );
 
 % if optional inputs are given - use them, else calculate ti's and ci's
-if nargin>18
+if nargin>19
     % fprintf('optional input arguments given')
     t_i = optional_t_i;
     t_j = optional_t_j;
@@ -64,7 +64,6 @@ if nargin>18
     c_i = optional_c_i;
     c_j = optional_c_j;
     c_k = optional_c_k;
-    A = optional_A;
 else
     t_i = actual_t_i;
     t_j = actual_t_j;
@@ -72,7 +71,6 @@ else
     c_i = actual_c_i;
     c_j = actual_c_j;
     c_k = actual_c_k;
-    A = actual_A;
 end
 
 % f_i's :  scalars

@@ -1,6 +1,6 @@
-function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, t_i, t_j, t_k, c_i, c_j, c_k] = ...
-    Eb_gradEb_hessEb_shell_midedge ...
-    (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
+function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, gradE_FDM, hessE_FDM, t_i, t_j, t_k, c_i, c_j, c_k] = ...
+    FDM_Energy_Grad_Hess...
+    (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ...
     init_ts, init_cs, init_fs, init_xi, ...
     optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
 
@@ -12,10 +12,6 @@ function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, t_i, t_j, t_k, c_i, 
 %                   projection of the mid-edge normal of edge i on tau_i^0
 % s_i, s_j, s_k: sign (+/-) corresponding to each of the xi_i DOFs
 % tau_i0, tau_j0, tau_k0: 3*1 vectors
-% A : intial value of triangle area
-% init_ts: initial value of t vectors of the triangle
-% init_cs: initial value of c for each edge of the triangle
-% init_xi: initial value of xi for each edge of the triangle
 
 % Outputs:
 % E: Energy - scalar, elastic energy of the triangle face
@@ -36,9 +32,14 @@ vi = pk - pj ; % 3*1 edge i vector
 vj = pi - pk ; % 3*1 edge j vector
 vk = pj - pi ; % 3*1 edge k vector
 
+% edge lengths
+li = norm(vi);
+lj = norm(vj);
+lk = norm(vk);
+
 % triangle face normal
 normal = cross(vk, vi);
-% actual_A = norm(normal)/2; % area of triangular face
+% A = norm(normal)/2; % area of triangular face
 unit_norm = normal/norm(normal); % normalized triangle face normal vector
 
 % t_i's (tangent (perpendicular to edge, in plane of triangle) of length =
@@ -47,15 +48,15 @@ actual_t_i = cross(vi,unit_norm);
 actual_t_j = cross(vj,unit_norm);
 actual_t_k = cross(vk,unit_norm);
 
-% actual_ts = [actual_t_i, actual_t_j, actual_t_k];
+actual_ts = [actual_t_i, actual_t_j, actual_t_k];
 
 % c_i's :  scalars
-actual_c_i = 1/( A*ls(1)*dot((actual_t_i/norm(actual_t_i)),tau_i0) );
-actual_c_j = 1/( A*ls(2)*dot((actual_t_j/norm(actual_t_j)),tau_j0) );
-actual_c_k = 1/( A*ls(3)*dot((actual_t_k/norm(actual_t_k)),tau_k0) );
+actual_c_i = 1/( A*li*dot((actual_t_i/norm(actual_t_i)),tau_i0) );
+actual_c_j = 1/( A*lj*dot((actual_t_j/norm(actual_t_j)),tau_j0) );
+actual_c_k = 1/( A*lk*dot((actual_t_k/norm(actual_t_k)),tau_k0) );
 
 % if optional inputs are given - use them, else calculate ti's and ci's
-if nargin>20
+if nargin>19
     % fprintf('optional input arguments given')
     t_i = optional_t_i;
     t_j = optional_t_j;
@@ -83,6 +84,7 @@ t = [t_i , t_j , t_k]; % t_i are columns
 
 c = [c_i, c_j, c_k]; % (1*3)
 
+l = [li, lj, lk]; % (1*3)
 s = [s_i, s_j, s_k]; % scalars (1*3)
 xi = [xi_i, xi_j, xi_k]; % scalars (1*3)
 tau_0 = [tau_i0, tau_j0, tau_k0]; % (3*3) tau_is are column vectors 
@@ -99,8 +101,8 @@ for i=1:3
             2 * ( (c(i)*init_cs(j)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t(:,i),init_ts(:,j))^2) );
 
         E2 = E2 + ( (c(i)*c(j)) * ((norm(t(:,i))^2)*(norm(t(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) ) + ...
-            ( (init_cs(i)*init_cs(j)) * ((ls(i)^2)*(ls(j)^2)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
-            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(norm(ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
+            ( (init_cs(i)*init_cs(j)) * ((norm(init_ts(:,i))^2)*(norm(init_ts(:,j))^2)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
+            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(norm(init_ts(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
@@ -143,16 +145,16 @@ for i=1:3
 
         del_E2_del_pi = del_E2_del_pi - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_i, unit_norm, A) + ...
             (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_i, unit_norm, A) .* (norm(t(:,i))^2*norm(init_ts(:,j))^2);
 
         del_E2_del_pj = del_E2_del_pj - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_j, unit_norm, A) + ...
             (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_j, unit_norm, A) .* (norm(t(:,i))^2*norm(init_ts(:,j))^2);
 
 
         del_E2_del_pk = del_E2_del_pk - c(i)*c(j) * ((s(i)*xi(i) - f(i)) .* delfi_by_delpk(tau_0(:,j), t_k, unit_norm, A) + ...
             (s(j)*xi(j) - f(j)) .* delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A)) .* (norm(t(:,i))^2*norm(t(:,j))^2) + ...
-            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A) .* (norm(t(:,i))^2*ls(j)^2);
+            2* c(i) * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * delfi_by_delpk(tau_0(:,i), t_k, unit_norm, A) .* (norm(t(:,i))^2*norm(init_ts(:,j))^2);
 
     end 
 end
@@ -167,13 +169,13 @@ for j=1:3
 
 
         del_E2_del_xi_i = del_E2_del_xi_i + (2*c_i*s_i* norm(t_i)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
-             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);
+             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * norm(init_ts(:,j))^2);
 
         del_E2_del_xi_j = del_E2_del_xi_j + (2*c_j*s_j* norm(t_j)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
-             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);
+             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * norm(init_ts(:,j))^2);
 
         del_E2_del_xi_k = del_E2_del_xi_k + (2*c_k*s_k* norm(t_k)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
-             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * ls(j)^2);        
+             init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * norm(init_ts(:,j))^2);        
 end
 
 % collect in the gradient vector in the sequence: del_by [pi, pj, pk, xi_i, xi_j, xi_k]
@@ -299,7 +301,7 @@ for k=1:9
             + (s(j)*xi(j) - f(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) - ...
             transpose(delfi_by_delpk(tau_0(:,i), t(:,num_k1), unit_norm, A)) * delfi_by_delpk(tau_0(:,j), t(:,num_k2), unit_norm, A) ) ...
             + ...
-            2* c(i) * init_cs(j) * (norm(t(:,i))^2*ls(j)^2) * (s(j)*init_xi(j)-init_fs(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) ;
+            2* c(i) * init_cs(j) * (norm(t(:,i))^2*norm(init_ts(:,j))^2) * (s(j)*init_xi(j)-init_fs(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) ;
 
 
 
@@ -374,6 +376,55 @@ hessE2 = [ddel_E2_by_ps(:,:,1) , ddel_E2_by_ps(:,:,2) , ddel_E2_by_ps(:,:,3) , d
     ddel_E2_del_xi_j_del_p_i , ddel_E2_del_xi_j_del_p_j , ddel_E2_del_xi_j_del_p_k , ddel_E2_by_del_xi_j_xi_i , ddel_E2_by_del_xi_j_xi_j , ddel_E2_by_del_xi_j_xi_k ;...
     ddel_E2_del_xi_k_del_p_i , ddel_E2_del_xi_k_del_p_j , ddel_E2_del_xi_k_del_p_k , ddel_E2_by_del_xi_k_xi_i , ddel_E2_by_del_xi_k_xi_j , ddel_E2_by_del_xi_k_xi_k ]' ;
 
-hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+% hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+hessE_with_stiff = stiff.*(hessE).*A;
 
+
+%% FDM
+change = 1e-8;
+q = [pi; pj; pk; xi_i; xi_j; xi_k]; % dof vector
+
+hessE_FDM = zeros(12,12);
+gradE_FDM = zeros(1,12);
+
+for c = 1:12
+    q_change = q;
+    q_change(c) = q(c) + change;
+    pi_change = q_change(1:3);
+    pj_change = q_change(4:6);
+    pk_change = q_change(7:9);
+    xi_i_change = q_change(10);
+    xi_j_change = q_change(11);
+    xi_k_change = q_change(12);
+
+    % changes in the energy
+    [E_change, gradE_change] = ...
+        Energy_Grad_Hess_with2terms_nat_curv ...
+        (stiff, nu, pi_change, pj_change, pk_change, xi_i_change, xi_j_change, xi_k_change, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ...
+    init_ts, init_cs, init_fs, init_xi, ...
+    t_i, t_j, t_k, c_i, c_j, c_k); % assume that t1, t2, t3, c1, c2, c3 are not changed - negligible changes
+
+    gradE_FDM(c) = (E_change - E)/change;
+
+    hessE_FDM(c,:) = (gradE_change - gradE) .* (1/change);
+
+end
+%%
+% figure(15)
+% subplot(2,1,1);
+% plot( gradE_with_stiff, 'ro');
+% hold on
+% plot( gradE_FDM, 'b^');
+% hold off
+% legend('Analytical my', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Gradient');
+% subplot(2,1,2);
+% plot( reshape(hessE_with_stiff, [144,1]), 'ro');
+% hold on
+% plot( reshape(hessE_FDM, [144,1]), 'b^');
+% hold off
+% legend('Analytical', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Hessian');
 end

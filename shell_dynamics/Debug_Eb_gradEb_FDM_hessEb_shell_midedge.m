@@ -1,5 +1,5 @@
-function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, t_i, t_j, t_k, c_i, c_j, c_k] = ...
-    Eb_gradEb_hessEb_shell_midedge ...
+function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, gradE_FDM, hessE_FDM] = ...
+    Debug_Eb_gradEb_FDM_hessEb_shell_midedge ...
     (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
     init_ts, init_cs, init_fs, init_xi, ...
     optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
@@ -100,11 +100,12 @@ for i=1:3
 
         E2 = E2 + ( (c(i)*c(j)) * ((norm(t(:,i))^2)*(norm(t(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) ) + ...
             ( (init_cs(i)*init_cs(j)) * ((ls(i)^2)*(ls(j)^2)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
-            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(norm(ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
+            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*((ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
-
+% E_with_stiff = stiff*(E2).*A ;
+% E_with_stiff = stiff*(E).*A ;
 %% Gradient of Energy
 
 % initialize
@@ -185,8 +186,39 @@ gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
 gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
+% gradE_with_stiff = stiff.*(gradE2).*A;
+% gradE_with_stiff = stiff.*(gradE).*A;
 
-%% Hessian of Energy
+%% Hessian of Energy using FDM
+change = 1e-8;
+q = [pi; pj; pk; xi_i; xi_j; xi_k]; % dof vector
+
+gradE_FDM = zeros(1,12);
+hessE_FDM = zeros(12,12);
+
+for iter = 1:12
+    q_change = q;
+    q_change(iter) = q(iter) + change;
+    pi_change = q_change(1:3);
+    pj_change = q_change(4:6);
+    pk_change = q_change(7:9);
+    xi_i_change = q_change(10);
+    xi_j_change = q_change(11);
+    xi_k_change = q_change(12);
+
+    % changes in the energy
+    [E_change, gradE_change] = Debug_Eb_gradEb_shell_midedge ...
+    (stiff, nu, pi_change, pj_change, pk_change, xi_i_change, xi_j_change, xi_k_change, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
+    init_ts, init_cs, init_fs, init_xi, ...
+    t_i, t_j, t_k, c_i, c_j, c_k);
+
+    gradE_FDM(iter) = (E_change - E_with_stiff)/change;
+
+    hessE_FDM(iter,:) = (gradE_change - gradE_with_stiff) .* (1/change);
+
+end
+
+%% hess analytical
 
 % double derivatives wrt xi's
 % E
@@ -375,5 +407,26 @@ hessE2 = [ddel_E2_by_ps(:,:,1) , ddel_E2_by_ps(:,:,2) , ddel_E2_by_ps(:,:,3) , d
     ddel_E2_del_xi_k_del_p_i , ddel_E2_del_xi_k_del_p_j , ddel_E2_del_xi_k_del_p_k , ddel_E2_by_del_xi_k_xi_i , ddel_E2_by_del_xi_k_xi_j , ddel_E2_by_del_xi_k_xi_k ]' ;
 
 hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+% hessE_with_stiff = stiff.*(hessE2).*A;
+% hessE_with_stiff = stiff.*(hessE).*A;
 
+% hessE_FDM = hessE_with_stiff;
+%%
+figure(15)
+subplot(2,1,1);
+plot( gradE_with_stiff, 'ro');
+hold on
+plot( gradE_FDM, 'b^');
+hold off
+legend('Analytical my', 'Finite Difference');
+xlabel('Index');
+ylabel('Gradient');
+subplot(2,1,2);
+plot( reshape(hessE_with_stiff, [144,1]), 'ro');
+hold on
+plot( reshape(hessE_FDM, [144,1]), 'b^');
+hold off
+legend('Analytical', 'Finite Difference');
+xlabel('Index');
+ylabel('Hessian');
 end

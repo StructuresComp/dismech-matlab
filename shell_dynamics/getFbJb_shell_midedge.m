@@ -33,9 +33,62 @@ for i=1:n_faces
 
     s_is = sign_faces(:,i);
 
-    [~, gradE, hessE] = Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+    [E, gradE, hessE] = Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
             init_ts, init_cs, init_fs, init_xis);
+%     [E, gradE, hessE_FDM] = Eb_gradEb_hessEb_FDM (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
+%             init_ts, init_cs, init_fs, init_xis);
+    %%
+
+%     [~, gradE, hessE] = Debug_Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
+%             init_ts, init_cs, init_fs, init_xis);
+
+%     [~, gradE, hessE] = Debug_Eb_gradEb_FDM_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
+%             init_ts, init_cs, init_fs, init_xis);
+
+%        [~, gradE, hessE] = Energy_Grad_Hess_with2terms_nat_curv (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ...
+%             init_ts, init_cs, init_fs, init_xis);
+% [~, gradE, ~, ~, hessE] = FDM_Energy_Grad_Hess (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ...
+%             init_ts, init_cs, init_fs, init_xis);
+%%
+% change = 1e-8;
+% q_tri = [p_is(:,1); p_is(:,2); p_is(:,3); xi_is(1); xi_is(2); xi_is(3)]; % dof vector
+% 
+% gradE_FDM = zeros(1,12);
+% hessE_FDM = zeros(12,12);
+% 
+% for iter = 1:12
+%     q_change = q_tri;
+%     q_change(iter) = q_tri(iter) + change;
+%     pi_change = q_change(1:3);
+%     pj_change = q_change(4:6);
+%     pk_change = q_change(7:9);
+%     xi_i_change = q_change(10);
+%     xi_j_change = q_change(11);
+%     xi_k_change = q_change(12);
+% 
+%     % changes in the energy
+% %     [E_change, gradE_change] = Debug_Eb_gradEb_shell_midedge ...
+% %     (MultiRod.kb, MultiRod.nu_shell, pi_change, pj_change, pk_change, xi_i_change, xi_j_change, xi_k_change, ...
+% %     s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
+% %     init_ts, init_cs, init_fs, init_xis, ...
+% %     t_i, t_j, t_k, c_i, c_j, c_k);
+% 
+%     [E_change, gradE_change] = Debug_Eb_gradEb_shell_midedge ...
+%     (MultiRod.kb, MultiRod.nu_shell, pi_change, pj_change, pk_change, xi_i_change, xi_j_change, xi_k_change, ...
+%     s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
+%     init_ts, init_cs, init_fs, init_xis);
+% 
+%     gradE_FDM(iter) = (E_change - E)/change;
+% 
+%     hessE_FDM(iter,:) = (gradE_change - gradE) .* (1/change);
+% 
+% end
 
     ind = [];
     for j=1:3
@@ -48,9 +101,28 @@ for i=1:n_faces
 
     Fb_shell (ind) = Fb_shell(ind) - gradE';
     Jb_shell (ind,ind) = Jb_shell(ind,ind) - hessE;
+%     Fb_shell (ind) = Fb_shell(ind) - gradE';
+%     Jb_shell (ind,ind) = Jb_shell(ind,ind) - hessE_FDM;
 
     % Energy
 %             E_bending (timeStep) = E_bending (timeStep) + E ;
+% figure(15)
+% subplot(2,1,1);
+% plot( gradE, 'ro');
+% hold on
+% plot( gradE_FDM, 'b^');
+% hold off
+% legend('Analytical my', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Gradient');
+% subplot(2,1,2);
+% plot( reshape(hessE, [144,1]), 'ro');
+% hold on
+% plot( reshape(hessE_FDM, [144,1]), 'b^');
+% hold off
+% legend('Analytical', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Hessian');
 end
 
 end
