@@ -5,6 +5,7 @@ close all;
 clc;
 
 addpath ../util_functions/
+addpath ../shell_dynamics/
 fprintf('FDM verification of midedge normal based shell bending\n');
 
 stiff = 1;

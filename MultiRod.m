@@ -132,7 +132,11 @@ classdef MultiRod
             obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen;
             obj.kb = 2/sqrt(3) * Y_shell * (obj.h^3) / 12;
             if sim_params.use_midedge
-                obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+                if(obj.nu_shell~=1)
+                    obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+                else
+                    obj.kb = Y_shell * obj.h^3 / (24 * (1 + obj.nu_shell));
+                end
 
                 % trial debug
                 obj.ks = 2*(Y_shell * obj.h/(1-obj.nu_shell^2)) * obj.refLen;

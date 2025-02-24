@@ -1,5 +1,5 @@
 function [E_with_stiff, gradE_with_stiff, gradE, gradE2] = ...
-    Debug_Eb_gradEb_shell_midedge ...
+    Eb_gradEb_shell_midedge ...
     (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
     init_ts, init_cs, init_fs, init_xi, ...
     optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
@@ -104,8 +104,7 @@ for i=1:3
     end
 end
 E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
-% E_with_stiff = stiff*(E2).*A ;
-% E_with_stiff = stiff*(E).*A ;
+
 %% Gradient of Energy
 
 % initialize
@@ -186,6 +185,4 @@ gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
 gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
-% gradE_with_stiff = stiff.*(gradE2).*A;
-% gradE_with_stiff = stiff.*(gradE).*A;
 end

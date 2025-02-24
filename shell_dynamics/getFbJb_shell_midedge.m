@@ -5,7 +5,6 @@ face_edges = MultiRod.face_edges';
 sign_faces = MultiRod.sign_faces';
 n_faces = MultiRod.n_faces;
 n_DOF = MultiRod.n_DOF;
-n_nodes = MultiRod.n_nodes;
 
 Fb_shell = zeros(n_DOF,1);
 Jb_shell = zeros(n_DOF);
@@ -34,27 +33,13 @@ for i=1:n_faces
 
     s_is = sign_faces(:,i);
 
-    [E, gradE, hessE] = Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
+    [~, gradE, hessE] = Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
             init_ts, init_cs, init_fs, init_xis);
+
 %     [E, gradE, hessE_FDM] = Eb_gradEb_hessEb_FDM (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
 %             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
 %             init_ts, init_cs, init_fs, init_xis);
-    %%
-
-%     [~, gradE, hessE] = Debug_Eb_gradEb_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
-%             init_ts, init_cs, init_fs, init_xis);
-
-%     [~, gradE, hessE] = Debug_Eb_gradEb_FDM_hessEb_shell_midedge (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ls, ...
-%             init_ts, init_cs, init_fs, init_xis);
-
-%        [~, gradE, hessE] = Energy_Grad_Hess_with2terms_nat_curv (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ...
-%             init_ts, init_cs, init_fs, init_xis);
-% [~, gradE, ~, ~, hessE] = FDM_Energy_Grad_Hess (MultiRod.kb, MultiRod.nu_shell, p_is(:,1), p_is(:,2), p_is(:,3), xi_is(1), xi_is(2), xi_is(3), ...
-%             s_is(1), s_is(2), s_is(3), tau_0_is(:,1), tau_0_is(:,2), tau_0_is(:,3), MultiRod.faceA(i), ...
 %             init_ts, init_cs, init_fs, init_xis);
 %%
 % change = 1e-8;
@@ -102,11 +87,8 @@ for i=1:n_faces
 
     Fb_shell (ind) = Fb_shell(ind) - gradE';
     Jb_shell (ind,ind) = Jb_shell(ind,ind) - hessE;
-%     Fb_shell (ind) = Fb_shell(ind) - gradE';
 %     Jb_shell (ind,ind) = Jb_shell(ind,ind) - hessE_FDM;
 
-    % Energy
-%             E_bending (timeStep) = E_bending (timeStep) + E ;
 % figure(15)
 % subplot(2,1,1);
 % plot( gradE, 'ro');
