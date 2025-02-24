@@ -19,8 +19,9 @@ for i=1:n_faces
     tau_0_is = zeros(3,3);
     
     for j=1:3
-        p_is(:,j) = q(3*Face_i_nodes(j)-2:3*Face_i_nodes(j));
-        xi_is(j) = q(3*n_nodes + Face_i_edges(j));
+        p_is(:,j) = q(mapNodetoDOF(Face_i_nodes(j)));
+        edge_dof = mapEdgetoDOFxi(MultiRod.face_shell_edges(i,j), MultiRod.n_nodes, MultiRod.n_edges_dof);
+        xi_is(j) = q(edge_dof);
         tau_0_is(:,j) = tau_0(:,Face_i_edges(j));
     end
     init_ts = MultiRod.init_ts(:,:,i);
@@ -90,12 +91,12 @@ for i=1:n_faces
 % 
 % end
 
-    ind = [];
+    ind = []; % can be made better for speed (like other springs)
     for j=1:3
-        ind = [ind, 3*Face_i_nodes(j)-2:3*Face_i_nodes(j)];
+        ind = [ind; mapNodetoDOF(Face_i_nodes(j))];
     end
     for j=1:3
-        ind = [ind, 3*n_nodes + Face_i_edges(j)];
+        ind = [ind; mapEdgetoDOFxi(MultiRod.face_shell_edges(i,j), MultiRod.n_nodes, MultiRod.n_edges_dof)];
     end
 
 

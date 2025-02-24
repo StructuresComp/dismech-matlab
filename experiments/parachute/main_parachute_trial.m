@@ -18,13 +18,9 @@ robotDescriptionParachute
 % robotDescriptionSquarePlate
 
 % create geometry
-[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometryParachute(nodes, edges, face_nodes); %% for debug
-
-% [nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
-%     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-%     = createGeometry(nodes, edges, face_nodes);
+    = createGeometry(nodes, edges, face_nodes);
 
 %%
 % intialize twist angles for rod-edges to 0: this should be changed if one
@@ -38,7 +34,7 @@ twist_angles=zeros(size(rod_edges,1)+size(rod_shell_joint_total_edges,1),1);
 %% Create the soft robot structure
 softRobot = MultiRod(geom, material, twist_angles,...
     nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params, environment);
+    face_nodes, sign_faces, face_edges, face_shell_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting and hinge springs
 
@@ -119,6 +115,16 @@ end
 if(sim_params.TwoDsim)
     fixed_edge_indices = [fixed_edge_indices, 1:softRobot.n_edges_dof]; % all rod thetas are fixed if it is a 2D sim
 end
+% if(sim_params.use_midedge)
+%     if(~isempty(rod_shell_joint_total_edges))
+%         [~, idx] = ismember(rod_shell_joint_total_edges, shell_edges, 'rows');
+%         check_edges = rod_shell_joint_total_edges(idx > 0, :); % Extract matching rows correctly
+%         [~, fix_edges] = ismember(check_edges, softRobot.Edges, 'rows');
+%         fix_edges = fix_edges(fix_edges > 0); % Use correct indexing to remove zeros
+% 
+%         fixed_edge_indices = [fixed_edge_indices, fix_edges'];
+%     end
+% end
 softRobot.fixed_edges = fixed_edge_indices;
 [softRobot.fixedDOF, softRobot.freeDOF] = FindFixedFreeDOF(softRobot.fixed_nodes, softRobot.fixed_edges, softRobot.n_DOF, softRobot.n_nodes);
 
