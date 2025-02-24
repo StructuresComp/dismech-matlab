@@ -181,54 +181,67 @@ tau1_0 = cross(v1, n1_avg);
 tau2_0 = cross(v2, n2_avg);
 tau3_0 = cross(v3, n3_avg);
 
-[E, gradE, hessE,~,~,~,~,~,~, t1, t2, t3, c1, c2, c3] = ...
-    Energy_Grad_Hess_with2terms_nat_curv ...
-    (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ...
+% [E, gradE, hessE,~,~,~,~,~,~, t1, t2, t3, c1, c2, c3] = ...
+%     Energy_Grad_Hess_with2terms_nat_curv ...
+%     (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, ...
+%     init_ts, init_cs, init_fs, init_xis);
+
+%%
+% [E_with_stiff, gradE_with_stiff, hessE_with_stiff, gradE_FDM, hessE_FDM] = ...
+%     Debug_Eb_gradEb_FDM_hessEb_shell_midedge ...
+%     (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ls, ...
+%     init_ts, init_cs, init_fs, init_xis)
+
+ls = [norm(v1); norm(v2); norm(v2)];
+    [E, gradE, hessE, t_i, t_j, t_k, c_i, c_j, c_k] = Eb_gradEb_hessEb_shell_midedge (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ls, ...
+    init_ts, init_cs, init_fs, init_xis);
+    [E, gradE, hessE_FDM] = Eb_gradEb_hessEb_FDM (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ls, ...
     init_ts, init_cs, init_fs, init_xis);
 
+
 %% FDM check for gradient and hessian
-change = 1e-8;
-q = [p1; p2; p3; xi_1; xi_2; xi_3]; % dof vector
-
-hessE_FDM = zeros(12,12);
-gradE_FDM = zeros(1,12);
-
-for c = 1:12
-    q_change = q;
-    q_change(c) = q(c) + change;
-    p1_change = q_change(1:3);
-    p2_change = q_change(4:6);
-    p3_change = q_change(7:9);
-    xi_1_change = q_change(10);
-    xi_2_change = q_change(11);
-    xi_3_change = q_change(12);
-
-    % changes in the energy
-    [E_change, gradE_change] = ...
-        Energy_Grad_Hess_with2terms_nat_curv ...
-        (stiff, nu, p1_change, p2_change, p3_change, xi_1_change, xi_2_change, xi_3_change, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ...
-        init_ts, init_cs, init_fs, init_xis, t1, t2, t3, c1, c2, c3); % assume that t1, t2, t3, c1, c2, c3 are not changed - negligible changes
-
-    gradE_FDM(c) = (E_change - E)/change;
-
-    hessE_FDM(c,:) = (gradE_change - gradE) .* (1/change);
-
-end
-diff_grad = gradE_FDM - gradE
+% change = 1e-8;
+% q = [p1; p2; p3; xi_1; xi_2; xi_3]; % dof vector
+% 
+% hessE_FDM = zeros(12,12);
+% gradE_FDM = zeros(1,12);
+% 
+% for c = 1:12
+%     q_change = q;
+%     q_change(c) = q(c) + change;
+%     p1_change = q_change(1:3);
+%     p2_change = q_change(4:6);
+%     p3_change = q_change(7:9);
+%     xi_1_change = q_change(10);
+%     xi_2_change = q_change(11);
+%     xi_3_change = q_change(12);
+% 
+%     % changes in the energy
+%     [E_change, gradE_change] = ...
+%         Energy_Grad_Hess_with2terms_nat_curv ...
+%         (stiff, nu, p1_change, p2_change, p3_change, xi_1_change, xi_2_change, xi_3_change, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, ...
+%         init_ts, init_cs, init_fs, init_xis, t1, t2, t3, c1, c2, c3, A); % assume that t1, t2, t3, c1, c2, c3 are not changed - negligible changes
+% 
+%     gradE_FDM(c) = (E_change - E)/change;
+% 
+%     hessE_FDM(c,:) = (gradE_change - gradE) .* (1/change);
+% 
+% end
+% diff_grad = gradE_FDM - gradE
 diff_hess = hessE_FDM - hessE
 
 %%
 
 h1 = figure();
 h1.WindowState = 'maximized';
-subplot(2,1,1);
-plot( gradE, 'ro');
-hold on
-plot( gradE_FDM, 'b^');
-hold off
-legend('Analytical my', 'Finite Difference');
-xlabel('Index');
-ylabel('Gradient');
+% subplot(2,1,1);
+% plot( gradE_with_stiff, 'ro');
+% hold on
+% plot( gradE_FDM, 'b^');
+% hold off
+% legend('Analytical my', 'Finite Difference');
+% xlabel('Index');
+% ylabel('Gradient');
 
 subplot(2,1,2);
 plot( reshape(hessE, [144,1]), 'ro');

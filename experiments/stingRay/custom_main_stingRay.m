@@ -12,7 +12,7 @@ addpath logging/
 robotDescriptionStingray
 
 % create geometry
-[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
     = createGeometry(nodes, edges, face_nodes);
 
@@ -27,7 +27,7 @@ twist_angles=zeros(size(rod_edges,1)+size(rod_shell_joint_total_edges,1),1);
 %% Create the soft robot structure
 softRobot = MultiRod(geom, material, twist_angles,...
     nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params, environment);
+    face_nodes, sign_faces, face_edges, face_shell_edges, sim_params, environment);
 
 %% Creating stretching, bending, twisting and hinge springs
 

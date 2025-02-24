@@ -9,6 +9,7 @@ classdef MultiRod
         n_DOF
         Nodes
         Edges
+        face_shell_edges
         face_nodes_shell
         edge_combos
         q0
@@ -50,7 +51,7 @@ classdef MultiRod
     end
     
     methods
-        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, sim_params, environment)
+        function obj = MultiRod(geom, material, twist_angles, Nodes, Edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, sign_faces, face_edges, face_shell_edges, sim_params, environment)
             % Declare local vars to store important parameters
             obj.r0 = geom.rod_r0;
             obj.h = geom.shell_h;
@@ -75,6 +76,7 @@ classdef MultiRod
             obj.Nodes = Nodes;
             obj.Edges = Edges;
             obj.face_nodes_shell = face_nodes;
+            obj.face_shell_edges = face_shell_edges;
             
             % DOF vector
             obj.n_DOF = 3*obj.n_nodes + n_rod_edges + n_edges_rod_shell_joint_total;
@@ -130,7 +132,11 @@ classdef MultiRod
             obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen;
             obj.kb = 2/sqrt(3) * Y_shell * (obj.h^3) / 12;
             if sim_params.use_midedge
-                obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+                if(obj.nu_shell~=1)
+                    obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+                else
+                    obj.kb = Y_shell * obj.h^3 / (24 * (1 + obj.nu_shell));
+                end
 
                 % trial debug
                 obj.ks = 2*(Y_shell * obj.h/(1-obj.nu_shell^2)) * obj.refLen;

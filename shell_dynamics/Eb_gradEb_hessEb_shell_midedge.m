@@ -1,4 +1,4 @@
-function [E_with_stiff, gradE_with_stiff, hessE_with_stiff] = ...
+function [E_with_stiff, gradE_with_stiff, hessE_with_stiff, t_i, t_j, t_k, c_i, c_j, c_k] = ...
     Eb_gradEb_hessEb_shell_midedge ...
     (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
     init_ts, init_cs, init_fs, init_xi, ...
@@ -103,7 +103,12 @@ for i=1:3
             2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(norm(ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
     end
 end
-E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
+if(nu~=1)
+    E_with_stiff = stiff*((1-nu)*E + (nu)*E2).*A ;
+else
+    E_with_stiff = stiff*E*A ; % check with prof
+end
+
 
 %% Gradient of Energy
 
@@ -184,7 +189,11 @@ gradE = [del_E_del_pi , del_E_del_pj , del_E_del_pk , ...
 gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
-gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
+if (nu~=1)
+    gradE_with_stiff = stiff.*((1-nu).*gradE + nu.*gradE2).*A;
+else
+    gradE_with_stiff = stiff.*gradE.*A ; % check with prof
+end
 
 %% Hessian of Energy
 
@@ -301,8 +310,6 @@ for k=1:9
             + ...
             2* c(i) * init_cs(j) * (norm(t(:,i))^2*ls(j)^2) * (s(j)*init_xi(j)-init_fs(j)) * ddel_fi_del_p_k1_p_k2_corrected (vi,vj,vk,tau_0(:,i),unit_norm,A,char_k2,char_k1) ;
 
-
-
         end
     end
 end 
@@ -374,6 +381,10 @@ hessE2 = [ddel_E2_by_ps(:,:,1) , ddel_E2_by_ps(:,:,2) , ddel_E2_by_ps(:,:,3) , d
     ddel_E2_del_xi_j_del_p_i , ddel_E2_del_xi_j_del_p_j , ddel_E2_del_xi_j_del_p_k , ddel_E2_by_del_xi_j_xi_i , ddel_E2_by_del_xi_j_xi_j , ddel_E2_by_del_xi_j_xi_k ;...
     ddel_E2_del_xi_k_del_p_i , ddel_E2_del_xi_k_del_p_j , ddel_E2_del_xi_k_del_p_k , ddel_E2_by_del_xi_k_xi_i , ddel_E2_by_del_xi_k_xi_j , ddel_E2_by_del_xi_k_xi_k ]' ;
 
-hessE_with_stiff = stiff.*(nu*hessE + (1-nu)*hessE2).*A;
+if (nu~=1)
+    hessE_with_stiff = stiff.*((1-nu).*hessE + nu.*hessE2).*A;
+else
+    hessE_with_stiff = stiff.*hessE.*A ; % check with prof
+end
 
 end
