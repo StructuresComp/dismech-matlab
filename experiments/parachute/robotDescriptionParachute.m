@@ -2,7 +2,7 @@
 
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
-sim_params.use_midedge = true;
+sim_params.use_midedge = false;
 sim_params.use_lineSearch = false;
 sim_params.showFrames = false;
 sim_params.log_data = true;

@@ -134,7 +134,9 @@ plot_MultiRod(softRobot, 0.0, sim_params,environment,imc);
 
 %% Initial conditions on velocity / angular velocity (if any)
 
-
+%% Add point mass payload
+softRobot.MassMat(mapNodetoDOF(1),mapNodetoDOF(1)) = softRobot.MassMat(mapNodetoDOF(1),mapNodetoDOF(1)).*100;
+softRobot.Fg (mapNodetoDOF(1)) = softRobot.Fg (mapNodetoDOF(1)).*100;  
 %% Time stepping scheme
 
 Nsteps = round(sim_params.totalTime/sim_params.dt);
