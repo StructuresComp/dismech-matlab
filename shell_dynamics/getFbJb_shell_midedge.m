@@ -1,4 +1,4 @@
-function [Fb_shell, Jb_shell] = getFbJb_shell_midedge_new(MultiRod, triangle_springs, q, tau_0)
+function [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, triangle_springs, q, tau_0)
 
 n_triangles = numel(triangle_springs);
 n_DOF = MultiRod.n_DOF;

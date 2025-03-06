@@ -83,8 +83,7 @@ while ~solved % % error > sim_params.tol
 
     if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)
-%             [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, q, tau_0); % midedge-bending (shell)
-            [Fb_shell, Jb_shell] = getFbJb_shell_midedge_new(MultiRod, triangle_springs, q, tau_0); % midedge-bending (shell)
+            [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, triangle_springs, q, tau_0); % midedge-bending (shell)
         else
             [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q); % hinge-bending (shell)
         end
