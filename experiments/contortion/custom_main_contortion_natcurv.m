@@ -63,12 +63,15 @@ else
     end
 end
 
-% hinge bending spring
+% shell bending spring
 n_hinge = size(elBendShell,1);
-if(n_hinge==0)
+n_triangle = softRobot.n_faces;
+if(n_triangle==0)
     hinge_springs = [];
+    triangle_springs = [];
 else
     if(~sim_params.use_midedge)
+        triangle_springs = [];
         for h=1:n_hinge
             hinge_springs(h) = hingeSpring (...
                 0, elBendShell(h,:), softRobot, softRobot.kb);
@@ -76,6 +79,9 @@ else
         hinge_springs = setThetaBar(hinge_springs, softRobot);
     else
         hinge_springs = [];
+        for t=1:n_triangle
+            triangle_springs(t) = triangleSpring(softRobot.face_nodes_shell(t,:), softRobot.face_edges(t,:), softRobot.face_shell_edges(t,:), softRobot.sign_faces(t,:), softRobot);
+        end
     end
 end
 
@@ -163,9 +169,9 @@ for timeStep = 1:Nsteps
         tau_0 = [];
     end
 
-    %%  Implicit stepping error iteration
-    [softRobot, stretch_springs, bend_twist_springs, hinge_springs] = ...
-        timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, tau_0,environment,imc, sim_params);
+     %%  Implicit stepping error iteration
+     [softRobot, stretch_springs, bend_twist_springs, hinge_springs] = ...
+         timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0,environment,imc, sim_params);
 
     ctime = ctime + sim_params.dt
 

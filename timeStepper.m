@@ -1,5 +1,5 @@
 function [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = ...
-    timeStepper (MultiRod, stretch_springs, bend_twist_springs, hinge_springs, tau_0, env, imc, sim_params)
+    timeStepper (MultiRod, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0, env, imc, sim_params)
 
 % create local variables in function to store the struct values
 n_nodes=MultiRod.n_nodes;
@@ -83,9 +83,10 @@ while ~solved % % error > sim_params.tol
 
     if(~isempty(MultiRod.face_nodes_shell))
         if (sim_params.use_midedge)
-            [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, q, tau_0); % hinge-bending (shell)
+%             [Fb_shell, Jb_shell] = getFbJb_shell_midedge(MultiRod, q, tau_0); % midedge-bending (shell)
+            [Fb_shell, Jb_shell] = getFbJb_shell_midedge_new(MultiRod, triangle_springs, q, tau_0); % midedge-bending (shell)
         else
-            [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q); % midedge-bending (shell)
+            [Fb_shell, Jb_shell, hinge_springs] = getFbJb_shell(MultiRod, hinge_springs, q); % hinge-bending (shell)
         end
         Forces = Forces + Fb_shell;
         JForces = JForces + Jb_shell;
