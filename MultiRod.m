@@ -132,14 +132,14 @@ classdef MultiRod
             obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen;
             obj.kb = 2/sqrt(3) * Y_shell * (obj.h^3) / 12;
             if sim_params.use_midedge
-                if(obj.nu_shell~=1)
-                    obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+                if(obj.nu_shell==1)
+                    error("poisson's ratio 1 for shell is not supported since (1-nu^2) terms appears in the denominator of the stiffness leading to inifinity")
                 else
-                    obj.kb = Y_shell * obj.h^3 / (24 * (1 + obj.nu_shell));
+                    obj.kb = Y_shell * obj.h^3 / (24 * (1 - obj.nu_shell^2));
+    %                 obj.kb = Y_shell * obj.h^3 / (24 * (1 + obj.nu_shell));  % if  nu = 1
+                    obj.ks = 2*(Y_shell * obj.h/(1-obj.nu_shell^2)) * obj.refLen;
+    %                 obj.ks = sqrt(3)/2 * Y_shell * obj.h * obj.refLen; % if  nu = 1
                 end
-
-                % trial debug
-                obj.ks = 2*(Y_shell * obj.h/(1-obj.nu_shell^2)) * obj.refLen;
             end
             
             % Other properties
@@ -154,7 +154,7 @@ classdef MultiRod
             if sim_params.use_midedge
                 obj.face_edges = face_edges;
                 obj.sign_faces = sign_faces;
-                [obj.init_ts,obj.init_cs,obj.init_fs, obj.init_xis] = obj.initialCurvatureMidedge(); % calculate initial values for c,t,f,xi
+                [obj.init_ts, obj.init_fs, obj.init_cs, obj.init_xis] = obj.initialCurvatureMidedge(); % calculate initial values for c,t,f,xi
             else
                 obj.face_edges = [];
                 obj.sign_faces = [];
