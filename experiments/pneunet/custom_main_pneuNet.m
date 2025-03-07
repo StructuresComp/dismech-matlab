@@ -2,11 +2,13 @@ clc
 clear all
 close all
 % add to path
+addpath springs/
 addpath util_functions/
 addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
+addpath adaptive_stepping/
 addpath logging/
 
 % robotDescriptionShellCantilever
