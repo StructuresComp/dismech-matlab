@@ -3,7 +3,6 @@ function [E_with_stiff, gradE_with_stiff, gradE, gradE2] = ...
     (stiff, nu, pi, pj, pk, xi_i, xi_j, xi_k, s_i, s_j, s_k, tau_i0, tau_j0, tau_k0, A, ls, ...
     init_ts, init_cs, init_fs, init_xi, ...
     optional_t_i, optional_t_j, optional_t_k, optional_c_i, optional_c_j, optional_c_k)
-
 % *************************************************************************
 % Inputs:
 % pi, pj, pk: vertex DOF - 3*1 position vectors of vertices of one triangle
@@ -100,10 +99,11 @@ for i=1:3
 
         E2 = E2 + ( (c(i)*c(j)) * ((norm(t(:,i))^2)*(norm(t(:,j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*xi(j) - f(j)) ) + ...
             ( (init_cs(i)*init_cs(j)) * ((ls(i)^2)*(ls(j)^2)) * (s(i)*init_xi(i) - init_fs(i)) * (s(j)*init_xi(j) - init_fs(j)) ) - ...
-            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*((ls(j))^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
+            2 * ( (c(i)*init_cs(j)) * ((norm(t(:,i))^2)*(ls(j)^2)) * (s(i)*xi(i) - f(i)) * (s(j)*init_xi(j) - init_fs(j)) );
     end
 end
-E_with_stiff = stiff*(nu*E + (1-nu)*E2).*A ;
+
+E_with_stiff = stiff*((1-nu)*E + (nu)*E2).*A ;
 
 %% Gradient of Energy
 
@@ -161,9 +161,9 @@ for j=1:3
         del_E_del_xi_i = del_E_del_xi_i + (2*c_i*s_i) * c(j) * (s(j)*xi(j) - f(j)) * (dot(t_i, t(:,j))^2) ...
             + 2*c_i*s_i * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_i,init_ts(:,j)))^2 ;
         del_E_del_xi_j = del_E_del_xi_j + (2*c_j*s_j) * c(j) * (s(j)*xi(j) - f(j)) * (dot(t_j, t(:,j))^2) ...
-            + 2*c_i*s_i * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_i,init_ts(:,j)))^2 ;
+            + 2*c_j*s_j * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_j,init_ts(:,j)))^2 ;
         del_E_del_xi_k = del_E_del_xi_k + (2*c_k*s_k) * c(j) * (s(j)*xi(j) - f(j)) * (dot(t_k, t(:,j))^2) ...
-            + 2*c_i*s_i * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_i,init_ts(:,j)))^2 ;
+            + 2*c_k*s_k * init_cs(j) * (s(j)*init_xi(j) - init_fs(j)) * (dot(t_k,init_ts(:,j)))^2 ;
 
 
         del_E2_del_xi_i = del_E2_del_xi_i + (2*c_i*s_i* norm(t_i)^2) * (c(j) * (s(j)*xi(j) - f(j)) * norm(t(:,j))^2 - ...
@@ -184,5 +184,5 @@ gradE = [del_E_del_pi , del_E_del_pj , del_E_del_pk , ...
 gradE2 = [del_E2_del_pi , del_E2_del_pj , del_E2_del_pk , ...
     del_E2_del_xi_i , del_E2_del_xi_j , del_E2_del_xi_k];
 
-gradE_with_stiff = stiff.*(nu.*gradE + (1-nu).*gradE2).*A;
+gradE_with_stiff = stiff.*((1-nu).*gradE + nu.*gradE2).*A;
 end
