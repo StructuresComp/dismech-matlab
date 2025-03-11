@@ -34,7 +34,7 @@ geom.shell_h = 1e-3;
 % material parameters
 material.density = 1200;
 material.youngs_rod = 0; % not used
-material.youngs_shell = 2e8;
+material.youngs_shell = 2e10;
 material.poisson_rod = 0;
 material.poisson_shell = 0.5;
 
@@ -45,12 +45,12 @@ env.ext_force_list = ["gravity"];
 env.g = [0, 0, -9.81]';
 
 %% Input text file 
-mesh_dense_nos = [20,25,30,35,40,45,50,55,60,65];
-mesh_types = ["equilateral" , "random" , "right" , "eq_algn"]; % type of mesh
+mesh_dense_nos = [4,8,20,25,30,35,40,45,50,55,60,65];
+mesh_types = ["equilateral" , "random" , "right" , "eq_algn", "non_uniform"]; % type of mesh
 
 % choose
-mesh_dense = 1;
-mesh_type = 1;
+mesh_dense = 7;
+mesh_type = 2;
 
 
 FileName = strcat(mesh_types(mesh_type), '_mesh_', num2str(mesh_dense_nos(mesh_dense)), '.txt');
@@ -63,7 +63,7 @@ inputFileName = strcat('experiments/shellCantilever/', FileName);
 
 sim_params.tol = 1e-4;
 sim_params.ftol = 1e-4;
-sim_params.dtol = 1e-2;
+sim_params.dtol = 1e-4;
 
 %% Boundary conditions
 fixed_node_indices = find(nodes(:,1)<=0.01)';
