@@ -1,6 +1,6 @@
 % check analytical gradient against fdm
 
-clear all;
+% clear all;
 close all;
 clc;
 
@@ -9,41 +9,41 @@ addpath ../shell_dynamics/
 fprintf('FDM verification of midedge normal based shell bending\n');
 
 stiff = 1;
-nu = 0.5;
+nu = 0;
 
 %% element: triangle
 
-% initial values (non-zero init curvature)
-
-init_ps = rand(3,3);
-init_p1 = init_ps(:,1);
-init_p2 = init_ps(:,2);
-init_p3 = init_ps(:,3);
-
-init_p1_ = rand(3,1);
-init_p2_ = rand(3,1);
-init_p3_ = rand(3,1);
-
-% init_xi_1 = rand;
-% init_xi_2 = rand;
-% init_xi_3 = rand;
-
-% % initial values (zero init curvature)
-
-% init_ps = [rand(2,3);0,0,0];
+% % initial values (non-zero init curvature)
+% 
+% init_ps = rand(3,3);
 % init_p1 = init_ps(:,1);
 % init_p2 = init_ps(:,2);
 % init_p3 = init_ps(:,3);
 % 
-% init_p1_ = [rand(2,1);0];
-% init_p2_ = [rand(2,1);0];
-% init_p3_ = [rand(2,1);0];
+% init_p1_ = rand(3,1);
+% init_p2_ = rand(3,1);
+% init_p3_ = rand(3,1);
+% 
+% % init_xi_1 = rand;
+% % init_xi_2 = rand;
+% % init_xi_3 = rand;
+% 
+% % % initial values (zero init curvature)
+% 
+% % init_ps = [rand(2,3);0,0,0];
+% % init_p1 = init_ps(:,1);
+% % init_p2 = init_ps(:,2);
+% % init_p3 = init_ps(:,3);
+% % 
+% % init_p1_ = [rand(2,1);0];
+% % init_p2_ = [rand(2,1);0];
+% % init_p3_ = [rand(2,1);0];
 
 nodes = [init_p1, init_p2, init_p3, init_p1_, init_p2_, init_p3_]';
 edges = [2,3; 3,1; 1,2; 2,4; 3,5; 1,6;...
     3,4; 1,5; 2,6];
 
-figure()
+figure(1)
 hold on;
 for i=1:size(edges,1)
     n1 = edges(i,1);
@@ -119,25 +119,39 @@ init_xis = [init_xi_1, init_xi_2, init_xi_3];
 [init_ts, init_fs, init_cs] = calculate_ts_fs_cs(init_p1, init_p2, init_p3, tau1_0, tau2_0, tau3_0);
 
 %% deformed
+nodes_def = nodes + 0.1*rand(size(nodes,1),3);
+figure(2)
+hold on;
+for i=1:size(edges,1)
+    n1 = edges(i,1);
+    n2 = edges(i,2);
+    n1pos = nodes_def(n1,:);
+    n2pos = nodes_def(n2,:);
+   
+    plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko-');
+end
+hold off;
 % vertex point vectors: p_i,j,k
-ps = init_ps + 0.001*rand(3,3);
-p1 = ps(:,1) ;
-p2 = ps(:,2) ;
-p3 = ps(:,3) ;
+p1 = nodes_def(1,:)' ;
+p2 = nodes_def(2,:)' ;
+p3 = nodes_def(3,:)' ;
 
-xis = init_xis + 0.001*rand(1,3);
+p1_ = nodes_def(4,:)' ;
+p2_ = nodes_def(5,:)' ;
+p3_ = nodes_def(6,:)' ;
+
+% xis = init_xis + 0.001*rand(1,3);
 xi_1 = xis(1);
 xi_2 = xis(2);
 xi_3 = xis(3);
-
-p1_ = p1 + 0.001*rand(3,1);
-p2_ = p2 + 0.001*rand(3,1);
-p3_ = p3 + 0.001*rand(3,1);
 
 % edge vectors: v_i,j,k
 v1 = p3 - p2 ; 
 v2 = p1 - p3 ;
 v3 = p2 - p1 ;
+
+% length of edges
+ls = [norm(v1), norm(v2), norm(v3)];
 
 % normal of the triangle
 normal = cross((p2-p1), (p3-p2));
@@ -176,14 +190,19 @@ end
 n1_avg = n1_avg/ norm(n1_avg);
 n2_avg = n2_avg/ norm(n2_avg);
 n3_avg = n3_avg/ norm(n3_avg);
+% 
+% tau1_0 = cross(v1, n1_avg);
+% tau2_0 = cross(v2, n2_avg);
+% tau3_0 = cross(v3, n3_avg);
 
-tau1_0 = cross(v1, n1_avg);
-tau2_0 = cross(v2, n2_avg);
-tau3_0 = cross(v3, n3_avg);
+% [E, gradE, hessE,~,~,~,~,~,~, t1, t2, t3, c1, c2, c3] = ...
+%     Energy_Grad_Hess_with2terms_nat_curv ...
+%     (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ...
+%     init_ts, init_cs, init_fs, init_xis);
 
-[E, gradE, hessE,~,~,~,~,~,~, t1, t2, t3, c1, c2, c3] = ...
-    Energy_Grad_Hess_with2terms_nat_curv ...
-    (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ...
+[E, gradE, hessE, t1, t2, t3, c1, c2, c3] = ...
+    Eb_gradEb_hessEb_shell_midedge ...
+    (stiff, nu, p1, p2, p3, xi_1, xi_2, xi_3, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ls, ...
     init_ts, init_cs, init_fs, init_xis);
 
 %% FDM check for gradient and hessian
@@ -205,8 +224,8 @@ for c = 1:12
 
     % changes in the energy
     [E_change, gradE_change] = ...
-        Energy_Grad_Hess_with2terms_nat_curv ...
-        (stiff, nu, p1_change, p2_change, p3_change, xi_1_change, xi_2_change, xi_3_change, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ...
+        Eb_gradEb_hessEb_shell_midedge ...
+        (stiff, nu, p1_change, p2_change, p3_change, xi_1_change, xi_2_change, xi_3_change, s_1, s_2, s_3, tau1_0, tau2_0, tau3_0, A, ls, ...
         init_ts, init_cs, init_fs, init_xis, t1, t2, t3, c1, c2, c3); % assume that t1, t2, t3, c1, c2, c3 are not changed - negligible changes
 
     gradE_FDM(c) = (E_change - E)/change;
@@ -222,18 +241,18 @@ diff_hess = hessE_FDM - hessE
 h1 = figure();
 h1.WindowState = 'maximized';
 subplot(2,1,1);
-plot( gradE, 'ro');
+plot( gradE(:), 'ro');
 hold on
-plot( gradE_FDM, 'b^');
+plot( gradE_FDM(:), 'b^');
 hold off
 legend('Analytical my', 'Finite Difference');
 xlabel('Index');
 ylabel('Gradient');
 
 subplot(2,1,2);
-plot( reshape(hessE, [144,1]), 'ro');
+plot( reshape(hessE(:,:), [144,1]), 'ro');
 hold on
-plot( reshape(hessE_FDM, [144,1]), 'b^');
+plot( reshape(hessE_FDM(:,:), [144,1]), 'b^');
 hold off
 legend('Analytical', 'Finite Difference');
 xlabel('Index');
