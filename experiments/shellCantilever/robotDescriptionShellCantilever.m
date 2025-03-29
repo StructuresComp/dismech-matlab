@@ -49,8 +49,8 @@ mesh_dense_nos = [4,8,20,25,30,35,40,45,50,55,60,65];
 mesh_types = ["equilateral" , "random" , "right" , "eq_algn", "non_uniform"]; % type of mesh
 
 % choose
-mesh_dense = 7;
-mesh_type = 2;
+mesh_dense = 3;
+mesh_type = 1;
 
 
 FileName = strcat(mesh_types(mesh_type), '_mesh_', num2str(mesh_dense_nos(mesh_dense)), '.txt');
