@@ -106,14 +106,6 @@ for c = 1:n_bend
                 theta_e = bend_twist_springs(c).sgn(1) * q_change(mapEdgetoDOF(e0, n_nodes));
                 theta_f = bend_twist_springs(c).sgn(2) * q_change(mapEdgetoDOF(e1, n_nodes));
 
-                
-                % changes in the gradient
-                % Fb_change = -getFb(MultiRod, bend_twist_springs, q_change, m1_change, m2_change);
-                % dJb_FDM(i,:) = (Fb_change - Fb_) .* (1/change);
-                % 
-                % Ft_change = -getFt(MultiRod, bend_twist_springs, q_change, refTwist_change); % twisting
-                % dJt_FDM(i,:) = (Ft_change - Ft_) .* (1/change);
-
                 Fb_change = gradEb(n_DOF, ind, node0p_change, node1p_change, node2p_change, m1e, m2e, m1f, m2f, bend_twist_springs(c));
 
                 dJb_FDM(i,:) = (Fb_change - Fb_) .* (1/change);

@@ -1,25 +1,29 @@
 % check analytical gradient against fdm
 
-clear all;
-close all;
-clc;
+% clc
+clear all
+% close all
+% add to path
+addpath util_functions/
+addpath contact_functions/
+addpath rod_dynamics/
+addpath shell_dynamics/
+addpath external_forces/
+addpath logging/
+addpath(genpath('experiments')); 
 
-addpath ../util_functions/
-fprintf('FDM verification of midedge normal based shell bending\n');
-
-stiff = 1;
-nu = 0.5;
+%%
+% input: robotDescription.m
 
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
 sim_params.use_midedge = false; % boolean var to decide on using midedge normal or 
 % hinge model for shell bending
 sim_params.use_lineSearch = false;
-sim_params.floor_present = false;
-sim_params.showFloor = false;
+sim_params.showFrames = true;
 sim_params.logStep = 1;
 sim_params.log_data = true;
-sim_params.bergou_DER = 0;
+sim_params.bergou_DER = 1;
 
 % Time step
 sim_params.dt = 1e-2;
@@ -36,11 +40,8 @@ else
 end
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
-sim_params.plotStep = 10;
+sim_params.plotStep = 1;
 
-sim_params.tol = 1e-4;
-sim_params.ftol = 1e-10;
-sim_params.dtol = 1e-10;
 %% Input parameters
 % geometry parameters
 geom.shell_h = 0;
@@ -52,39 +53,78 @@ material.youngs_rod = 2e6; % not used
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;
-% environment parameters
-env.g = [0, 0, -9.81]';
+
+%% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 env.ext_force_list = ["gravity"]; 
 
-%% initial configuration (non-zero init curvature)
-rod_nodes = rand(3,3);
-twist_angles = rand(2,1);
-% twist_angles = [0;0];
+% environment parameters
+env.g = [0, 0, 0]';
 
-rod_edges = [1,2; 2,3];
+%% Tolerance on force function. 
 
-shell_nodes = [];
-face_nodes = [];
-rod_shell_joint_edges = [];
+sim_params.tol = 1e-4;
+sim_params.ftol = 1e-10;
+sim_params.dtol = 1e-10;
 
+%% Boundary conditions
+fixed_node_indices = [];
+fixed_edge_indices = [];
 
-[nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, ...
+%% logging
+input_log_node = 1;
+
+%% Plot dimensions
+sim_params.plot_x = [0,0.1];
+sim_params.plot_y = [-0.05,0.05];
+sim_params.plot_z = [-0.05,0.05];
+%%
+
+nodes = rand(3,3);
+edges = [1,2; 2,3];
+face_nodes =[];
+% create geometry
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
-    = createGeometry(rod_nodes, shell_nodes, rod_edges, rod_shell_joint_edges, face_nodes);
-n_nodes = size(nodes,1);
-n_edges = size(edges,1);
-n_edges_rod_only = size(rod_edges,1);
-n_edges_shell_only = size(shell_edges,1);
-n_hinge = size(elBendShell,1);
-n_edges_rod_shell = size(rod_shell_joint_edges,1);
-n_edges_shell = size(shell_edges,1);
-% twist_angles=zeros(n_edges_rod_only+n_edges_rod_shell,1);
+    = createGeometry(nodes, edges, face_nodes);
 
+% intialize twist angles for rod-edges to 0: this should be changed if one
+% wants to start with a non-zero intial twist
+% twist_angles=zeros(size(rod_edges,1)+size(rod_shell_joint_total_edges,1),1);
+twist_angles = rand(2,1);
+
+% create environment and imc structs
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
+
+
+%% Create the soft robot structure
 softRobot = MultiRod(geom, material, twist_angles,...
-    nodes, edges, rod_nodes, shell_nodes, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
-    face_nodes, sign_faces, face_edges, sim_params, env);
+    nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
+    face_nodes, sign_faces, face_edges, face_shell_edges, sim_params, environment);
 
+%% Creating stretching, bending, twisting and hinge springs
+
+n_stretch = size(elStretchRod,1) + size(elStretchShell,1);
 n_bend_twist = size(elBendRod,1);
+
+% stretching spring
+if(n_stretch==0)
+    stretch_springs = [];
+else
+    for s=1:n_stretch
+        if (s <= size(elStretchRod,1)) % rod
+            stretch_springs (s) = stretchSpring (...
+                softRobot.refLen(s), elStretchRod(s,:),softRobot);
+
+        else % shell
+            stretch_springs (s) = stretchSpring (...
+                softRobot.refLen(s), ...
+                elStretchShell(s-(size(elStretchRod,1)),:), ...
+                softRobot, softRobot.ks(s));
+        end
+    end
+end
+
+% bending and twisting spring
 if(n_bend_twist==0)
     bend_twist_springs = [];
 else
@@ -93,15 +133,32 @@ else
             elBendRod(b,:), elBendSign(b,:), [0 0], 0, softRobot);
     end
 end
-%% Prepare system
-% Reference frame (Space parallel transport at t=0)
-% softRobot = computeSpaceParallel(softRobot);
-softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
-for c=1:softRobot.n_edges_dof
-    frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
-    softRobot.a1(c,:) = frame(:,1);
-    softRobot.a2(c,:) = frame(:,2);
+
+% shell bending spring
+n_hinge = size(elBendShell,1);
+n_triangle = softRobot.n_faces;
+if(n_triangle==0)
+    hinge_springs = [];
+    triangle_springs = [];
+else
+    if(~sim_params.use_midedge)
+        triangle_springs = [];
+        for h=1:n_hinge
+            hinge_springs(h) = hingeSpring (...
+                0, elBendShell(h,:), softRobot, softRobot.kb);
+        end
+        hinge_springs = setThetaBar(hinge_springs, softRobot);
+    else
+        hinge_springs = [];
+        for t=1:n_triangle
+            triangle_springs(t) = triangleSpring(softRobot.face_nodes_shell(t,:), softRobot.face_edges(t,:), softRobot.face_shell_edges(t,:), softRobot.sign_faces(t,:), softRobot);
+        end
+    end
 end
+
+%%
+softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
+softRobot = computeSpaceParallel(softRobot);
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle
@@ -111,29 +168,15 @@ theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges
 bend_twist_springs = setkappa(softRobot, bend_twist_springs);
 
 % Reference twist
-undef_refTwist = computeRefTwist_bend_twist_spring ...
+softRobot.undef_refTwist = computeRefTwist_bend_twist_spring ...
     (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
     zeros(n_bend_twist,1));
-refTwist = computeRefTwist_bend_twist_spring ...
+softRobot.refTwist = computeRefTwist_bend_twist_spring ...
     (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
-    zeros(n_bend_twist,1));
-softRobot.refTwist = refTwist;
-softRobot.undef_refTwist = undef_refTwist;
-
-figure()
-hold on;
-for i=1:size(edges,1)
-    n1 = edges(i,1);
-    n2 = edges(i,2);
-    n1pos = rod_nodes(:,n1);
-    n2pos = rod_nodes(:,n2);
-   
-    plot3([n1pos(1);n2pos(1)], [n1pos(2);n2pos(2)], [n1pos(3);n2pos(3)],'ko-');
-end
-hold off;
+    softRobot.undef_refTwist);
 
 %% Deformed configuration
-softRobot.q = rand(softRobot.n_DOF,1);
+softRobot.q = softRobot.q0 + 0.1*rand(softRobot.n_DOF,1);
 q = softRobot.q;
 
  % Compute time parallel reference frame
@@ -144,7 +187,7 @@ q = softRobot.q;
     refTwist = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, softRobot.refTwist);
 
     % Compute material frame
-    theta = q(3*n_nodes + 1 : 3*n_nodes + softRobot.n_edges_dof);
+    theta = q(3*softRobot.n_nodes + 1 : 3*softRobot.n_nodes + softRobot.n_edges_dof);
     [m1, m2] = computeMaterialDirectors(a1,a2,theta);
 
 %%
@@ -171,7 +214,7 @@ for c = 1:softRobot.n_DOF
     refTwist_change = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, refTwist);
 
     % Compute material frame
-    theta = q_change(3*n_nodes + 1 : 3*n_nodes + softRobot.n_edges_dof);
+    theta = q_change(3*softRobot.n_nodes + 1 : 3*softRobot.n_nodes + softRobot.n_edges_dof);
     [m1, m2] = computeMaterialDirectors(a1,a2,theta);
 
     % changes in the gradient
