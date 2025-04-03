@@ -1,19 +1,16 @@
-% check analytical gradient against fdm
+% check analytical hessian against fdm
 
-% clc
+clc
 clear all
-% close all
+close all
 % add to path
-addpath util_functions/
-addpath contact_functions/
-addpath rod_dynamics/
-addpath shell_dynamics/
-addpath external_forces/
-addpath logging/
-addpath(genpath('experiments')); 
+addpath ../../util_functions/
+addpath ../../rod_dynamics/
+addpath ../../
+addpath ../../springs/
+addpath ../../external_forces/
 
-%%
-% input: robotDescription.m
+%% input: robotDescription.m
 
 sim_params.static_sim = false;
 sim_params.TwoDsim = false;
@@ -23,7 +20,7 @@ sim_params.use_lineSearch = false;
 sim_params.showFrames = true;
 sim_params.logStep = 1;
 sim_params.log_data = true;
-sim_params.bergou_DER = 1;
+sim_params.bergou_DER = 0;
 
 % Time step
 sim_params.dt = 1e-2;
@@ -49,7 +46,7 @@ geom.rod_r0 = 0.001;
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e6; % not used
+material.youngs_rod = 2e6;
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;
@@ -57,7 +54,7 @@ material.poisson_shell = 0;
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 env.ext_force_list = ["gravity"]; 
 
-% environment parameters
+% % environment parameters
 env.g = [0, 0, 0]';
 
 %% Tolerance on force function. 
@@ -77,20 +74,21 @@ input_log_node = 1;
 sim_params.plot_x = [0,0.1];
 sim_params.plot_y = [-0.05,0.05];
 sim_params.plot_z = [-0.05,0.05];
-%%
 
+%% Initial undeformed configuration
+
+% random
 nodes = rand(3,3);
 edges = [1,2; 2,3];
 face_nodes =[];
+
 % create geometry
 [nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
     elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
     = createGeometry(nodes, edges, face_nodes);
 
-% intialize twist angles for rod-edges to 0: this should be changed if one
-% wants to start with a non-zero intial twist
-% twist_angles=zeros(size(rod_edges,1)+size(rod_shell_joint_total_edges,1),1);
-twist_angles = rand(2,1);
+% intialize twist angles for rod-edges
+twist_angles = rand(2,1); % random
 
 % create environment and imc structs
 [environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
@@ -179,25 +177,22 @@ softRobot.refTwist = computeRefTwist_bend_twist_spring ...
 softRobot.q = softRobot.q0 + 0.1*rand(softRobot.n_DOF,1);
 q = softRobot.q;
 
- % Compute time parallel reference frame
-    [a1, a2] = computeTimeParallel(softRobot, softRobot.a1, softRobot.q0, q);
+% Compute time parallel reference frame
+[a1, a2] = computeTimeParallel(softRobot, softRobot.a1, softRobot.q0, q);
 
-    % Compute reference twist
-    tangent = computeTangent(softRobot, softRobot.q);
-    refTwist = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, softRobot.refTwist);
+% Compute reference twist
+tangent = computeTangent(softRobot, softRobot.q);
+refTwist = computeRefTwist_bend_twist_spring(bend_twist_springs, a1, tangent, softRobot.refTwist);
 
-    % Compute material frame
-    theta = q(3*softRobot.n_nodes + 1 : 3*softRobot.n_nodes + softRobot.n_edges_dof);
-    [m1, m2] = computeMaterialDirectors(a1,a2,theta);
+% Compute material frame
+theta = q(3*softRobot.n_nodes + 1 : 3*softRobot.n_nodes + softRobot.n_edges_dof);
+[m1, m2] = computeMaterialDirectors(a1,a2,theta);
 
 %%
 [Fb, Jb, bend_twist_springs] = getFbJb(softRobot, bend_twist_springs, softRobot.q, m1, m2, sim_params);
 [Ft, Jt, bend_twist_springs] = getFtJt(softRobot, bend_twist_springs, softRobot.q, refTwist, sim_params); % twisting
 
-%% Trial
-% [Fb_trial, Jb_trial, Ft_trial, Jt_trial, Jb_FDM_trial, Jt_FDM_trial, bend_twist_springs] = getFbJb_FtJt_and_FDM(softRobot, bend_twist_springs, softRobot.q, m1, m2, refTwist, sim_params);
-
-
+% FDM for hess
 change = 1e-8;
 Jb_FDM = zeros(11,11);
 Jt_FDM = zeros(11,11);
@@ -226,14 +221,6 @@ for c = 1:softRobot.n_DOF
 
 end
 
-% Jb_FDM = Jb_FDM'; % why this?
-% Jt_FDM = Jt_FDM'; % why this?
-% diff_grad = gradE_FDM - gradE
-% diff_hess = hessE_FDM - hessE
-% 
-% %%
-% 
-
 %%
 
 figure(10);
@@ -256,24 +243,3 @@ legend('Analytical', 'Finite Difference');
 xlabel('Index');
 ylabel('Hessian');
 title('Twisting hessian')
-%%
-% figure(20);
-% subplot(2,1,1)
-% plot( reshape(Jb_trial, [121,1]), 'ro');
-% hold on
-% plot( reshape(Jb_FDM_trial, [121,1]), 'b^');
-% hold off
-% legend('Analytical', 'Finite Difference');
-% xlabel('Index');
-% ylabel('Hessian');
-% title('Bending hessian')
-% 
-% subplot(2,1,2)
-% plot( reshape(Jt_trial, [121,1]), 'ro');
-% hold on
-% plot( reshape(Jt_FDM_trial, [121,1]), 'b^');
-% hold off
-% legend('Analytical', 'Finite Difference');
-% xlabel('Index');
-% ylabel('Hessian');
-% title('Twisting hessian')
