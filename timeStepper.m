@@ -99,6 +99,7 @@ while ~solved % % error > sim_params.tol
         else
             Fg = MultiRod.Fg;
         end
+%         Fg = MultiRod.Fg;
         Forces = Forces + Fg;
     end
 

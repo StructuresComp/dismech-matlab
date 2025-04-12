@@ -9,7 +9,7 @@ sim_params.showFrames = true;
 sim_params.logStep = 1;
 sim_params.log_data = true;
 sim_params.bergou_DER = 0;
-sim_params.FDM = 1;
+sim_params.FDM = 0;
 
 % Time step
 sim_params.dt = 1e-2;
@@ -43,7 +43,7 @@ geom.rod_r0 = 0.001;
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e6; % not used
+material.youngs_rod = 2e6;
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;
@@ -52,7 +52,7 @@ material.poisson_shell = 0;
 env.ext_force_list = ["gravity"]; 
 
 % environment parameters
-env.g = [0, 0, -9.81]';
+env.g = [0, 0, -0.981]';
 
 %% Tolerance on force function. 
 

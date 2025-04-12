@@ -11,7 +11,7 @@ function frame = randomOrthonormalFrame(edgeVector)
 v1 = edgeVector / norm(edgeVector);
 
 % Generate a random vector not aligned with v1
-randomVector = rand(3, 1);
+randomVector = rand(3, 1); % random vector
 if abs(dot(randomVector, v1)) > 0.9
     % If the random vector is nearly aligned, generate another random vector
     randomVector = rand(3, 1);

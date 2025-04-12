@@ -8,6 +8,8 @@ undef_refTwist = MultiRod.undef_refTwist;
 Ft = zeros(n_DOF,1);
 Jt = zeros(n_DOF);
 
+% refTwist-undef_refTwist
+
 for c = 1:n_twist
     n0 = bend_twist_springs(c).nodes_ind(1);
     n1 = bend_twist_springs(c).nodes_ind(2);

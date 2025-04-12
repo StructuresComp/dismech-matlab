@@ -1,4 +1,4 @@
-% clc
+clc
 clear all
 close all
 % add to path
@@ -8,12 +8,16 @@ addpath contact_functions/
 addpath rod_dynamics/
 addpath shell_dynamics/
 addpath external_forces/
-addpath logging/
 addpath adaptive_stepping/
+addpath logging/
 addpath(genpath('experiments')); 
 
+% % Examples:
+robotDescriptionRodCantilever
 % robotDescriptionShellCantilever
-robotDescriptionStraightContortion
+% robotDescriptionParachute
+% robotDescriptionRodContact
+% robotDescriptionSquarePlate
 
 % create geometry
 [nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
@@ -87,21 +91,20 @@ else
         end
     end
 end
+
 %% Prepare system
-% % % Reference frame (Space parallel transport at t=0)
+% % Reference frame (Space parallel transport at t=0)
 softRobot = computeSpaceParallel(softRobot);
-perturbation_strength = 0.25;
-softRobot = addPerturbedReferenceFrames(softRobot, perturbation_strength);
-
-
-% % initialize reference frames randomly
 % softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
 % for c=1:softRobot.n_edges_dof
 %     frame = randomOrthonormalFrame(softRobot.tangent(c,:)');
 %     softRobot.a1(c,:) = frame(:,1);
 %     softRobot.a2(c,:) = frame(:,2);
 % end
-% load('experiments/contortion/random_frame_trial.mat')
+perturbation_strength = 1;
+softRobot = addPerturbedReferenceFrames(softRobot, perturbation_strength);
+
+% load('experiments/rodCantilever/random_frame.mat')
 % softRobot.a1 = a1;
 % softRobot.a2 = a2;
 
@@ -116,11 +119,13 @@ bend_twist_springs = setkappa(softRobot, bend_twist_springs);
 softRobot.undef_refTwist = computeRefTwist_bend_twist_spring ...
     (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
     zeros(n_bend_twist,1));
+% softRobot.refTwist = computeRefTwist_bend_twist_spring ...
+%     (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
+%     softRobot.undef_refTwist);
 softRobot.refTwist = computeRefTwist_bend_twist_spring ...
     (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
-    softRobot.undef_refTwist);
+    zeros(n_bend_twist,1));
 % softRobot.refTwist = softRobot.undef_refTwist;
-
 %% Boundary Conditions
 
 softRobot.fixed_nodes = fixed_node_indices;
@@ -139,8 +144,7 @@ softRobot.fixed_edges = fixed_edge_indices;
 plot_MultiRod(softRobot, 0.0, sim_params,environment,imc);
 
 %% Initial conditions on velocity / angular velocity (if any)
-u0 = 0.1;
-w0 = 0; %2
+
 
 %% Time stepping scheme
 
@@ -164,14 +168,6 @@ for timeStep = 1:Nsteps
     if(sim_params.static_sim)
         environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
     end
-    %% contorting moving BC
-    if(ctime<0.15)
-        softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) = softRobot.q0(1:3:3*size(softRobot.fixed_nodes,2)/2) + u0*sim_params.dt.*ones(size(1:3:3*size(softRobot.fixed_nodes,2)/2,1));
-    else
-        for i=1:size(softRobot.fixed_edges,2)/2
-            softRobot.q0(mapEdgetoDOF(i,softRobot.n_nodes)) = softRobot.q0(mapEdgetoDOF(i,softRobot.n_nodes)) + w0*sim_params.dt;
-        end
-    end
     %% Precomputation at each timeStep: midedge normal shell bending
     if(sim_params.use_midedge)
         tau_0 = updatePreComp_without_sign(softRobot.q, softRobot);
@@ -187,6 +183,7 @@ for timeStep = 1:Nsteps
 
     % Update q
     softRobot.q0 = softRobot.q;
+
     %% Logging and animation
     current_pos_x(timeStep) = softRobot.q0(3*log_node-2);
     current_pos_y(timeStep) = softRobot.q0(3*log_node-1);
