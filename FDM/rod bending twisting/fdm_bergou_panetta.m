@@ -157,6 +157,9 @@ end
 %%
 softRobot.tangent = computeTangent(softRobot, softRobot.q0); 
 softRobot = computeSpaceParallel(softRobot);
+perturbation_strength = 1;
+softRobot = addPerturbedReferenceFrames(softRobot, perturbation_strength);
+
 
 % Material frame from reference frame and twist angle
 theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle

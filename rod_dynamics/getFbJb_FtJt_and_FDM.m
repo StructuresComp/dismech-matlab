@@ -19,6 +19,8 @@ a1 = MultiRod.a1;
 undef_refTwist = MultiRod.undef_refTwist;
 change = 1e-8;
 
+undef_refTwist -  refTwist
+
 for c = 1:n_bend
     n0 = bend_twist_springs(c).nodes_ind(1);
     n1 = bend_twist_springs(c).nodes_ind(2);
@@ -121,27 +123,27 @@ for c = 1:n_bend
     % dJb(ind, ind)
     % % dJt(ind, ind)
 % 
-%             figure(100)
-% subplot(2,1,1)
-% plot( reshape(dJb(ind, ind), [121,1]), 'ro');
-% hold on
-% plot( reshape(dJb_FDM(:, ind), [121,1]), 'b^');
-% hold off
-% legend('Analytical', 'Finite Difference');
-% xlabel('Index');
-% ylabel('Hessian');
-% title('Bending hessian')
-% 
-% subplot(2,1,2)
-% plot( reshape(dJt(ind, ind), [121,1]), 'ro');
-% hold on
-% plot( reshape(dJt_FDM(:, ind), [121,1]), 'b^');
-% hold off
-% legend('Analytical', 'Finite Difference');
-% xlabel('Index');
-% ylabel('Hessian');
-% title('Bending hessian')
-% 
+            figure(100)
+subplot(2,1,1)
+plot( reshape(dJb(ind, ind), [121,1]), 'ro');
+hold on
+plot( reshape(dJb_FDM(:, ind), [121,1]), 'b^');
+hold off
+legend('Analytical', 'Finite Difference');
+xlabel('Index');
+ylabel('Hessian');
+title('Bending hessian')
+
+subplot(2,1,2)
+plot( reshape(dJt(ind, ind), [121,1]), 'ro');
+hold on
+plot( reshape(dJt_FDM(:, ind), [121,1]), 'b^');
+hold off
+legend('Analytical', 'Finite Difference');
+xlabel('Index');
+ylabel('Hessian');
+title('Twisting hessian')
+
 
     %% change sign of forces if the edges were flipped for alignment earlier
     if bend_twist_springs(c).sgn(1) ~= 1
