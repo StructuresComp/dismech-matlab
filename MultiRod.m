@@ -103,8 +103,11 @@ classdef MultiRod
             % Mass matrix
             obj.MassMat = obj.calculateMassMatrix(geom);
             % Weight
-%             obj.W = obj.calculateWeightVector(sim_params.g);
-            obj.Fg = getGravityForce(obj,environment);
+            if isfield(environment, 'g') && ~isempty(environment.g)
+                obj.Fg = getGravityForce(obj,environment);
+            else
+                obj.Fg = [];
+            end
             
             % Stiffnesses
             G_rod = Y_rod / (2 * (1 + nu_rod));
