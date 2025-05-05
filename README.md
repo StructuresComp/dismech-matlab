@@ -18,6 +18,7 @@ Soft robots rely on flexible structures for motion and interaction, often underg
 - **Environmental forces:** gravity, buoyancy, ground contact, Coulomb & viscous friction, and aerodynamic drag
 - **Time-dependent actuation support** via curvature or twist modulation
 - **Modular and accessible MATLAB implementation** with no external dependencies
+
 ![features](media/Features_dismech.jpg) 
 
 ### TO-DO:
@@ -26,7 +27,7 @@ Soft robots rely on flexible structures for motion and interaction, often underg
 - [ ] Python version - Coming Soon!
 - [ ] Add shell functionality in [C++ version](https://github.com/StructuresComp/dismech-rods.git)
 
-If you'd like DisMech to support a new feature, feel free create an issue, and we'll add it to
+If you'd like MAT-DiSMech to support a new feature, feel free create an issue, and we'll add it to
 the list here.
 For those looking to contribute, PRs are always welcome!
 
@@ -43,8 +44,10 @@ cd dismech-matlab
 
 To simulate a soft robot, provide the following input:
 
-- **Geometry file (`.txt`)**: containing node positions, edge list (for rods), and triangle list (for shells) for the discretized soft-robot structure.
+- **`inputGeometry.txt` file:** containing node positions, edge list (for rods), and triangle list (for shells) for the discretized soft-robot structure.
 - **`robotDescription.m` file:** containing Material properties, Simulation parameters, Boundary conditions, Initial conditions on velocity (if any), Actuation (if any), Environmental properties.
+
+The [`./experiments`](./experiments) folder contains examples of both files. Each subfolder contains the input files to reproduce the different simulation examples described below.
 
 ### 3. Run a Simulation
 
@@ -58,18 +61,20 @@ Edit or use an existing script (e.g., `main.m`) and execute it in MATLAB. The si
 The repository includes scripts and input files to reproduce the following simulations (and more):
 
 ### Manta Ray Swimming
-Flapping and undulatory motion modeled using sinusoidal hinge actuation with drag and buoyancy forces.
+Flapping and undulatory motion are modeled using sinusoidal hinge actuation with aerodynamic drag, buoyancy, and gravity forces.
+
 ![mantaray](media/mantaray.gif)
 
 ### Parachute
-Shows a shell canopy supported by rod tethers. Demonstrates handling of the dynaics of a hybrid structure made out of rods and shell under aerodynamic drag and gravity.
+Demonstrates handling of the dynamics of a hybrid structure made out of a shell canopy and rod tethers under aerodynamic drag and gravity.
+
 ![parachute](media/parachute.gif)
 
 ### Rod-Ground Collision
 Evaluates elastic and frictional contact. Demonstrates soft vs. stiff material response upon ground impact.
-| | |
-|:--:|:--:|
-|![rod1](media/rod1.gif) | ![rod2](media/rod2.gif) |
+| ![rod1](media/rod1.gif) | ![rod2](media/rod2.gif) |
+|:----------------------:|:----------------------:|
+| Rod with E = 2 MPa       | Rod with E = 2 GPa     |
 
 
 ## Validation with Cantilever Beam
@@ -80,15 +85,14 @@ Static deflection under gravity from different models in our simulator compared 
 
 If our work has helped your research, please cite the following paper.
 ```
-@article{choi2023dismech,
-    author={Choi, Andrew and Jing, Ran and Sabelhaus, Andrew P. and Jawed, Mohammad Khalid},
-    journal={IEEE Robotics and Automation Letters},
-    title={DisMech: A Discrete Differential Geometry-Based Physical Simulator for Soft Robots and Structures},
-    year={2024},
-    volume={9},
-    number={4},
-    pages={3483-3490},
-    doi={10.1109/LRA.2024.3365292}
+@misc{lahoti2025matdismech,
+      title={{MAT-DiSMech: A Discrete Differential Geometry-based Computational Tool for Simulation of Rods, Shells, and Soft Robots}}, 
+      author={Radha Lahoti and M. Khalid Jawed},
+      year={2025},
+      eprint={2504.17186},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2504.17186}, 
 }
 ```
 
