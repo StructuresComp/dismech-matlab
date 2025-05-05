@@ -103,8 +103,11 @@ classdef MultiRod
             % Mass matrix
             obj.MassMat = obj.calculateMassMatrix(geom);
             % Weight
-%             obj.W = obj.calculateWeightVector(sim_params.g);
-            obj.Fg = getGravityForce(obj,environment);
+            if isfield(environment, 'g') && ~isempty(environment.g)
+                obj.Fg = getGravityForce(obj,environment);
+            else
+                obj.Fg = [];
+            end
             
             % Stiffnesses
             G_rod = Y_rod / (2 * (1 + nu_rod));
@@ -240,11 +243,13 @@ classdef MultiRod
             for cEdge = 1:obj.n_edges_dof
                 if isfield(geom, 'Axs') && ~isempty(geom.Axs)
                     dm = obj.refLen(cEdge) * geom.Axs * obj.rho;
+                    edge_mass = dm * geom.Jxs/geom.Axs; % I = m*(J/A)
                 else
                     dm = obj.refLen(cEdge) * pi * obj.r0^2 * obj.rho;
+                    edge_mass = dm * obj.r0^2 / 2; % I = 1/2 m r^2
                 end
                 ind = mapEdgetoDOF(cEdge, obj.n_nodes);
-                m(ind) = dm / 2 * obj.r0^2;  % I = 1/2 m r^2
+                m(ind) = edge_mass;
             end
 
             massMat = diag(m);
