@@ -39,6 +39,8 @@ if ismember("selfContact", env.ext_force_list)
         imc.velTol = env.velTol;
     else
         imc.compute_friction = false;
+        imc.mu_k = 0;
+        imc.velTol = 0;
     end
 end
 
