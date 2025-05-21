@@ -1,5 +1,5 @@
 function hinge_springs = setThetaBar(hinge_springs, MultiRod)
-n_hinge = size(hinge_springs,1);
+n_hinge = length(hinge_springs);
 for c=1:n_hinge
     n0=hinge_springs(c).nodes_ind(1);
     n1=hinge_springs(c).nodes_ind(2);
