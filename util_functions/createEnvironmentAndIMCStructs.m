@@ -25,7 +25,10 @@ if ismember("pointForce", env.ext_force_list)
     environment.ptForce = env.ptForce;
     environment.ptForce_node = env.ptForce_node;
 end
-
+if ismember("rft", env.ext_force_list)
+    environment.ct = env.ct;
+    environment.cn = env.cn;
+end
 if ismember("selfContact", env.ext_force_list)
     imc.k_c = material.contact_stiffness;
     imc.contact_len = 2*geom.rod_r0;

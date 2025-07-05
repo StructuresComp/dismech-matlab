@@ -120,6 +120,12 @@ while ~solved % % error > sim_params.tol
         Forces = Forces + Fpt;
     end
 
+    if ismember("rft", env.ext_force_list)
+        [Frft,Jrft] = get_rft_force(MultiRod, q, u, env, sim_params);
+        Forces = Forces + Frft;
+        JForces = JForces + Jrft;
+    end
+
     if(sim_params.static_sim) 
         f = - Forces; % Equations of motion
         J = - JForces; % Jacobian

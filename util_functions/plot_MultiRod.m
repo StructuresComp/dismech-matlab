@@ -83,7 +83,24 @@ if(isfield(environment, 'showFloor'))
 end
 hold off
 title(num2str(ctime, 't=%f'));
-view(3); % isometric view
+
+if isfield(sim_params, 'view')
+    if sim_params.view == "xy"
+        view(2);
+    elseif sim_params.view == "xz"
+        view(0, 90);
+    elseif sim_params.view == "yz"
+        view(90, 0);
+    elseif sim_params.view == "iso"
+        view(3);
+    else
+        view(3);
+    end
+else
+    view(3); % isometric view
+end
+
+
 xlabel('x');
 ylabel('y');
 zlabel('z');
