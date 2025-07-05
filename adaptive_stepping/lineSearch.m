@@ -55,7 +55,7 @@ while ~success
 
     if(~isempty(bend_twist_springs))
     if(sim_params.TwoDsim)
-        Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
+        Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
         Ft = zeros(n_DOF,1);
     else
         Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
@@ -85,7 +85,7 @@ while ~success
     end
 
     if ismember("viscous", env.ext_force_list) % Viscous forces
-        [Fv,~] = getViscousForce_correctedJacobian(q,q0,sim_params.dt,env.eta,MultiRod);
+        [Fv,~] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
         Forces = Forces + Fv;
     end
 
@@ -112,7 +112,6 @@ while ~success
     end
 
     if ismember("floorContact", env.ext_force_list) % floor contact
-        % [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
         [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force_custom_gd(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
         f = f - Fc_floor - Ffr_floor;
     end
