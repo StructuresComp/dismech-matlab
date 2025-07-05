@@ -207,5 +207,6 @@ figure()
 plot3(current_pos_x, current_pos_y, current_pos_z);
 title('space trajectory of the node')
 legend(['x'; 'y'; 'z'])
-xlabel('t [s]')
-ylabel('z [m]')
+xlabel('x [m]')
+ylabel('y [m]')
+zlabel('z [m]')

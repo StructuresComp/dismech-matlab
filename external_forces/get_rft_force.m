@@ -36,8 +36,9 @@ function [F_full, J_full] = get_rft_force(softRobot, q, u, env, sim_params)
 
     % Compute forces
     F_nodes = zeros(N, 3);
+    voronoi_lengths = softRobot.voronoiRefLen;
     for i = 1:N
-        F_nodes(i, :) = - M(:, :, i) * V(i, :)';
+        F_nodes(i, :) = - M(:, :, i) * V(i, :)' .* voronoi_lengths(i);
     end
 
     F_nodes = reshape(F_nodes.', [], 1); % column vector
@@ -45,7 +46,7 @@ function [F_full, J_full] = get_rft_force(softRobot, q, u, env, sim_params)
     % Compute Jacobian blocks
     J_blocks = zeros(3, 3, N);
     for i = 1:N
-        J_blocks(:, :, i) = - M(:, :, i) / dt;
+        J_blocks(:, :, i) = - M(:, :, i) / dt .* voronoi_lengths(i);
     end
 
     % Assemble block diagonal Jacobian

@@ -41,18 +41,15 @@ geom.rod_r0 = 0.001;
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e6; % not used
+material.youngs_rod = 2e6;
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;
 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 env.ext_force_list = ["rft"]; 
-% env.ext_force_list = ["selfContact", "floorContact"];
-% env.ext_force_list = ["gravity"];
 
 % environment parameters
-env.g = [0,0,0]';
 env.ct = 0.01;
 env.cn = 0.1;
 
@@ -71,6 +68,6 @@ input_log_node = size(nodes,1);
 
 %% Plot dimensions
 sim_params.plot_x = [-0.1,0.1];
-sim_params.plot_y = [-0.0005,0.0005];
-sim_params.plot_z = [-0.0005,0.0005];
+sim_params.plot_y = [-0.01,0.01];
+sim_params.plot_z = [-0.05,0.05];
 sim_params.view = "xy";
