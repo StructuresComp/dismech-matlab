@@ -14,7 +14,7 @@ addpath(genpath('experiments'));
 
 % % Examples:
 % robotDescriptionRodCantilever
-robotDescriptionShellCantilever
+robotDescriptionRodCantilever_for_explicit
 % robotDescriptionParachute
 % robotDescriptionRodContact
 % robotDescriptionSquarePlate
@@ -162,7 +162,7 @@ for timeStep = 1:Nsteps
 
     %%  Implicit stepping error iteration
     [softRobot, stretch_springs, bend_twist_springs, hinge_springs] = ...
-        timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0,environment,imc, sim_params);
+        explicit_timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0,environment,imc, sim_params);
 
     ctime = ctime + sim_params.dt
 
@@ -187,11 +187,11 @@ end
 %% Saving data
 [rod_data,shell_data] = logDataForRendering(dof_with_time, softRobot, Nsteps, sim_params.static_sim);
 
-filename = "node_trajectory.xls";
-writematrix(time_arr', filename, Sheet=1,Range='A1');
-writematrix(current_pos_x, filename, Sheet=1,Range='B1');
-writematrix(current_pos_y, filename, Sheet=1,Range='C1');
-writematrix(current_pos_z, filename, Sheet=1,Range='D1');
+% filename = "node_trajectory.xls";
+% writematrix(time_arr', filename, Sheet=1,Range='A1');
+% writematrix(current_pos_x, filename, Sheet=1,Range='B1');
+% writematrix(current_pos_y, filename, Sheet=1,Range='C1');
+% writematrix(current_pos_z, filename, Sheet=1,Range='D1');
 
 %% Plots
 % time trajectory
@@ -203,7 +203,7 @@ xlabel('t [s]')
 ylabel('position [m]')
 % space trajectory
 figure()
-plot3(current_pos_x, current_pos_y, current_pos_z);
+plot3(current_pos_x-current_pos_x(1), current_pos_y-current_pos_y(1), current_pos_z-current_pos_z(1));
 title('space trajectory of the node')
 legend(['x'; 'y'; 'z'])
 xlabel('x [m]')

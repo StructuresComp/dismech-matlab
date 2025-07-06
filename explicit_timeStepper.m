@@ -1,52 +1,36 @@
-function [alpha] = lineSearch(q,q0,dq,u,f,J, stretch_springs, bend_twist_springs, hinge_springs, MultiRod, tau_0, imc, env, sim_params)
-% Store current q
-q_old = q;
-n_nodes=MultiRod.n_nodes;
-n_edges_dof = MultiRod.n_edges_dof;
-n_DOF=MultiRod.n_DOF;
+function [MultiRod, stretch_springs, bend_twist_springs, hinge_springs] = ...
+    explicit_timeStepper (MultiRod, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0, env, imc, sim_params)
 
+% create local variables in function to store the struct values
+n_nodes=MultiRod.n_nodes;
+n_edges = MultiRod.n_edges;
+n_DOF=MultiRod.n_DOF;
+n_edges_dof = MultiRod.n_edges_dof;
+q0=MultiRod.q0;
+u=MultiRod.u;
 a1=MultiRod.a1;
+a2=MultiRod.a2;
+freeIndex=MultiRod.freeDOF;
 refTwist=MultiRod.refTwist;
 
+% Guess: new DOF is same as old DOF vector
+    q = q0;
+    % intialize force and Jacobian
+    Forces = zeros(n_DOF,1);
 
-% Initialize an interval for optimal learning rate alpha
-amax = 2;
-amin = 1e-3;
-al = 0;
-au = 1;
-
-a = 1;
-
-% Compute the slope initially
-x0 = 0.5 * norm(f(MultiRod.freeDOF))^2; % Should decrease with the updated learning rate from lineSearch
-dx0 = -(transpose(f(MultiRod.freeDOF)) * J(MultiRod.freeDOF,MultiRod.freeDOF) * dq(MultiRod.freeDOF));
-
-success = false;
-m2 = 0.9;
-m1 = 0.1;
-iter_l = 1;
-
-while ~success
-    %% NewtonUpdate
-    q(MultiRod.freeDOF) = q_old(MultiRod.freeDOF)-a*dq(MultiRod.freeDOF);
-    %% prepSystemForIteration
-
+    %% prepare for iterations
     % Compute time parallel reference frame
     [a1_iter, a2_iter] = computeTimeParallel(MultiRod, a1, q0, q);
 
     % Compute reference twist
     tangent = computeTangent(MultiRod, q);
-    % if(~isempty(bend_twist_springs))
-        refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
-    % end
+    refTwist_iter = computeRefTwist_bend_twist_spring(bend_twist_springs, a1_iter, tangent, refTwist);
+
     % Compute material frame
     theta = q(3*n_nodes + 1 : 3*n_nodes + n_edges_dof);
-    [m1_axis, m2_axis] = computeMaterialDirectors(a1_iter,a2_iter,theta);
+    [m1, m2] = computeMaterialDirectors(a1_iter,a2_iter,theta);
 
-
-    %% compute forces
-    % Force calculation
-    Forces = zeros(n_DOF,1);
+    %% Elastic force and jacobian calculation
     
     if(~isempty(stretch_springs))
     Fs = getFs(MultiRod, stretch_springs, q);
@@ -55,10 +39,10 @@ while ~success
 
     if(~isempty(bend_twist_springs))
     if(sim_params.TwoDsim)
-        Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
+        Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = zeros(n_DOF,1);
     else
-        Fb = getFb(MultiRod, bend_twist_springs, q, m1_axis, m2_axis); % bending (rod)
+        Fb = getFb(MultiRod, bend_twist_springs, q, m1, m2); % bending (rod)
         Ft = getFt(MultiRod, bend_twist_springs, q, refTwist_iter); % twisting
     end
     Forces = Forces + Fb + Ft;
@@ -99,58 +83,22 @@ while ~success
         Forces = Forces + Fpt;
     end
 
-    if(sim_params.static_sim) 
-        f = - Forces; % Equations of motion
-    else     
-        f = MultiRod.MassMat / sim_params.dt * ( (q-q0)/ sim_params.dt - u) - Forces; % Inertial forces added
-    end
-
     if ismember("selfContact", env.ext_force_list) % IMC
         [Fc, Ffr] = ...
             IMC_new_only_force(imc, q, q0, sim_params.dt);        
-        f = f - Fc - Ffr;
+        Forces = Forces + Fc + Ffr;
     end
 
     if ismember("floorContact", env.ext_force_list) % floor contact
         [Fc_floor, Ffr_floor] = computeFloorContactAndFriction_only_force_custom_gd(imc, sim_params.dt, q, q0, n_nodes, n_DOF);
-        f = f - Fc_floor - Ffr_floor;
+        Forces = Forces + Fc_floor + Ffr_floor;
     end
-%%
-    x = 0.5 * norm(f(MultiRod.freeDOF))^2;
-    error = sum(abs(f(MultiRod.freeDOF)) ); % just to check
-    slope = (x - x0) / a;
+    % NOTE: Did not add inertial forces, those are added in the explicit
+    % step itself below
+    accel = MultiRod.MassMat\Forces; 
+    q(freeIndex) = (sim_params.dt).*(accel(freeIndex).*sim_params.dt + u(freeIndex)) + q0(freeIndex);
 
-%     %         if(slope<0)
-%     %             success = true;
-%     %             continue;
-%     %         end
+%% update
+MultiRod = update_system(MultiRod, bend_twist_springs, sim_params, a1, q0, q, refTwist);
 
-    if isnan(x)
-        error("x is NaN");
-    end
-
-    if slope >= m2 * dx0 && slope <= m1 * dx0
-        success = true;
-    else
-        if slope < m2 * dx0
-            al = a;
-        else
-            au = a;
-        end
-
-        if au < amax
-            a = 0.5 * (al + au);
-        else
-            a = 10 * a;
-        end
-    end
-
-    if a > amax || a < amin || iter_l > 100
-        break;
-    end
-
-    iter_l = iter_l + 1;
 end
-alpha = a;
-end
-
