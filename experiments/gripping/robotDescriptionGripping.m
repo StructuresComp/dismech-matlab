@@ -47,9 +47,9 @@ material.poisson_rod = 0.5;
 material.poisson_shell = 0;
 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
-env.ext_force_list = ["floorContact", "floorFriction"]; 
+% env.ext_force_list = ["floorContact", "floorFriction"]; 
 % env.ext_force_list = ["selfContact", "floorContact"];
-% env.ext_force_list = ["gravity"];
+env.ext_force_list = ["gravity"];
 
 % environment parameters
 env.g = [0,0,0]';
@@ -57,7 +57,7 @@ env.contact_stiffness = 20;
 env.mu = 0.25;
 env.floor_z = 0.05;
 env.velTol = 1e-2;
-material.contact_stiffness = 1e3;
+material.contact_stiffness = 0;
 material.mu = 0.25;
 
 %% Tolerance on force function. 

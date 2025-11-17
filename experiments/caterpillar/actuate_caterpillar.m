@@ -1,7 +1,10 @@
 function stretch_springs = actuate_caterpillar(stretch_springs, ctime)
-    p1 = 0.2;
-    p2 = 0.4;
-    p3 = 0.6;
+    % p1 = 0.2;
+    % p2 = 0.4;
+    % p3 = 0.6;
+    p1 = 0.1;
+    p2 = 0.2;
+    p3 = 0.3;
     t_mod = mod(ctime, p3); % phase in current cycle
 
     if t_mod < p1

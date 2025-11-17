@@ -12,7 +12,7 @@ sim_params.bergou_DER = 0;
 sim_params.FDM = 0;
 
 % Time step
-sim_params.dt = 5e-2;
+sim_params.dt = 1e-2;
 
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 50;
@@ -26,10 +26,10 @@ else
 end
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
-sim_params.plotStep = 1;
+sim_params.plotStep = 10;
 
 %% Input text file 
-inputFileName = 'experiments/snake/horizontal_rod_n21.txt';
+inputFileName = 'experiments/snake/horizontal_rod_n41.txt';
 
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -67,7 +67,7 @@ fixed_edge_indices = [];
 input_log_node = size(nodes,1);
 
 %% Plot dimensions
-sim_params.plot_x = [-0.1,0.1];
+sim_params.plot_x = [-0.5,0.1];
 sim_params.plot_y = [-0.01,0.01];
 sim_params.plot_z = [-0.05,0.05];
 sim_params.view = "xy";

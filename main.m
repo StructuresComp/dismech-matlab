@@ -13,8 +13,8 @@ addpath logging/
 addpath(genpath('experiments')); 
 
 % % Examples:
-% robotDescriptionRodCantilever
-robotDescriptionShellCantilever
+robotDescriptionRodCantilever
+% robotDescriptionShellCantilever
 % robotDescriptionParachute
 % robotDescriptionRodContact
 % robotDescriptionSquarePlate

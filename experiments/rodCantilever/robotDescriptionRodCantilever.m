@@ -20,7 +20,7 @@ sim_params.maximum_iter = 25;
 % Total simulation time
 if(sim_params.static_sim)
 %     sim_params.totalTime = sim_params.dt;
-    sim_params.totalTime = sim_params.dt*10;
+    sim_params.totalTime = sim_params.dt*5;
 else
     sim_params.totalTime = 0.3; % sec
 end
@@ -30,7 +30,7 @@ sim_params.plotStep = 1;
 
 %% Input text file 
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n3.txt';
-% inputFileName = 'experiments/rodCantilever/horizontal_rod_n26.txt';
+% inputFileName = 'experiments/rodCantilever/horizontal_rod_n21.txt';
 inputFileName = 'experiments/rodCantilever/horizontal_rod_n51.txt';
 % inputFileName = 'experiments/rodCantilever/horizontal_rod_n101.txt';
 
@@ -51,7 +51,7 @@ geom.Jxs = b*h^3/6;
 
 % material parameters
 material.density = 1200;
-material.youngs_rod = 2e6; % not used
+material.youngs_rod = 1e7; % not used
 material.youngs_shell = 0;
 material.poisson_rod = 0.5;
 material.poisson_shell = 0;

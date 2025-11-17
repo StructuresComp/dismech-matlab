@@ -69,7 +69,7 @@ refTwist=MultiRod.refTwist;
     end
 
     if ismember("viscous", env.ext_force_list) % Viscous forces
-        [Fv,~] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
+        Fv = getViscousForce_explicit(u,sim_params.dt,env.eta,MultiRod);
         Forces = Forces + Fv;
     end
 
@@ -95,7 +95,8 @@ refTwist=MultiRod.refTwist;
     end
     % NOTE: Did not add inertial forces, those are added in the explicit
     % step itself below
-    accel = MultiRod.MassMat\Forces; 
+    accel = MultiRod.MassMat\Forces; % Forces./mass_vector
+    % accel = Forces./MultiRod.massVec;
     q(freeIndex) = (sim_params.dt).*(accel(freeIndex).*sim_params.dt + u(freeIndex)) + q0(freeIndex);
 
 %% update

@@ -1,6 +1,6 @@
 function tangential_wave = actuate_snake(n_bends, t)
     % --- Parameters you can tune ---
-    amplitude = 0.02;             % Max strain applied to each bend
+    amplitude = 0.05;             % Max strain applied to each bend
     frequency = 1.0;              % Oscillation frequency in Hz
     spatial_wavelength = 1.0;     % Wavelength along the body in normalized units
     phase_offset = pi / 2;        % Phase offset between vertical and tangential components

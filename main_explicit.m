@@ -149,6 +149,9 @@ current_pos_z(1) = softRobot.q0(3*log_node);
 dof_with_time = zeros(softRobot.n_DOF+1,Nsteps);
 dof_with_time(1,:) = time_arr;
 
+% track sim time
+tic
+
 for timeStep = 1:Nsteps
     if(sim_params.static_sim)
         environment.g = timeStep*environment.static_g/Nsteps; % ramp gravity
@@ -179,24 +182,22 @@ for timeStep = 1:Nsteps
             dof_with_time(2:end,timeStep) =  softRobot.q;
         end
     end
-    if mod(timeStep, sim_params.plotStep) == 0
-        plot_MultiRod(softRobot, ctime, sim_params, environment, imc);
-    end
+    % if mod(timeStep, sim_params.plotStep) == 0
+    %     plot_MultiRod(softRobot, ctime, sim_params, environment, imc);
+    % end
 end
-
+toc
 %% Saving data
 [rod_data,shell_data] = logDataForRendering(dof_with_time, softRobot, Nsteps, sim_params.static_sim);
 
-% filename = "node_trajectory.xls";
-% writematrix(time_arr', filename, Sheet=1,Range='A1');
-% writematrix(current_pos_x, filename, Sheet=1,Range='B1');
-% writematrix(current_pos_y, filename, Sheet=1,Range='C1');
-% writematrix(current_pos_z, filename, Sheet=1,Range='D1');
+filename = "node_trajectory.xlsx";
+M = [time_arr(:), current_pos_x(:), current_pos_y(:), current_pos_z(:)];
+writematrix(M, filename, Sheet=1, Range='A1');
 
 %% Plots
 % time trajectory
 figure()
-plot(time_arr,current_pos_x, time_arr, current_pos_y, time_arr, current_pos_z);
+plot(time_arr,current_pos_x-current_pos_x(1), time_arr, current_pos_y - current_pos_y(1), time_arr, current_pos_z - current_pos_z(1));
 title('time trajectory of the node')
 legend(['x'; 'y'; 'z'])
 xlabel('t [s]')

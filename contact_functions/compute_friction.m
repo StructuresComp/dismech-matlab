@@ -10,7 +10,7 @@ K2 = 15/vel_tol;
     x2s0 = data(19:21);
     x2e0 = data(22:24);
 
-    % Extract force data
+    % Extract contact force data
     f1s = forces(1:3);
     f1e = forces(4:6);
     f2s = forces(7:9);

@@ -20,6 +20,7 @@ classdef MultiRod
         voronoiArea
         faceA
         MassMat
+        massVec
         Fg
         EI1
         EI2
@@ -101,7 +102,7 @@ classdef MultiRod
             obj.faceA = obj.calculateFaceArea();
             
             % Mass matrix
-            obj.MassMat = obj.calculateMassMatrix(geom);
+            [obj.MassMat, obj.massVec] = obj.calculateMassMatrix(geom);
             % Weight
             if isfield(environment, 'g') && ~isempty(environment.g)
                 obj.Fg = getGravityForce(obj,environment);
@@ -212,8 +213,8 @@ classdef MultiRod
             end
         end
 
-        function massMat = calculateMassMatrix(obj, geom)
-            m = zeros(obj.n_DOF, 1);
+        function [massMat, massVec] = calculateMassMatrix(obj, geom)
+            massVec = zeros(obj.n_DOF, 1);
 
             % Shell faces
             for i = 1:obj.n_faces
@@ -223,9 +224,9 @@ classdef MultiRod
                 face_A = 0.5 * norm(cross((obj.Nodes(node2ind, :) - obj.Nodes(node1ind, :)), (obj.Nodes(node3ind, :) - obj.Nodes(node2ind, :))));
                 Mface = obj.rho * face_A * obj.h;
 
-                m(mapNodetoDOF(node1ind)) = m(mapNodetoDOF(node1ind)) + Mface / 3 * ones(3, 1);
-                m(mapNodetoDOF(node2ind)) = m(mapNodetoDOF(node2ind)) + Mface / 3 * ones(3, 1);
-                m(mapNodetoDOF(node3ind)) = m(mapNodetoDOF(node3ind)) + Mface / 3 * ones(3, 1);
+                massVec(mapNodetoDOF(node1ind)) = massVec(mapNodetoDOF(node1ind)) + Mface / 3 * ones(3, 1);
+                massVec(mapNodetoDOF(node2ind)) = massVec(mapNodetoDOF(node2ind)) + Mface / 3 * ones(3, 1);
+                massVec(mapNodetoDOF(node3ind)) = massVec(mapNodetoDOF(node3ind)) + Mface / 3 * ones(3, 1);
             end
 
             % Rod nodes
@@ -236,7 +237,7 @@ classdef MultiRod
                     dm = obj.voronoiRefLen(cNode) * pi * obj.r0^2 * obj.rho;
                 end
                 ind = mapNodetoDOF(cNode);
-                m(ind) = m(ind) + dm * ones(3, 1);
+                massVec(ind) = massVec(ind) + dm * ones(3, 1);
             end
 
             % Rod edges
@@ -249,10 +250,10 @@ classdef MultiRod
                     edge_mass = dm * obj.r0^2 / 2; % I = 1/2 m r^2
                 end
                 ind = mapEdgetoDOF(cEdge, obj.n_nodes);
-                m(ind) = edge_mass;
+                massVec(ind) = edge_mass;
             end
 
-            massMat = diag(m);
+            massMat = diag(massVec);
         end
 
 

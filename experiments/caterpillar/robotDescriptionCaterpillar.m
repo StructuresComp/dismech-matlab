@@ -22,7 +22,7 @@ if(sim_params.static_sim)
 %     sim_params.totalTime = sim_params.dt;
     sim_params.totalTime = sim_params.dt*10;
 else
-    sim_params.totalTime = 10; % sec
+    sim_params.totalTime = 5; % sec
 end
 
 % How often the plot should be saved? (Set plotStep to 1 to show each plot)
@@ -30,6 +30,7 @@ sim_params.plotStep = 1;
 
 %% Input text file 
 inputFileName = 'experiments/caterpillar/horizontal_rod_n3.txt';
+% inputFileName = 'experiments/caterpillar/smaller_horizontal_rod_n3.txt';
 
 % reading the input text file
 [nodes, edges, face_nodes] = inputProcessorNew(inputFileName);
@@ -49,8 +50,8 @@ material.poisson_shell = 0;
 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
 % env.ext_force_list = ["gravity"]; 
-env.ext_force_list = ["gravity", "floorContact", "floorFriction"]; 
-
+% env.ext_force_list = ["gravity", "floorContact", "floorFriction"]; 
+env.ext_force_list = ["gravity", "floorContact"];
 % environment parameters
 env.g = [0, 0, -9.81]';
 env.contact_stiffness = 1000;
