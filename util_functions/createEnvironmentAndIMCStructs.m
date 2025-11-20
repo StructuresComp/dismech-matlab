@@ -32,14 +32,14 @@ end
 if ismember("selfContact", env.ext_force_list)
     imc.k_c = material.contact_stiffness;
     imc.contact_len = 2*geom.rod_r0;
-    imc.delta = 0.01*imc.contact_len;
+    imc.delta = 0.5*0.3125*imc.contact_len;
     imc.omega = 20; % # iters before jacobian for contact forces is used
     imc.scale = 1/geom.rod_r0;
     imc.C = [];
     if ismember("selfFriction", env.ext_force_list)
         imc.compute_friction = true;
         imc.mu_k = material.mu;
-        imc.velTol = env.velTol;
+        imc.velTol = material.velTol;
     else
         imc.compute_friction = false;
         imc.velTol = 0;

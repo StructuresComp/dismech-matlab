@@ -18,17 +18,19 @@ n_dof = size(q,1);
 
 if(iter==1) % run only on first iter
     [C, ~] = constructCandidateSet(q, edge_combos, candidate_lim, scale);
-    if(~isempty(C)) % if collision is detected, update contact stiffness if necessary
-        k_c = updateContactStiffnessNew(fvec_exceptIMC, C, fixedDOF);
-    end
+    % % if(~isempty(C)) % if collision is detected, update contact stiffness if necessary
+    % %     k_c = updateContactStiffnessNew(fvec_exceptIMC, C, fixedDOF);
+    % % end
+    % C = edge_combos;
 end
 if(~isempty(C))
     [colliding_edge_combos, ~,~] = detectCollisions(q, C, delta, contact_len, scale);
 
-    use_hess = false; % if iter<omega compute only forces
-    if (iter>omega) 
-        use_hess = true; % compute Jacobian for convergence
-    end
+    % use_hess = false; % if iter<omega compute only forces
+    % if (iter>omega) 
+    %     use_hess = true; % compute Jacobian for convergence
+    % end
+    use_hess = true;
     [Fc, Jc, Ffr, Jfr] = computeIMCContactAndFriction(q, q0, colliding_edge_combos, delta, contact_len, scale, k_c, mu_k, dt, velTol, n_dof, use_hess, friction_present);
 else 
     Fc = zeros(n_dof, 1);

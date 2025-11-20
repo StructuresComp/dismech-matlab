@@ -147,7 +147,9 @@ classdef MultiRod
             end
             
             % Other properties
-            obj.edge_combos = obj.construct_possible_edge_combos([rod_edges; rod_shell_joint_edges]);
+            % obj.edge_combos = obj.construct_possible_edge_combos([rod_edges; rod_shell_joint_edges]);
+            obj.edge_combos = obj.construct_edge_pairs_with_min_gap([rod_edges; rod_shell_joint_edges], 3);
+
             obj.u = zeros(size(obj.q0));
             obj.a1 = zeros(obj.n_edges_dof, 3);
             obj.a2 = zeros(obj.n_edges_dof, 3);
@@ -422,5 +424,54 @@ classdef MultiRod
             end
 
         end
+
+        function [edge_combos, edge_combos_idx] = construct_edge_pairs_with_min_gap(edges, k)
+        %CONSTRUCT_EDGE_PAIRS_WITH_MIN_GAP
+        %   Construct all edge pairs (ei, ej) such that:
+        %       - ei < ej  (no duplicates / orderless pairs)
+        %       - ej - ei >= k  ("k-apart" in edge index)
+        %
+        %   This is for the consecutive-edge case like:
+        %       edges = [1 2; 2 3; 3 4; ...]
+        %
+        %   Inputs:
+        %       edges  : N x 2 array of edge node indices
+        %       k      : minimum index separation between edges (integer >= 1)
+        %
+        %   Outputs:
+        %       edge_combos_idx : M x 2 array of edge index pairs [ei, ej]
+        %       edge_combos     : M x 4 array of node index pairs
+        %                         [edges(ei,1), edges(ei,2), edges(ej,1), edges(ej,2)]
+        
+            no_of_edges = size(edges, 1);
+        
+            if no_of_edges <= 1
+                edge_combos_idx = zeros(0, 2);
+                edge_combos     = zeros(0, 4);
+                return;
+            end
+        
+            % All upper-triangular index pairs (ei < ej)
+            [I, J] = find(triu(true(no_of_edges), 1));  % k=1 on diag offset gives ei<ej
+        
+            % Apply k-apart condition on indices
+            mask = (J - I) >= k;
+            I_valid = I(mask);
+            J_valid = J(mask);
+        
+            if isempty(I_valid)
+                edge_combos_idx = zeros(0, 2);
+                edge_combos     = zeros(0, 4);
+                return;
+            end
+        
+            % Edge index pairs
+            edge_combos_idx = [I_valid, J_valid];
+        
+            % Corresponding node index pairs: [xi, x_{i+1}, xj, x_{j+1}]
+            edge_combos = [edges(I_valid, :), edges(J_valid, :)];
+        end
+
+
     end
 end
