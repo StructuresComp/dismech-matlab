@@ -1,6 +1,6 @@
 % parachute : rod+shell
 %% rod
-df = load('rawDataRod_knot_friction.txt');
+df = load('rawDataRod.txt');
 
 n_rod_nodes = 301;
 n_Tri = 0;
@@ -9,7 +9,7 @@ rod_radius = 0.04;
 
 scaleFactor = 10;
 
-fileID = fopen('rodData_knot_friction.js', 'w');
+fileID = fopen('rodData_knot_new_matlab.js', 'w');
 
 fprintf(fileID, 'nNodes = %i; \n', n_rod_nodes);
 fprintf(fileID, 'rodRadius = %d;\n', rod_radius);

@@ -103,7 +103,8 @@ while ~solved % % error > sim_params.tol
     end
 
     if ismember("viscous", env.ext_force_list) % Viscous forces
-        [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
+        % [Fv,Jv] = getViscousForce(q,q0,sim_params.dt,env.eta,MultiRod);
+        [Fv,Jv] = getViscousForce_temp(q,q0,sim_params.dt,env.eta,MultiRod);
 
         Forces = Forces + Fv;
         JForces = JForces + Jv;
