@@ -1,0 +1,232 @@
+clc
+clear all
+close all
+% add to path
+addpath springs/
+addpath util_functions/
+addpath contact_functions/
+addpath rod_dynamics/
+addpath shell_dynamics/
+addpath external_forces/
+addpath adaptive_stepping/
+addpath logging/
+addpath(genpath('experiments')); 
+
+% % Examples:
+robotDescriptionKnot
+
+% create geometry
+[nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, face_nodes, face_edges, face_shell_edges, ...
+    elStretchRod, elStretchShell, elBendRod, elBendSign, elBendShell, sign_faces, face_unit_norms]...
+    = createGeometry(nodes, edges, face_nodes);
+
+% intialize twist angles for rod-edges to 0: this should be changed if one
+% wants to start with a non-zero intial twist
+twist_angles=zeros(size(rod_edges,1)+size(rod_shell_joint_total_edges,1),1);
+
+% create environment and imc structs
+[environment,imc] = createEnvironmentAndIMCStructs(env,geom,material,sim_params);
+
+
+%% Create the soft robot structure
+softRobot = MultiRod(geom, material, twist_angles,...
+    nodes, edges, rod_edges, shell_edges, rod_shell_joint_edges, rod_shell_joint_total_edges, ...
+    face_nodes, sign_faces, face_edges, face_shell_edges, sim_params, environment);
+
+%% Creating stretching, bending, twisting and hinge springs
+
+n_stretch = size(elStretchRod,1) + size(elStretchShell,1);
+n_bend_twist = size(elBendRod,1);
+
+% stretching spring
+if(n_stretch==0)
+    stretch_springs = [];
+else
+    for s=1:n_stretch
+        if (s <= size(elStretchRod,1)) % rod
+            stretch_springs (s) = stretchSpring (...
+                softRobot.refLen(s), elStretchRod(s,:),softRobot);
+
+        else % shell
+            stretch_springs (s) = stretchSpring (...
+                softRobot.refLen(s), ...
+                elStretchShell(s-(size(elStretchRod,1)),:), ...
+                softRobot, softRobot.ks(s));
+        end
+    end
+end
+
+% bending and twisting spring
+if(n_bend_twist==0)
+    bend_twist_springs = [];
+else
+    for b=1:n_bend_twist
+        bend_twist_springs(b) = bendTwistSpring ( ...
+            elBendRod(b,:), elBendSign(b,:), [0 0], 0, softRobot);
+    end
+end
+
+% shell bending spring
+n_hinge = size(elBendShell,1);
+n_triangle = softRobot.n_faces;
+if(n_triangle==0)
+    hinge_springs = [];
+    triangle_springs = [];
+else
+    if(~sim_params.use_midedge)
+        triangle_springs = [];
+        for h=1:n_hinge
+            hinge_springs(h) = hingeSpring (...
+                0, elBendShell(h,:), softRobot, softRobot.kb);
+        end
+        hinge_springs = setThetaBar(hinge_springs, softRobot);
+    else
+        hinge_springs = [];
+        for t=1:n_triangle
+            triangle_springs(t) = triangleSpring(softRobot.face_nodes_shell(t,:), softRobot.face_edges(t,:), softRobot.face_shell_edges(t,:), softRobot.sign_faces(t,:), softRobot);
+        end
+    end
+end
+
+%% Prepare system
+% Reference frame (Space parallel transport at t=0)
+softRobot = computeSpaceParallel(softRobot);
+
+% Material frame from reference frame and twist angle
+theta = softRobot.q0(3*softRobot.n_nodes+1:3*softRobot.n_nodes+softRobot.n_edges_dof); % twist angle
+[softRobot.m1, softRobot.m2] = computeMaterialDirectors(softRobot.a1,softRobot.a2,theta);
+
+% Set rod natural curvature
+bend_twist_springs = setkappa(softRobot, bend_twist_springs);
+
+% Reference twist
+softRobot.undef_refTwist = computeRefTwist_bend_twist_spring ...
+    (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
+    zeros(n_bend_twist,1));
+softRobot.refTwist = computeRefTwist_bend_twist_spring ...
+    (bend_twist_springs, softRobot.a1, softRobot.tangent, ...
+    softRobot.undef_refTwist);
+
+%% Boundary Conditions
+
+softRobot.fixed_nodes = fixed_node_indices;
+for i=1:size(softRobot.Edges,1)
+    if ( ismember(softRobot.Edges(i,1),fixed_node_indices) && ismember(softRobot.Edges(i,2),fixed_node_indices) )
+        fixed_edge_indices = [fixed_edge_indices, i];
+    end
+end
+if(sim_params.TwoDsim)
+    fixed_edge_indices = [fixed_edge_indices, 1:softRobot.n_edges_dof]; % all rod thetas are fixed if it is a 2D sim
+end
+softRobot.fixed_edges = fixed_edge_indices;
+[softRobot.fixedDOF, softRobot.freeDOF] = FindFixedFreeDOF(softRobot.fixed_nodes, softRobot.fixed_edges, softRobot.n_DOF, softRobot.n_nodes);
+
+% Visualize initial configuration and the fixed and free nodes: free nodes - blue, fixed - red
+plot_MultiRod(softRobot, 0.0, sim_params,environment,imc);
+
+%% Initial conditions on velocity / angular velocity (if any)
+
+
+%% Time stepping scheme
+ctime = 0; % current time
+time_arr = [0.0];
+
+% containers for logging data
+current_pos_x = [];
+current_pos_y = [];
+current_pos_z = [];
+log_node = input_log_node;
+current_pos_x = [current_pos_x, softRobot.q0(3*log_node-2)];
+current_pos_y = [current_pos_y, softRobot.q0(3*log_node-1)];
+current_pos_z = [current_pos_z, softRobot.q0(3*log_node)];
+dof_with_time = [softRobot.q0];
+
+while ctime < sim_params.totalTime
+
+    %% Precomputation at each timeStep: midedge normal shell bending
+    if(sim_params.use_midedge)
+        tau_0 = updatePreComp_without_sign(softRobot.q, softRobot);
+    else
+        tau_0 = [];
+    end
+
+    %% changing boundary condition
+    if ctime > wait_time && ctime <= wait_time + pull_time % pulling phase
+        for i=1:length(start_nodes)
+            softRobot.q0(mapNodetoDOF(start_nodes(i))) = softRobot.q0(mapNodetoDOF(start_nodes(i))) + [0; -pull_speed * sim_params.dt; 0];
+        end
+        for i=1:length(end_nodes)
+            softRobot.q0(mapNodetoDOF(end_nodes(i))) = softRobot.q0(mapNodetoDOF(end_nodes(i))) + [0; pull_speed * sim_params.dt; 0];
+        end
+    elseif ctime > wait_time + pull_time && ctime <= wait_time + pull_time + release_time % release phase
+        for i=1:length(start_nodes)
+            softRobot.q0(mapNodetoDOF(start_nodes(i))) = softRobot.q0(mapNodetoDOF(start_nodes(i))) + [0; pull_speed * sim_params.dt; 0];
+        end
+        for i=1:length(end_nodes)
+            softRobot.q0(mapNodetoDOF(end_nodes(i))) = softRobot.q0(mapNodetoDOF(end_nodes(i))) + [0; -pull_speed * sim_params.dt; 0];
+        end
+    end
+    
+
+    %%  Implicit stepping error iteration with adaptive time step
+    try
+        [softRobot, stretch_springs, bend_twist_springs, hinge_springs] = ...
+            timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0,environment,imc, sim_params);
+
+    catch ME
+        % If something goes wrong, print the error
+        fprintf('Error occurred during simulation step: %s\n', ME.message);
+        sim_params.dt = sim_params.dt*0.1;
+        fprintf('Reducing time step to: %g\n', sim_params.dt);
+
+        [softRobot, stretch_springs, bend_twist_springs, hinge_springs] = ...
+            timeStepper(softRobot, stretch_springs, bend_twist_springs, hinge_springs, triangle_springs, tau_0, environment,imc, sim_params);
+
+    end
+    ctime = ctime + sim_params.dt
+    time_arr = [time_arr, ctime];
+
+    % Update q
+    softRobot.q0 = softRobot.q;
+
+    %% Logging and animation
+    current_pos_x = [current_pos_x, softRobot.q0(3*log_node-2)];
+    current_pos_y = [current_pos_y, softRobot.q0(3*log_node-1)];
+    current_pos_z = [current_pos_z, softRobot.q0(3*log_node)];
+
+    if(sim_params.log_data)
+        dof_with_time =  [dof_with_time, softRobot.q];
+    end
+    % if mod(timeStep, sim_params.plotStep) == 0
+    %     plot_MultiRod(softRobot, ctime, sim_params, environment, imc);
+    % end
+end
+
+dof_with_time = [time_arr', dof_with_time]';
+Nsteps = size(dof_with_time, 2);
+
+%% Saving data
+[rod_data,shell_data] = logDataForRendering(dof_with_time, softRobot, Nsteps, sim_params.static_sim);
+
+filename = "node_trajectory.xls";
+writematrix(time_arr', filename, Sheet=1,Range='A1');
+writematrix(current_pos_x, filename, Sheet=1,Range='B1');
+writematrix(current_pos_y, filename, Sheet=1,Range='C1');
+writematrix(current_pos_z, filename, Sheet=1,Range='D1');
+
+%% Plots
+% time trajectory
+figure()
+plot(time_arr,current_pos_x, time_arr, current_pos_y, time_arr, current_pos_z);
+title('time trajectory of the node')
+legend(['x'; 'y'; 'z'])
+xlabel('t [s]')
+ylabel('position [m]')
+% space trajectory
+figure()
+plot3(current_pos_x, current_pos_y, current_pos_z);
+title('space trajectory of the node')
+legend(['x'; 'y'; 'z'])
+xlabel('x [m]')
+ylabel('y [m]')
+zlabel('z [m]')

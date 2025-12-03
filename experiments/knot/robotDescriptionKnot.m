@@ -10,7 +10,7 @@ sim_params.logStep = 1;
 sim_params.log_data = true;
 
 % Time step
-sim_params.dt = 1e-3;
+sim_params.dt = 1e-1;
 
 % Maximum number of iterations in Newton Solver
 sim_params.maximum_iter = 25;
@@ -40,17 +40,15 @@ material.poisson_rod = 0.5;
 material.poisson_shell = 0;
 
 %% external force list ["selfContact", "selfFriction", "floorContact", "floorFriction", "gravity", "buoyancy", "viscous", "aerodynamic","pointForce"]
-% env.ext_force_list = ["selfContact", "selfFriction", "viscous"];
-env.ext_force_list = ["selfContact", "viscous"];
-% env.ext_force_list = ["empty"];
+env.ext_force_list = ["selfContact", "selfFriction", "viscous"];
+% env.ext_force_list = ["selfContact", "viscous"];
 
 material.contact_stiffness = 1;
-% % material.mu = 0.3;
-% % material.velTol = 1e-4;
+material.mu = 0.3;
+material.velTol = 1e-4;
 
 % environment parameters
-% env.g = [0, 0, -9.81]';
-env.eta = 0.1;
+env.eta = 0.1515;
 
 %% Tolerance on force function. 
 
